@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationService;
-import pl.sgorski.nethelt.core.exception.SerializationException;
-import pl.sgorski.nethelt.core.model.NetworkConfig;
+import pl.sgorski.nethelt.exception.SerializationException;
+import pl.sgorski.nethelt.model.NetworkConfig;
 
 /**
  * Implemented service for serializing and deserializing {@link NetworkConfig} objects to and from JSON.

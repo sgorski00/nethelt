@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.core.exception;
+package pl.sgorski.nethelt.exception;
 
 public class SerializationException extends RuntimeException {
 

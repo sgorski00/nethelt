@@ -1,6 +1,6 @@
 package pl.sgorski.nethelt.agent.serialization;
 
-import pl.sgorski.nethelt.core.model.Result;
+import pl.sgorski.nethelt.model.Result;
 
 /**
  * Service interface for serializing and deserializing Result objects to and from JSON.

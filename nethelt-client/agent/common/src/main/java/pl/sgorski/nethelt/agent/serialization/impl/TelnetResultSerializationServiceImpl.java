@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.ResultSerializationService;
-import pl.sgorski.nethelt.core.exception.SerializationException;
-import pl.sgorski.nethelt.core.model.TelnetResult;
+import pl.sgorski.nethelt.exception.SerializationException;
+import pl.sgorski.nethelt.model.TelnetResult;
 
 /**
  * Service implementation for serializing and deserializing TelnetResult objects to and from JSON.

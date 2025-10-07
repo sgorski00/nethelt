@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.Set;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationService;
-import pl.sgorski.nethelt.core.exception.SerializationException;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.PingResult;
+import pl.sgorski.nethelt.exception.SerializationException;
+import pl.sgorski.nethelt.model.Device;
 
 /**
  * Implemented service for serializing and deserializing Device objects to and from JSON.

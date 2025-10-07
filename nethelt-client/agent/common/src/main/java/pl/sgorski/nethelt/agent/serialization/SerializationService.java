@@ -1,7 +1,7 @@
 package pl.sgorski.nethelt.agent.serialization;
 
 import java.util.Set;
-import pl.sgorski.nethelt.core.exception.SerializationException;
+import pl.sgorski.nethelt.exception.SerializationException;
 
 /**
  * Service interface for serializing and deserializing objects to and from JSON.

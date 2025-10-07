@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.NetworkConfig;
-import pl.sgorski.nethelt.core.model.Operation;
-import pl.sgorski.nethelt.core.model.PingResult;
-import pl.sgorski.nethelt.core.model.TelnetResult;
+import pl.sgorski.nethelt.model.Device;
+import pl.sgorski.nethelt.model.NetworkConfig;
+import pl.sgorski.nethelt.model.Operation;
+import pl.sgorski.nethelt.model.PingResult;
+import pl.sgorski.nethelt.model.TelnetResult;
 
 @RestController
 @RequestMapping("/api")

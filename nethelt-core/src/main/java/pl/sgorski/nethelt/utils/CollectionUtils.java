@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.core.utils;
+package pl.sgorski.nethelt.utils;
 
 public class CollectionUtils {
 

@@ -17,8 +17,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>pl.sgorski.nethelt.core</groupId>
+      <groupId>pl.sgorski.nethelt</groupId>
       <artifactId>nethelt-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <dependency>
