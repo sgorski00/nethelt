@@ -9,12 +9,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.gorski.nethelt.agent.config.WebClientSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
-import pl.sgorski.nethelt.core.exception.WebClientException;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.NetworkConfig;
-import pl.sgorski.nethelt.core.model.Result;
+import pl.sgorski.nethelt.exception.WebClientException;
+import pl.sgorski.nethelt.model.Device;
+import pl.sgorski.nethelt.model.NetworkConfig;
+import pl.sgorski.nethelt.model.Result;
+import pl.sgorski.nethelt.utils.CollectionUtils;
 
 //TODO: add logging
 //TODO: add unit tests
@@ -24,11 +27,12 @@ import pl.sgorski.nethelt.core.model.Result;
  */
 public class WebClientService {
 
-  private final static String BASE_URL = "http://localhost:8080/api";
-  private final static String DEVICES_ENDPOINT = BASE_URL + "/devices";
-  private final static String PING_ENDPOINT = BASE_URL + "/ping";
-  private final static String TELNET_ENDPOINT = BASE_URL + "/telnet";
-  private final static String JSON_MEDIA_TYPE = "application/json";
+  private static final String BASE_URL = "http://localhost:8080/api";
+  private static final String DEVICES_ENDPOINT = BASE_URL + "/devices";
+  private static final String PING_ENDPOINT = BASE_URL + "/ping";
+  private static final String TELNET_ENDPOINT = BASE_URL + "/telnet";
+  private static final String JSON_MEDIA_TYPE = "application/json";
+  private static final Logger LOG = LoggerFactory.getLogger(WebClientService.class);
 
   private final OkHttpClient webServerClient;
   private final SerializationController serializer;
@@ -36,6 +40,7 @@ public class WebClientService {
   public WebClientService(SerializationController serializer) {
     this.webServerClient = WebClientSingleton.getInstance();
     this.serializer = serializer;
+    LOG.debug("WebClientService initialized with base web server URL: {}", BASE_URL);
   }
 
   /**
@@ -45,20 +50,26 @@ public class WebClientService {
    * @param clazz the class type of the results
    */
   public <T extends Result> void sendResult(Set<T> results, Class<T> clazz) {
-    if (Objects.isNull(results) || results.isEmpty()) return;
+    if (CollectionUtils.isEmpty(results)) return;
+    LOG.info("Attempting to send {} results of type {} to the server", results.size(), clazz.getSimpleName());
     String json = serializer.serialize(results);
     String endpoint = resolveEndpoint(clazz);
     postJson(endpoint, json);
   }
 
   private String resolveEndpoint(Class<?> clazz) {
+    String endpoint;
     switch (clazz.getSimpleName()) {
       case "PingResult":
-        return PING_ENDPOINT;
+        endpoint = PING_ENDPOINT;
+        break;
       case "TelnetResult":
-        return TELNET_ENDPOINT;
+        endpoint = TELNET_ENDPOINT;
+        break;
       default: throw new IllegalArgumentException("Cannot send results to the server! Unsupported result type: " + clazz.getName());
     }
+    LOG.debug("Resolved endpoint: {} for class: {}", endpoint, clazz.getSimpleName());
+    return endpoint;
   }
 
   /**
@@ -69,6 +80,7 @@ public class WebClientService {
    * @throws WebClientException when connection to the server cannot be established
    */
   private void postJson(String url, String json) {
+    LOG.debug("Posting JSON to URL: {}. Payload: {}", url, json);
     RequestBody body = RequestBody.create(json, MediaType.get(JSON_MEDIA_TYPE));
     Request request = new Request.Builder()
       .url(url)
@@ -78,6 +90,7 @@ public class WebClientService {
 
     try {
       webServerClient.newCall(request).execute().close();
+      LOG.debug("Successfully posted results to the server at URL: {}", url);
     } catch (IOException e) {
       throw new WebClientException("Cannot connect to the server", e);
     }
@@ -89,6 +102,7 @@ public class WebClientService {
    * @return set of config fetched from the server
    */
   public Set<NetworkConfig> fetchNetworkConfig() {
+    LOG.debug("Fetching network configuration from the server");
     Request request = new Request.Builder().url(BASE_URL + "/config/network")
       .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
       .get()
@@ -102,6 +116,7 @@ public class WebClientService {
    * @return set of devices fetched from the server
    */
   public Set<Device> fetchDevices() {
+    LOG.debug("Fetching devices from the server");
     Request request = new Request.Builder()
       .url(DEVICES_ENDPOINT)
       .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client

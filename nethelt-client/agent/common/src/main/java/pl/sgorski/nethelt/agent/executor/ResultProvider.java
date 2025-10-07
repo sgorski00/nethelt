@@ -4,24 +4,29 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.PingResult;
-import pl.sgorski.nethelt.core.model.TelnetResult;
-import pl.sgorski.nethelt.core.service.PingOperation;
-import pl.sgorski.nethelt.core.service.TelnetOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.sgorski.nethelt.model.Device;
+import pl.sgorski.nethelt.model.PingResult;
+import pl.sgorski.nethelt.model.TelnetResult;
+import pl.sgorski.nethelt.service.PingOperation;
+import pl.sgorski.nethelt.service.TelnetOperation;
 import pl.sgorski.nethelt.network.ping.DefaultPingOperationImpl;
 import pl.sgorski.nethelt.network.telnet.DefaultTelnetOperationImpl;
 
 /**
- * Provides methods to execute ping and telnet operations on a set of devices and retrieve their results.
+ * Provides methods to execute network operations on a set of devices and retrieve their results.
  * This class utilizes asynchronous operations to perform network checks concurrently for better performance.
  */
 public class ResultProvider {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ResultProvider.class);
 
   private final PingOperation ping;
   private final TelnetOperation telnet;
 
   public ResultProvider() {
+    LOG.debug("Initializing ResultProvider with default implementations");
     this.ping = new DefaultPingOperationImpl();
     this.telnet = new DefaultTelnetOperationImpl();
   }

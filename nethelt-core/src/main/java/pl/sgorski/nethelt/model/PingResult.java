@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.core.model;
+package pl.sgorski.nethelt.model;
 
 /**
  * Represents the result of a ping operation on a network device.

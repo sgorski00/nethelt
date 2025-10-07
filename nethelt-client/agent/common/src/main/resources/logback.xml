@@ -1,0 +1,13 @@
+<configuration debug="false" statusListenerClass="ch.qos.logback.core.status.NopStatusListener">
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %cyan(%-40logger{36}) - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+  <logger name="pl.gorski.nethelt" level="DEBUG" />
+</configuration>

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.core.model;
+package pl.sgorski.nethelt.model;
 
 public enum Operation {
   PING,

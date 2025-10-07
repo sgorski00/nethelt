@@ -7,6 +7,11 @@ import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.agent.serialization.impl.DefaultSerializationController;
 
+/**
+ * Main application class for the Nethelt Background agent.
+ * It starts in the background as a scheduler and fetch data from the web service.
+ * After executing operations it sends results back to the web service.
+ */
 public class App {
 
   public static void main(String[] args) {

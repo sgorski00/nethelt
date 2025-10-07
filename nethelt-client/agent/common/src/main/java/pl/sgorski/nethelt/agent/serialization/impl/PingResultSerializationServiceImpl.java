@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.Set;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.ResultSerializationService;
-import pl.sgorski.nethelt.core.exception.SerializationException;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.PingResult;
+import pl.sgorski.nethelt.exception.SerializationException;
+import pl.sgorski.nethelt.model.PingResult;
 
 /**
  * Service implementation for serializing and deserializing PingResult objects to and from JSON.

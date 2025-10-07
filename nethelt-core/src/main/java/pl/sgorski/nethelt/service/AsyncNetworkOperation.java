@@ -1,9 +1,9 @@
-package pl.sgorski.nethelt.core.service;
+package pl.sgorski.nethelt.service;
 
 import java.util.concurrent.CompletableFuture;
-import pl.sgorski.nethelt.core.exception.NetworkException;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.Result;
+import pl.sgorski.nethelt.exception.NetworkException;
+import pl.sgorski.nethelt.model.Device;
+import pl.sgorski.nethelt.model.Result;
 
 /**
  * A generic interface for performing asynchronous operations on devices.

@@ -8,17 +8,22 @@ import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import pl.sgorski.nethelt.core.exception.NetworkException;
-import pl.sgorski.nethelt.core.model.Device;
-import pl.sgorski.nethelt.core.model.TelnetResult;
-import pl.sgorski.nethelt.core.service.TelnetOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.sgorski.nethelt.exception.NetworkException;
+import pl.sgorski.nethelt.model.Device;
+import pl.sgorski.nethelt.model.TelnetResult;
+import pl.sgorski.nethelt.service.TelnetOperation;
 
 /** Default implementation of TelnetOperation */
 public class DefaultTelnetOperationImpl implements TelnetOperation {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultTelnetOperationImpl.class);
   private static final int TELNET_TIMEOUT_MS = 5_000;
 
   @Override
   public TelnetResult execute(Device device) throws NetworkException {
+    LOG.info("Checking port {} of device: {}", device.getPort(), device.getName());
     String message;
     long startTime = System.nanoTime();
     boolean isPortOpen = checkIfPortIsOpen(device);
@@ -26,6 +31,7 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
     message = isPortOpen ?
       "Port " + device.getPort() + " is open in device " + device.getName() :
       "Port " + device.getPort() + " is closed in device " + device.getName();
+    LOG.info("Telnet check for {} result: {}", device.getName(), message);
     return new TelnetResult(device, true, message, responseTime, isPortOpen);
   }
 
