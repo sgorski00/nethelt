@@ -15,8 +15,8 @@
   <description>${project.name}</description>
 
   <modules>
-    <module>agent</module>
     <module>network</module>
+    <module>agent</module>
   </modules>
 
   <properties>
