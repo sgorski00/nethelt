@@ -35,6 +35,14 @@ public class DefaultSerializationController implements SerializationController {
     LOG.info("Registered serializers for classes: {}", serializers.keySet());
   }
 
+  /**
+   * Constructor for serializers injections, primarily for testing purposes.
+   * In production it is recommended to use the default constructor.
+   */
+  public DefaultSerializationController(Map<Class<?>, SerializationService<?>> serializers) {
+    this.serializers.putAll(serializers);
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   public <T> String serialize(Iterable<T> objects) {
