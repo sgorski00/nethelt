@@ -5,6 +5,8 @@ public class NetworkConfig {
   private boolean enabled;
   private int intervalSeconds;
 
+  public NetworkConfig() { } //empty constructor for deserializing - DO NOT REMOVE
+
   public NetworkConfig(Operation operation, boolean enabled, int intervalSeconds) {
     this.operation = operation;
     this.enabled = enabled;

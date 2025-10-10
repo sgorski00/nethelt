@@ -13,6 +13,8 @@ public class TelnetResult extends Result{
     this.portOpen = portOpen;
   }
 
+  public TelnetResult() { super(); } //empty constructor for deserializing - DO NOT REMOVE
+
   public boolean isPortOpen() {
     return portOpen;
   }

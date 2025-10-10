@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import javax.net.SocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.sgorski.nethelt.exception.NetworkException;
@@ -21,14 +22,23 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
   private static final Logger LOG = LoggerFactory.getLogger(DefaultTelnetOperationImpl.class);
   private static final int TELNET_TIMEOUT_MS = 5_000;
 
+  private final SocketFactory socketFactory;
+
+  public DefaultTelnetOperationImpl() {
+    this(SocketFactory.getDefault());
+  }
+
+  public DefaultTelnetOperationImpl(SocketFactory socketFactory) {
+    this.socketFactory = socketFactory;
+  }
+
   @Override
   public TelnetResult execute(Device device) throws NetworkException {
     LOG.info("Checking port {} of device: {}", device.getPort(), device.getName());
-    String message;
     long startTime = System.nanoTime();
     boolean isPortOpen = checkIfPortIsOpen(device);
     long responseTime = getElapsedTimeInMs(startTime);
-    message = isPortOpen ?
+    String message = isPortOpen ?
       "Port " + device.getPort() + " is open in device " + device.getName() :
       "Port " + device.getPort() + " is closed in device " + device.getName();
     LOG.info("Telnet check for {} result: {}", device.getName(), message);
@@ -46,7 +56,7 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
       throw new IllegalArgumentException("Port for device " + device.getName() + " is not specified. It is required for Telnet operation.");
     }
 
-    try (Socket socket = new Socket()) {
+    try (Socket socket = socketFactory.createSocket()) {
       socket.connect(new InetSocketAddress(device.getAddress(), device.getPort()), TELNET_TIMEOUT_MS);
       return true;
     } catch (ConnectException | SocketTimeoutException | IllegalBlockingModeException e) {

@@ -13,6 +13,8 @@ public class Device {
   private InetAddress address;
   private Integer port;
 
+  public Device() { } //empty constructor for deserializing - DO NOT REMOVE
+
   public Device(String name, String ip, Integer port) {
     this.name = name;
 
