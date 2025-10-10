@@ -20,6 +20,13 @@ public class TelnetResultTests {
   }
 
   @Test
+  void construction_shouldCreateEmptyTelnetResult() {
+    TelnetResult emptyResult = new TelnetResult();
+    assertNotNull(emptyResult, "Telnet result should contain empty constructor for deserializing!");
+    assertNotNull(emptyResult.getTimestamp());
+  }
+
+  @Test
   void construction_shouldCreateTelnetResult() {
     assertEquals(device, result.getDevice());
     assertTrue(result.isSuccess());

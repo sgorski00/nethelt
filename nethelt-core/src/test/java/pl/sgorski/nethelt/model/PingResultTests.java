@@ -20,6 +20,13 @@ public class PingResultTests {
   }
 
   @Test
+  void construction_shouldCreateEmptyPingResult() {
+    PingResult emptyResult = new PingResult();
+    assertNotNull(emptyResult,"Ping result should contain empty constructor for deserializing!");
+    assertNotNull(emptyResult.getTimestamp());
+  }
+
+  @Test
   void construction_shouldCreatePingResult() {
     assertEquals(device, result.getDevice());
     assertTrue(result.isSuccess());
