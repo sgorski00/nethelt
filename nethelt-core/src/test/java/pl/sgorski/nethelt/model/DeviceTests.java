@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class DeviceTests {
 
   @Test
+  void constructionEmpty_shouldCreateDevice() {
+    Device device = new Device();
+
+    assertNotNull(device, "Device should contain empty constructor for deserializing!");
+  }
+
+  @Test
   void constructionWithPort_shouldCreateDevice_WithPort() {
     Device device = new Device("Device1", "192.168.1.1", 8080);
 

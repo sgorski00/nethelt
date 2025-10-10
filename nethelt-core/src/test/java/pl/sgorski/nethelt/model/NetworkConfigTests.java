@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,13 @@ public class NetworkConfigTests {
   @BeforeEach
   void setUp() {
     config = new NetworkConfig(Operation.PING, true, 60);
+  }
+
+  @Test
+  void constructionEmpty_shouldCreateConfig() {
+    NetworkConfig config = new NetworkConfig();
+
+    assertNotNull(config, "NetworkConfig should contain empty constructor for deserializing!");
   }
 
   @Test
