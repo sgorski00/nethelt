@@ -11,8 +11,6 @@ public class NetworkConfig {
     this.intervalSeconds = intervalSeconds;
   }
 
-  public NetworkConfig() {}
-
   public Operation getOperation() {
     return operation;
   }
@@ -35,5 +33,10 @@ public class NetworkConfig {
 
   public void setIntervalSeconds(int intervalSeconds) {
     this.intervalSeconds = intervalSeconds;
+  }
+
+  @Override
+  public String toString() {
+    return "NetworkConfig{" + "operation=" + operation + ", enabled=" + enabled + ", intervalSeconds=" + intervalSeconds + '}';
   }
 }

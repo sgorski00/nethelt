@@ -13,13 +13,16 @@ public class TelnetResult extends Result{
     this.portOpen = portOpen;
   }
 
-  public TelnetResult() {}
-
   public boolean isPortOpen() {
     return portOpen;
   }
 
   public void setPortOpen(boolean portOpen) {
     this.portOpen = portOpen;
+  }
+
+  @Override
+  public String toString() {
+    return "TelnetResult{" + "portOpen=" + portOpen + ", " + super.toString() + "}";
   }
 }
