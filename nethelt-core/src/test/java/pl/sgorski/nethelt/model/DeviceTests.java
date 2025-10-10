@@ -126,4 +126,34 @@ class DeviceTests {
 
     assertNotEquals(device1, device2);
   }
+
+  @Test
+  void toString_shouldReturnCorrectData_WithPort() {
+    Device device = new Device("Server", "192.168.1.1", 8080);
+    String expected = "Device{name='Server', ipv4Address=192.168.1.1, port=8080}";
+    assertEquals(expected, device.toString());
+  }
+
+  @Test
+  void toString_shouldReturnCorrectData_WithoutPort() {
+    Device device = new Device("Server", "192.168.1.1");
+    String expected = "Device{name='Server', ipv4Address=192.168.1.1, port=null}";
+    assertEquals(expected, device.toString());
+  }
+
+  @Test
+  void hashCode_shouldBeConsistent_ForEqualDevices() {
+    Device device1 = new Device("Device", "192.168.1.1", 8080);
+    Device device2 = new Device("Device", "192.168.1.1", 8080);
+
+    assertEquals(device1.hashCode(), device2.hashCode());
+  }
+
+  @Test
+  void hashCode_shouldNotBeConsistent_ForEqualDevices() {
+    Device device1 = new Device("Device", "192.168.1.1", 8080);
+    Device device2 = new Device("Device", "192.168.1.2", 8080);
+
+    assertNotEquals(device1.hashCode(), device2.hashCode());
+  }
 }

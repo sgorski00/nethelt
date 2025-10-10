@@ -20,8 +20,6 @@ public abstract class Result {
     this.responseTimeMs = responseTimeMs;
   }
 
-  public Result() {}
-
   public Instant getTimestamp() {
     return timestamp;
   }

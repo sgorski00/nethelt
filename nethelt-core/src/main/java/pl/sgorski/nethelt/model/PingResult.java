@@ -9,5 +9,8 @@ public class PingResult extends Result {
     super(device, success, message, responseTimeMs);
   }
 
-  public PingResult() {}
+  @Override
+  public String toString() {
+    return "PingResult{" + super.toString() +  "}";
+  }
 }
