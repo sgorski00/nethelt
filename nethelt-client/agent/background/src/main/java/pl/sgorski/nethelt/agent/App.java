@@ -1,7 +1,7 @@
-package pl.gorski.nethelt.agent;
+package pl.sgorski.nethelt.agent;
 
-import pl.gorski.nethelt.agent.scheduler.WebScheduledTaskManager;
-import pl.gorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;

@@ -2,8 +2,8 @@ package pl.sgorski.nethelt.agent.scheduler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.gorski.nethelt.agent.scheduler.WebScheduledTaskManager;
-import pl.gorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.model.*;
 
@@ -14,6 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class WebScheduledTaskManagerTests {

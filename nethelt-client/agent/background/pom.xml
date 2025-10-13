@@ -14,6 +14,16 @@
   <name>NetHelt Client - Agent Background WebClient</name>
   <description>${project.name}</description>
 
+  <properties>
+    <version.assembly.plugin>3.7.1</version.assembly.plugin>
+    <version.exec.plugin>3.5.1</version.exec.plugin>
+    <app.name>NetHelt Client</app.name>
+    <app.package.dir>${project.build.directory}/packed</app.package.dir>
+    <app.fatjar.dir>${app.package.dir}/jar</app.fatjar.dir>
+    <app.exe.dir>${app.package.dir}/exe</app.exe.dir>
+    <project.main.class>pl.sgorski.nethelt.agent.App</project.main.class>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt.agent</groupId>
@@ -54,6 +64,66 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>${version.assembly.plugin}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${project.main.class}</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <outputDirectory>${app.fatjar.dir}</outputDirectory>
+          <finalName>nethelt-bg-client</finalName>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${version.exec.plugin}</version>
+        <executions>
+          <execution>
+            <id>create-exe</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <executable>jpackage</executable>
+              <arguments>
+                <argument>--verbose</argument>
+                <argument>--input</argument>
+                <argument>${app.fatjar.dir}</argument>
+                <argument>--name</argument>
+                <argument>${app.name}</argument>
+                <argument>--main-class</argument>
+                <argument>pl.sgorski.nethelt.agent.App</argument>
+                <argument>--main-jar</argument>
+                <argument>nethelt-bg-client-jar-with-dependencies.jar</argument>
+                <argument>--type</argument>
+                <argument>app-image</argument>
+                <argument>--dest</argument>
+                <argument>${app.exe.dir}</argument>
+                <argument>--vendor</argument>
+                <argument>Sebastian Górski</argument>
+                <argument>--win-console</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

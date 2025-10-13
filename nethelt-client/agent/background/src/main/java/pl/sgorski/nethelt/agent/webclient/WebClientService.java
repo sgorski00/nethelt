@@ -1,4 +1,4 @@
-package pl.gorski.nethelt.agent.webclient;
+package pl.sgorski.nethelt.agent.webclient;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.gorski.nethelt.agent.config.WebClientSingleton;
+import pl.sgorski.nethelt.agent.config.WebClientSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.exception.WebClientException;
 import pl.sgorski.nethelt.model.Device;

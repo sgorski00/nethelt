@@ -1,4 +1,4 @@
-package pl.gorski.nethelt.agent.scheduler;
+package pl.sgorski.nethelt.agent.scheduler;
 
 import java.util.Objects;
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.gorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
 import pl.sgorski.nethelt.model.Device;
