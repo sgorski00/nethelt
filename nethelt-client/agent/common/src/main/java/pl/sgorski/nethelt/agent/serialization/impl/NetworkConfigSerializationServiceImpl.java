@@ -20,6 +20,14 @@ public class NetworkConfigSerializationServiceImpl implements SerializationServi
     this.objectMapper = ObjectMapperSingleton.getInstance();
   }
 
+  /**
+   * Constructor for dependency injection, primarily for testing purposes.
+   * In production it is recommended to use the default constructor.
+   */
+  public NetworkConfigSerializationServiceImpl(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
+
   @Override
   public String toJson(NetworkConfig object) throws SerializationException {
     try {

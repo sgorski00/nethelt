@@ -19,9 +19,6 @@ import pl.sgorski.nethelt.model.NetworkConfig;
 import pl.sgorski.nethelt.model.Result;
 import pl.sgorski.nethelt.utils.CollectionUtils;
 
-//TODO: add logging
-//TODO: add unit tests
-
 /**
  * Service for communicating with the web server.
  */

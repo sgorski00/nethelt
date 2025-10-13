@@ -20,6 +20,14 @@ public class TelnetResultSerializationServiceImpl implements ResultSerialization
     this.objectMapper = ObjectMapperSingleton.getInstance();
   }
 
+  /**
+   * Constructor for dependency injection, primarily for testing purposes.
+   * In production it is recommended to use the default constructor.
+   */
+  public TelnetResultSerializationServiceImpl(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
+
   @Override
   public String toJson(TelnetResult object) {
     try {

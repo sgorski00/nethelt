@@ -32,6 +32,16 @@ public class ResultProvider {
   }
 
   /**
+   * Constructor allowing dependency injection.
+   * Should be used primarily for testing purposes.
+   * It is recommended to use default constructor in production code.
+   */
+  public ResultProvider(PingOperation ping, TelnetOperation telnet) {
+    this.ping = ping;
+    this.telnet = telnet;
+  }
+
+  /**
    * Executes ping operations asynchronously on the provided set of devices and returns their results.
    *
    * @param devices the set of devices to ping

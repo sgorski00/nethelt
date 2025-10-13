@@ -1,5 +1,6 @@
 package pl.gorski.nethelt.agent.scheduler;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,15 +25,19 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
   private static final int CONFIG_UPDATE_INTERVAL_SEC = 60;
   private static final Logger LOG = LoggerFactory.getLogger(WebScheduledTaskManager.class);
 
-  /** Scheduled executor. It uses threads equal to number of operations. */
+  /**
+   * Scheduled executor. It uses threads equal to number of operations.
+   */
   private final ScheduledExecutorService scheduler;
   private final WebClientService webClientService;
   private final ResultProvider resultProvider;
 
   private ScheduledFuture<?> pingTask;
   private int pingInterval = -1; //actual interval in seconds
+  private boolean pingEnabled = false; //actual status
   private ScheduledFuture<?> telnetTask;
   private int telnetInterval = -1; //actual interval in seconds
+  private boolean telnetEnabled = false; //actual status
 
   public WebScheduledTaskManager(WebClientService webClientService, ResultProvider resultProvider) {
     int numberOfOperations = Operation.values().length;
@@ -56,31 +61,15 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
       Set<Device> devices = webClientService.fetchDevices();
 
       for (NetworkConfig cfg : configs) {
-        if (!cfg.isEnabled()) continue;
-
-        Runnable runnable;
         switch (cfg.getOperation()) {
         case PING:
-          if(cfg.getIntervalSeconds() == pingInterval) continue;
-
-          LOG.info("Rescheduling PING task. Changes detected in configuration.");
-          runnable = () -> {
-            Set<PingResult> results = resultProvider.getPingResults(devices);
-            webClientService.sendResult(results, PingResult.class);
-          };
-          pingInterval = cfg.getIntervalSeconds();
-          pingTask = rescheduleTask(pingTask, pingInterval, runnable);
+          handlePing(cfg, devices);
           break;
         case TELNET:
-          if(cfg.getIntervalSeconds() == telnetInterval) continue;
-
-          LOG.info("Rescheduling TELNET task. Changes detected in configuration.");
-          runnable = () -> {
-            Set<TelnetResult> results = resultProvider.getTelnetResults(devices);
-            webClientService.sendResult(results, TelnetResult.class);
-          };
-          telnetInterval = cfg.getIntervalSeconds();
-          telnetTask = rescheduleTask(telnetTask, telnetInterval, runnable);
+          handleTelnet(cfg, devices);
+          break;
+        default:
+          LOG.warn("Unsupported operation: {}", cfg.getOperation());
           break;
         }
       }
@@ -89,17 +78,61 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
     }
   }
 
-  private ScheduledFuture<?> rescheduleTask(ScheduledFuture<?> currentTask, int intervalSec, Runnable task) {
-    if (currentTask != null && !currentTask.isCancelled()) {
-      currentTask.cancel(false);
+  private void handlePing(NetworkConfig cfg, Set<Device> devices) {
+    if (!cfg.isChanged(pingEnabled, pingInterval)) return;
+
+    LOG.info("Configuration change detected for PING operation.");
+    pingInterval = cfg.getIntervalSeconds();
+    pingEnabled = cfg.isEnabled();
+
+    closeTask(pingTask);
+    if (pingEnabled) {
+      LOG.info("Rescheduling PING task (enabled).");
+      Runnable runnable = () -> {
+        Set<PingResult> results = resultProvider.getPingResults(devices);
+        webClientService.sendResult(results, PingResult.class);
+      };
+      pingTask = rescheduleTask(pingTask, pingInterval, runnable);
+    } else {
+      LOG.info("PING task disabled.");
     }
+  }
+
+  private void handleTelnet(NetworkConfig cfg, Set<Device> devices) {
+    if (!cfg.isChanged(telnetEnabled, telnetInterval)) return;
+
+    LOG.info("Configuration change detected for TELNET operation.");
+    telnetInterval = cfg.getIntervalSeconds();
+    telnetEnabled = cfg.isEnabled();
+
+    closeTask(telnetTask);
+    if (telnetEnabled) {
+      LOG.info("Rescheduling TELNET task (enabled).");
+      Runnable runnable = () -> {
+        Set<TelnetResult> results = resultProvider.getTelnetResults(devices);
+        webClientService.sendResult(results, TelnetResult.class);
+      };
+      telnetTask = rescheduleTask(telnetTask, telnetInterval, runnable);
+    } else {
+      LOG.info("TELNET task disabled.");
+    }
+  }
+
+  private ScheduledFuture<?> rescheduleTask(ScheduledFuture<?> currentTask, int intervalSec, Runnable task) {
+    closeTask(currentTask);
     return scheduler.scheduleWithFixedDelay(task, 0, intervalSec, TimeUnit.SECONDS);
   }
 
   public void stop() {
     LOG.info("Stopping Scheduled Task Manager");
-    if (pingTask != null) pingTask.cancel(false);
-    if (telnetTask != null) telnetTask.cancel(false);
+    closeTask(pingTask);
+    closeTask(telnetTask);
     scheduler.shutdown();
+  }
+
+  private void closeTask(ScheduledFuture<?> task) {
+    if (Objects.nonNull(task) && !task.isCancelled()) {
+      task.cancel(false);
+    }
   }
 }
