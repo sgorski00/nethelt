@@ -51,22 +51,16 @@ public class WebClientService {
     LOG.info("Attempting to send {} results of type {} to the server", results.size(), clazz.getSimpleName());
     String json = serializer.serialize(results);
     String endpoint = resolveEndpoint(clazz);
+    LOG.debug("Resolved endpoint: {} for class: {}", endpoint, clazz.getSimpleName());
     postJson(endpoint, json);
   }
 
   private String resolveEndpoint(Class<?> clazz) {
-    String endpoint;
-    switch (clazz.getSimpleName()) {
-      case "PingResult":
-        endpoint = PING_ENDPOINT;
-        break;
-      case "TelnetResult":
-        endpoint = TELNET_ENDPOINT;
-        break;
-      default: throw new IllegalArgumentException("Cannot send results to the server! Unsupported result type: " + clazz.getName());
-    }
-    LOG.debug("Resolved endpoint: {} for class: {}", endpoint, clazz.getSimpleName());
-    return endpoint;
+    return switch (clazz.getSimpleName()) {
+      case "PingResult" -> PING_ENDPOINT;
+      case "TelnetResult" -> TELNET_ENDPOINT;
+      default -> throw new IllegalArgumentException("Cannot send results to the server! Unsupported result type: " + clazz.getName());
+    };
   }
 
   /**

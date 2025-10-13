@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +87,7 @@ public class NetworkConfigSerializationServiceImplTests {
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
-    Set<NetworkConfig> expected = new HashSet<>();
+    Set<NetworkConfig> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<NetworkConfig>>>any())).thenReturn(expected);
 
     Set<NetworkConfig> result = service.toObjectSet(json);

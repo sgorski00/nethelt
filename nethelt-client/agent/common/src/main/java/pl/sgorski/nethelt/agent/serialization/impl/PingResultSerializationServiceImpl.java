@@ -58,7 +58,7 @@ public class PingResultSerializationServiceImpl implements ResultSerializationSe
   @Override
   public Set<PingResult> toObjectSet(String json) throws SerializationException {
     try {
-      return objectMapper.readValue(json, new TypeReference<Set<PingResult>>() {});
+      return objectMapper.readValue(json, new TypeReference<>() {});
     } catch (JsonProcessingException e) {
       throw new SerializationException("Failed to deserialize JSON to PingResults set", e);
     }

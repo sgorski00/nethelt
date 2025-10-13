@@ -3,8 +3,6 @@ package pl.sgorski.nethelt.utils;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -18,7 +16,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnTrue_EmptyList() {
-    List<String> list = new ArrayList<>();
+    List<String> list = List.of();
 
     boolean result = CollectionUtils.isEmpty(list);
 
@@ -27,7 +25,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnTrue_EmptySet() {
-    Set<String> set = new HashSet<>();
+    Set<String> set = Set.of();
 
     boolean result = CollectionUtils.isEmpty(set);
 
@@ -36,8 +34,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnFalse_NonEmptyList() {
-    List<String> list = new ArrayList<>();
-    list.add("item");
+    List<String> list = List.of("item");
 
     boolean result = CollectionUtils.isEmpty(list);
 
@@ -46,8 +43,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnFalse_NonEmptySet() {
-    Set<String> set = new HashSet<>();
-    set.add("item");
+    Set<String> set = Set.of("item");
 
     boolean result = CollectionUtils.isEmpty(set);
 

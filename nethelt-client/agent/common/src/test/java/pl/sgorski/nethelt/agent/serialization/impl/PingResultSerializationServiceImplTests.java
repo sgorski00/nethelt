@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +87,7 @@ public class PingResultSerializationServiceImplTests {
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
-    Set<PingResult> expected = new HashSet<>();
+    Set<PingResult> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<PingResult>>>any())).thenReturn(expected);
 
     Set<PingResult> result = service.toObjectSet(json);

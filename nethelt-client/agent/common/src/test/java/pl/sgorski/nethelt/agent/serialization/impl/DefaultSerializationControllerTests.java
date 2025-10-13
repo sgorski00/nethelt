@@ -9,9 +9,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +24,8 @@ public class DefaultSerializationControllerTests {
 
   @BeforeEach
   void setUp() {
-    Map<Class<?>, SerializationService<?>> serializers = new HashMap<>();
     deviceSerializer = mock(SerializationService.class);
-    serializers.put(Device.class, deviceSerializer);
+    Map<Class<?>, SerializationService<?>> serializers = Map.of(Device.class, deviceSerializer);
 
     controller = new DefaultSerializationController(serializers);
   }
@@ -67,8 +63,7 @@ public class DefaultSerializationControllerTests {
   @Test
   void serializeIterable_ShouldThrow_SerializerNotFound() {
     NotSerializable notSerializable = new NotSerializable();
-    List<NotSerializable> list = new ArrayList<>();
-    list.add(notSerializable);
+    List<NotSerializable> list = List.of(notSerializable);
 
     SerializationException ex = assertThrows(SerializationException.class, () -> controller.serialize(list));
     assertTrue(ex.getMessage().contains("No serializer found for class"));
@@ -76,11 +71,9 @@ public class DefaultSerializationControllerTests {
 
   @Test
   void serializeIterable_ShouldReturnJson_SerializerExists() {
-    List<Device> devices = new ArrayList<>();
-    devices.add(new Device());
+    List<Device> devices = List.of(new Device());
     String expected = "[{\"name\":\"Device\"}]";
     when(deviceSerializer.toJson(anyIterable())).thenReturn(expected);
-
 
     String result = controller.serialize(devices);
 
@@ -90,8 +83,7 @@ public class DefaultSerializationControllerTests {
   @Test
   void deserializeToSet_ShouldDeserialize_SerializerExists() {
     String json = "[{\"name\":\"Device\"}]";
-    Set<Device> devices = new HashSet<>();
-    devices.add(new Device());
+    Set<Device> devices = Set.of(new Device());
     when(deviceSerializer.toObjectSet(anyString())).thenReturn(devices);
 
     Set<Device> result = controller.deserializeToSet(json, Device.class);

@@ -62,15 +62,9 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
 
       for (NetworkConfig cfg : configs) {
         switch (cfg.getOperation()) {
-        case PING:
-          handlePing(cfg, devices);
-          break;
-        case TELNET:
-          handleTelnet(cfg, devices);
-          break;
-        default:
-          LOG.warn("Unsupported operation: {}", cfg.getOperation());
-          break;
+          case PING -> handlePing(cfg, devices);
+          case TELNET -> handleTelnet(cfg, devices);
+          default -> LOG.warn("Unsupported operation: {}", cfg.getOperation());
         }
       }
     } catch (Exception e) {
@@ -99,7 +93,8 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
   }
 
   private void handleTelnet(NetworkConfig cfg, Set<Device> devices) {
-    if (!cfg.isChanged(telnetEnabled, telnetInterval)) return;
+    if (!cfg.isChanged(telnetEnabled, telnetInterval))
+      return;
 
     LOG.info("Configuration change detected for TELNET operation.");
     telnetInterval = cfg.getIntervalSeconds();
