@@ -58,7 +58,7 @@ public class DeviceSerializationServiceImpl implements SerializationService<Devi
   @Override
   public Set<Device> toObjectSet(String json) throws SerializationException {
     try {
-      return objectMapper.readValue(json, new TypeReference<Set<Device>>() {});
+      return objectMapper.readValue(json, new TypeReference<>() {});
     } catch (JsonProcessingException e) {
       throw new SerializationException("Failed to deserialize JSON to Device set", e);
     }

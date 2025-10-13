@@ -58,7 +58,7 @@ public class NetworkConfigSerializationServiceImpl implements SerializationServi
   @Override
   public Set<NetworkConfig> toObjectSet(String json) throws SerializationException {
     try {
-      return objectMapper.readValue(json, new TypeReference<Set<NetworkConfig>>() {});
+      return objectMapper.readValue(json, new TypeReference<>() {});
     } catch (JsonProcessingException e) {
       throw new SerializationException("Failed to deserialize JSON to NetworkConfig set", e);
     }

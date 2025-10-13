@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -25,8 +24,8 @@ import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import pl.gorski.nethelt.agent.config.WebClientSingleton;
-import pl.gorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.config.WebClientSingleton;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.exception.SerializationException;
 import pl.sgorski.nethelt.exception.WebClientException;
@@ -60,8 +59,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_Success_PingResult() throws Exception {
-    Set<PingResult> results = new HashSet<>();
-    results.add(new PingResult());
+    Set<PingResult> results = Set.of(new PingResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
     webClientService.sendResult(results, PingResult.class);
@@ -73,8 +71,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_Success_TelnetResult() throws Exception {
-    Set<TelnetResult> results = new HashSet<>();
-    results.add(new TelnetResult());
+    Set<TelnetResult> results = Set.of(new TelnetResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
     webClientService.sendResult(results, TelnetResult.class);
@@ -86,7 +83,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_EmptySet_ShouldNotPost() throws Exception {
-    Set<PingResult> results = new HashSet<>();
+    Set<PingResult> results = Set.of();
 
     webClientService.sendResult(results, PingResult.class);
 
@@ -97,8 +94,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_SerializationException_ShouldThrow() throws Exception {
-    Set<PingResult> results = new HashSet<>();
-    results.add(new PingResult());
+    Set<PingResult> results = Set.of(new PingResult());
     when(serializer.serialize(anySet())).thenThrow(new SerializationException("Serialization Exception"));
 
     assertThrows(SerializationException.class, () -> webClientService.sendResult(results, PingResult.class));
@@ -110,8 +106,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_IllegalEndpoint_ShouldThrow() throws Exception {
-    Set<NotConfiguredResult> results = new HashSet<>();
-    results.add(new NotConfiguredResult());
+    Set<NotConfiguredResult> results = Set.of(new NotConfiguredResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
     assertThrows(IllegalArgumentException.class, () -> webClientService.sendResult(results, NotConfiguredResult.class));
@@ -123,8 +118,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_IOException_ShouldThrow() throws Exception {
-    Set<PingResult> results = new HashSet<>();
-    results.add(new PingResult());
+    Set<PingResult> results = Set.of(new PingResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
     when(call.execute()).thenThrow(new IOException("IO Exception"));
 
@@ -138,8 +132,7 @@ public class WebClientServiceTests {
   @Test
   void fetchNetworkConfig_Success() throws Exception {
     ResponseBody responseBody = mock(ResponseBody.class);
-    Set<NetworkConfig> expectedSet = new HashSet<>();
-    expectedSet.add(new NetworkConfig());
+    Set<NetworkConfig> expectedSet = Set.of(new NetworkConfig());
 
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
@@ -211,8 +204,7 @@ public class WebClientServiceTests {
   @Test
   void fetchDevices_Success() throws Exception {
     ResponseBody responseBody = mock(ResponseBody.class);
-    Set<NetworkConfig> expectedSet = new HashSet<>();
-    expectedSet.add(new NetworkConfig());
+    Set<NetworkConfig> expectedSet = Set.of(new NetworkConfig());
 
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);

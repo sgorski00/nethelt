@@ -88,7 +88,7 @@ public class DeviceSerializationServiceImplTests {
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
-    Set<Device> expected = new HashSet<>();
+    Set<Device> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<Device>>>any())).thenReturn(expected);
 
     Set<Device> result = service.toObjectSet(json);

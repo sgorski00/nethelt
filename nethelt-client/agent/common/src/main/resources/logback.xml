@@ -9,5 +9,5 @@
     <appender-ref ref="CONSOLE" />
   </root>
 
-  <logger name="pl.gorski.nethelt" level="DEBUG" />
+  <logger name="pl.sgorski.nethelt" level="DEBUG" />
 </configuration>

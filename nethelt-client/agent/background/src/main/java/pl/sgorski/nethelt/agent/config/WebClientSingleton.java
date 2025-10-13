@@ -1,4 +1,4 @@
-package pl.gorski.nethelt.agent.config;
+package pl.sgorski.nethelt.agent.config;
 
 import java.time.Duration;
 import okhttp3.OkHttpClient;

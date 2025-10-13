@@ -58,7 +58,7 @@ public class TelnetResultSerializationServiceImpl implements ResultSerialization
   @Override
   public Set<TelnetResult> toObjectSet(String json) throws SerializationException {
     try {
-      return objectMapper.readValue(json, new TypeReference<Set<TelnetResult>>() {});
+      return objectMapper.readValue(json, new TypeReference<>() {});
     } catch (JsonProcessingException e) {
       throw new SerializationException("Failed to deserialize JSON to PingResults set", e);
     }

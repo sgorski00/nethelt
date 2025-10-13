@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -64,9 +63,7 @@ public class ResultProviderTests {
     Device deviceWithoutPort = new Device();
     Device deviceWithPort = new Device();
     deviceWithPort.setPort(23);
-    Set<Device> devices = new HashSet<>();
-    devices.add(deviceWithoutPort);
-    devices.add(deviceWithPort);
+    Set<Device> devices = Set.of(deviceWithoutPort, deviceWithPort);
 
     TelnetResult telnetResult = mock(TelnetResult.class);
     when(telnet.executeAsync(deviceWithPort)).thenReturn(CompletableFuture.completedFuture(telnetResult));

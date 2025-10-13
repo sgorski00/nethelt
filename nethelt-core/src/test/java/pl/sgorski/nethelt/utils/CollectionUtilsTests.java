@@ -18,7 +18,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnTrue_EmptyList() {
-    List<String> list = new ArrayList<>();
+    List<String> list = List.of();
 
     boolean result = CollectionUtils.isEmpty(list);
 
@@ -27,7 +27,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnTrue_EmptySet() {
-    Set<String> set = new HashSet<>();
+    Set<String> set = Set.of();
 
     boolean result = CollectionUtils.isEmpty(set);
 
@@ -36,8 +36,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnFalse_NonEmptyList() {
-    List<String> list = new ArrayList<>();
-    list.add("item");
+    List<String> list = List.of("item");
 
     boolean result = CollectionUtils.isEmpty(list);
 
@@ -46,8 +45,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnFalse_NonEmptySet() {
-    Set<String> set = new HashSet<>();
-    set.add("item");
+    Set<String> set = Set.of("item");
 
     boolean result = CollectionUtils.isEmpty(set);
 

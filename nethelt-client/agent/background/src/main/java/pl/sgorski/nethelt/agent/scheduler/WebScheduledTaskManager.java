@@ -1,4 +1,4 @@
-package pl.gorski.nethelt.agent.scheduler;
+package pl.sgorski.nethelt.agent.scheduler;
 
 import java.util.Objects;
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.gorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
 import pl.sgorski.nethelt.model.Device;
@@ -62,15 +62,9 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
 
       for (NetworkConfig cfg : configs) {
         switch (cfg.getOperation()) {
-        case PING:
-          handlePing(cfg, devices);
-          break;
-        case TELNET:
-          handleTelnet(cfg, devices);
-          break;
-        default:
-          LOG.warn("Unsupported operation: {}", cfg.getOperation());
-          break;
+          case PING -> handlePing(cfg, devices);
+          case TELNET -> handleTelnet(cfg, devices);
+          default -> LOG.warn("Unsupported operation: {}", cfg.getOperation());
         }
       }
     } catch (Exception e) {
@@ -99,7 +93,8 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
   }
 
   private void handleTelnet(NetworkConfig cfg, Set<Device> devices) {
-    if (!cfg.isChanged(telnetEnabled, telnetInterval)) return;
+    if (!cfg.isChanged(telnetEnabled, telnetInterval))
+      return;
 
     LOG.info("Configuration change detected for TELNET operation.");
     telnetInterval = cfg.getIntervalSeconds();

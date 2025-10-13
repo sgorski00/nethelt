@@ -88,7 +88,7 @@ public class TelnetResultSerializationServiceImplTests {
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
-    Set<TelnetResult> expected = new HashSet<>();
+    Set<TelnetResult> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<TelnetResult>>>any())).thenReturn(expected);
 
     Set<TelnetResult> result = service.toObjectSet(json);

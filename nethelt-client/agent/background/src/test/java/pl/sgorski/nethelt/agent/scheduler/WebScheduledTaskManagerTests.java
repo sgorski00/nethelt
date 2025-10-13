@@ -2,8 +2,8 @@ package pl.sgorski.nethelt.agent.scheduler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.gorski.nethelt.agent.scheduler.WebScheduledTaskManager;
-import pl.gorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.model.*;
 
