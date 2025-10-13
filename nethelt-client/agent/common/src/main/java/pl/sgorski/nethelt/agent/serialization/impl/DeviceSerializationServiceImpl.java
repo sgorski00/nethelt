@@ -3,7 +3,6 @@ package pl.sgorski.nethelt.agent.serialization.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
 import java.util.Set;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationService;
@@ -19,6 +18,14 @@ public class DeviceSerializationServiceImpl implements SerializationService<Devi
 
   public DeviceSerializationServiceImpl() {
     this.objectMapper = ObjectMapperSingleton.getInstance();
+  }
+
+  /**
+   * Constructor for dependency injection, primarily for testing purposes.
+   * In production it is recommended to use the default constructor.
+   */
+  public DeviceSerializationServiceImpl(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
   }
 
   @Override

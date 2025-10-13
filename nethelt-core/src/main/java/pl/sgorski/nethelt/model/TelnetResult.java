@@ -13,7 +13,7 @@ public class TelnetResult extends Result{
     this.portOpen = portOpen;
   }
 
-  public TelnetResult() {}
+  public TelnetResult() { super(); } //empty constructor for deserializing - DO NOT REMOVE
 
   public boolean isPortOpen() {
     return portOpen;
@@ -21,5 +21,10 @@ public class TelnetResult extends Result{
 
   public void setPortOpen(boolean portOpen) {
     this.portOpen = portOpen;
+  }
+
+  @Override
+  public String toString() {
+    return "TelnetResult{" + "portOpen=" + portOpen + ", " + super.toString() + "}";
   }
 }

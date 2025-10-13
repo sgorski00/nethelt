@@ -20,7 +20,7 @@ public abstract class Result {
     this.responseTimeMs = responseTimeMs;
   }
 
-  public Result() {}
+  public Result() { } //empty constructor for deserializing - DO NOT REMOVE
 
   public Instant getTimestamp() {
     return timestamp;

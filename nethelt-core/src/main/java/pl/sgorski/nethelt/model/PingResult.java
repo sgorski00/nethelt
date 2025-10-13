@@ -9,5 +9,10 @@ public class PingResult extends Result {
     super(device, success, message, responseTimeMs);
   }
 
-  public PingResult() {}
+  public PingResult() { super(); } //empty constructor for deserializing - DO NOT REMOVE
+
+  @Override
+  public String toString() {
+    return "PingResult{" + super.toString() +  "}";
+  }
 }
