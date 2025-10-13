@@ -44,7 +44,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldReschedulePing_Enabled() {
-    NetworkConfig cfg = networkConfig(Operation.PING, true, 10);
+    NetworkConfig cfg = new NetworkConfig(Operation.PING, true, 10);
     Device device = new Device();
 
     mockConfigAndDevices(cfg, device);
@@ -58,7 +58,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldNotReschedulePing_Disabled() {
-    NetworkConfig cfg = networkConfig(Operation.PING, false, 10);
+    NetworkConfig cfg = new NetworkConfig(Operation.PING, false, 10);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -70,7 +70,7 @@ class WebScheduledTaskManagerTests {
     setPrivateField(manager, "pingInterval", 5);
     setPrivateField(manager, "pingEnabled", true);
 
-    NetworkConfig cfg = networkConfig(Operation.PING, true, 5);
+    NetworkConfig cfg = new NetworkConfig(Operation.PING, true, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -82,7 +82,7 @@ class WebScheduledTaskManagerTests {
     setPrivateField(manager, "pingEnabled", true);
     setPrivateField(manager, "pingTask", scheduledFuture);
 
-    NetworkConfig cfg = networkConfig(Operation.PING, false, 5);
+    NetworkConfig cfg = new NetworkConfig(Operation.PING, false, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -92,7 +92,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldRescheduleTelnet_Enabled() {
-    NetworkConfig cfg = networkConfig(Operation.TELNET, true, 5);
+    NetworkConfig cfg = new NetworkConfig(Operation.TELNET, true, 5);
     Device device = new Device();
     device.setPort(22);
 
@@ -107,7 +107,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldNotRescheduleTelnet_Disabled() {
-    NetworkConfig cfg = networkConfig(Operation.TELNET, false, 5);
+    NetworkConfig cfg = new NetworkConfig(Operation.TELNET, false, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -119,7 +119,7 @@ class WebScheduledTaskManagerTests {
     setPrivateField(manager, "telnetInterval", 5);
     setPrivateField(manager, "telnetEnabled", true);
 
-    NetworkConfig cfg = networkConfig(Operation.TELNET, true, 5);
+    NetworkConfig cfg = new NetworkConfig(Operation.TELNET, true, 5);
     Device device = new Device();
     device.setPort(22);
 
@@ -131,7 +131,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldNotReschedule_NullOperation() {
-    NetworkConfig cfg = networkConfig(null, true, 5);
+    NetworkConfig cfg = new NetworkConfig(null, true, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -147,14 +147,6 @@ class WebScheduledTaskManagerTests {
 
     verify(scheduledFuture, times(2)).cancel(false);
     verify(scheduler).shutdown();
-  }
-
-  private static NetworkConfig networkConfig(Operation op, boolean enabled, int interval) {
-    NetworkConfig cfg = new NetworkConfig();
-    cfg.setEnabled(enabled);
-    cfg.setOperation(op);
-    cfg.setIntervalSeconds(interval);
-    return cfg;
   }
 
   private void mockConfigAndDevices(NetworkConfig cfg, Device device) {
