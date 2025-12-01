@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nethelt-core</artifactId>
+  <artifactId>core</artifactId>
   <packaging>jar</packaging>
   <name>NetHelt - Core</name>
   <description>${project.name}</description>

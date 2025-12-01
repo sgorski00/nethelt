@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nethelt-client</artifactId>
+  <artifactId>desktop-client</artifactId>
   <packaging>pom</packaging>
   <name>NetHelt Client - Main BOM</name>
   <description>${project.name}</description>

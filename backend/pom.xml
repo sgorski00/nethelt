@@ -10,7 +10,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>nethelt-web-backend</artifactId>
+	<artifactId>backend</artifactId>
 	<packaging>jar</packaging>
 	<name>NetHelt - Web App - Backend</name>
 	<description>${project.name}</description>
@@ -43,7 +43,7 @@
 
 		<dependency>
 			<groupId>pl.sgorski.nethelt</groupId>
-			<artifactId>nethelt-core</artifactId>
+			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

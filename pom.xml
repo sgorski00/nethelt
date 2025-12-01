@@ -36,7 +36,7 @@
 
       <dependency>
         <groupId>pl.sgorski.nethelt</groupId>
-        <artifactId>nethelt-core</artifactId>
+        <artifactId>core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -61,7 +61,7 @@
       </dependency>
       <dependency>
         <groupId>pl.sgorski.nethelt</groupId>
-        <artifactId>nethelt-web-backend</artifactId>
+        <artifactId>backend</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
