@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: /infrastructure/docker/java/Dockerfile
+    container_name: nethelt_backend
+    ports:
+      - "8080:8080"
+    networks:
+      - nethelt_network
+    depends_on:
+      - db
+      - ai_service
+
+  ai_service:
+    build:
+      context: ../..
+      dockerfile: /infrastructure/docker/python/Dockerfile
+    container_name: nethelt_ai_service
+    ports:
+      - "8000:8000"
+    networks:
+      - nethelt_network
+
+  db:
+    image: postgres:17.2-alpine
+    container_name: nethelt_db
+    environment:
+      POSTGRES_USER: nethelt_user
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_DB: nethelt_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+        - nethelt_network
+
+volumes:
+    db_data:
+
+networks:
+  nethelt_network:
+    driver: bridge

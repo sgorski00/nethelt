@@ -4,12 +4,12 @@
 
   <parent>
     <groupId>pl.sgorski.nethelt.agent</groupId>
-    <artifactId>nethelt-agent</artifactId>
+    <artifactId>agent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nethelt-agent-background</artifactId>
+  <artifactId>agent-background</artifactId>
   <packaging>jar</packaging>
   <name>NetHelt Client - Agent Background WebClient</name>
   <description>${project.name}</description>
@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt.agent</groupId>
-      <artifactId>nethelt-agent-common</artifactId>
+      <artifactId>agent-common</artifactId>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>

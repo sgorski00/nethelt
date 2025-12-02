@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>pl.sgorski.nethelt.agent</groupId>
-  <artifactId>nethelt-agent</artifactId>
+  <artifactId>agent</artifactId>
   <packaging>pom</packaging>
   <name>NetHelt Client - Agent BOM</name>
   <description>${project.name}</description>
@@ -19,7 +19,7 @@
     <dependencies>
       <dependency>
         <groupId>pl.sgorski.nethelt.agent</groupId>
-        <artifactId>nethelt-agent-common</artifactId>
+        <artifactId>agent-common</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
