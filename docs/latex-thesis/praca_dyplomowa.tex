@@ -1,0 +1,111 @@
+\documentclass[12pt,oneside,a4paper]{book}
+
+% Pakiety
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{titlesec}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{caption}
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+% Ustawienie czcionki na Times New Roman
+\usepackage{tgtermes}
+
+% Ustawienie interlinii 1.5
+\onehalfspacing
+
+% Ustawienie numeracji stron
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+
+% Ustawienie rozmiarów nagłówkóW
+\titleformat{\chapter}
+{\bfseries\fontsize{14pt}{14pt}\selectfont}
+{\thechapter.}{1em}{}
+\titlespacing*{\chapter}{0pt}{120pt}{40pt}
+
+\titleformat{\section}
+{\bfseries\fontsize{13pt}{13pt}\selectfont}
+{\thesection}{1em}{}
+\titlespacing{\section}{0pt}{12pt}{6pt}
+
+\titleformat{\subsection}
+{\bfseries\fontsize{12pt}{12pt}\selectfont}
+{\thesubsection}{1em}{}
+\titlespacing{\subsection}{0pt}{6pt}{6pt}
+
+% Ustawienie spisów
+\renewcommand*\contentsname{Spis treści}
+\renewcommand\lstlistingname{Listing}
+\renewcommand\lstlistlistingname{Spis listingów}
+
+% Wcięcie 1. akapitu
+\setlength{\parindent}{0.7cm}
+
+% Ustawienie odstępu po podpisu rysunku
+\captionsetup[figure]{
+	width=0.8\textwidth,
+	font={small,stretch=1},
+	labelfont={bf},
+	textfont={},
+	justification=Centering,
+	singlelinecheck=false,
+	skip=10pt
+}
+
+% Ustawienie kolorowania listingów
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pyellow}{rgb}{0.65,0.65,0}
+\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgray}{rgb}{0.4,0.4,0.4}
+
+\lstset{
+	language=Java,
+	showspaces=false,
+	showtabs=false,
+	breaklines=true,
+	showstringspaces=false,
+	breakatwhitespace=true,
+	commentstyle=\color{pgreen},
+	keywordstyle=\color{pblue},
+	stringstyle=\color{pred},
+	basicstyle=\ttfamily\small,
+	backgroundcolor=\color{gray},
+	frame=single,
+	rulecolor=\color{darkgray},
+	moredelim=[il][\textcolor{pyellow}]{\$\$},
+	moredelim=[is][\textcolor{pyellow}]{\%\%}{\%\%},
+	captionpos=b
+}
+
+%Początek dokumentu
+\begin{document}
+	
+	%Strona tytułowa
+	\includepdf[pages=-]{images/title-page.pdf}
+	
+	%Spis treści
+	\tableofcontents
+	\newpage
+	
+	%Rozdziały
+	\include{introduction}
+	
+	%Listingi i bibliografia
+	\listoffigures
+	\listoftables
+	\lstlistoflistings
+	\include{bibliography}
+	
+\end{document}
