@@ -1,0 +1,21 @@
+device_id: uuid-1
+device_type: PC # PC / IOT / ROUTER / AP / OTHERS
+
+interval_seconds: 5
+duration_minutes: 2880
+
+normal:
+  mean_ms: 3.0
+  std_ms: 1.0
+  jitter_ms: 1.0
+
+degradation:
+  start_minute: 2592
+  end_minute: 2822
+  final_mean_ms: 15.0
+
+failure:
+  start_minute: 2822
+  packet_loss_rate: 0.4
+  min_ms: 40
+  max_ms: 500
