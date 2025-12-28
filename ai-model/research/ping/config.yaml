@@ -10,12 +10,12 @@ normal:
   jitter_ms: 1.0
 
 degradation:
-  start_minute: 2592
-  end_minute: 2822
+  start_minute: 2592 #2592
+  end_minute: 2822 #2822
   final_mean_ms: 15.0
 
 failure:
-  start_minute: 2822
+  start_minute: 2822 #2822
   packet_loss_rate: 0.4
   min_ms: 40
   max_ms: 500

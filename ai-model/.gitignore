@@ -13,6 +13,7 @@
 .idea/**/shelf
 *.txt
 *.csv
+*.joblib
 
 # AWS User-specific
 .idea/**/aws.xml
