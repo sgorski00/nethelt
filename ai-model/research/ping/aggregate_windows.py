@@ -40,8 +40,8 @@ def run():
 
     out = pd.DataFrame(windows)
 
-    out["ping_avg_15m"] = out["ping_avg_1m"].rolling(15).mean()
-    out["ping_std_15m"] = out["ping_avg_1m"].rolling(15).std()
+    out["ping_avg_15m"] = out["ping_avg_1m"].rolling(15, min_periods=5).mean()
+    out["ping_std_15m"] = out["ping_avg_1m"].rolling(15, min_periods=5).std()
 
     out["ping_zscore_15m"] = (
             (out["ping_avg_1m"] - out["ping_avg_15m"]) /
