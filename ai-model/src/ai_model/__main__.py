@@ -1,5 +1,4 @@
 import argparse
-import pandas as pd
 from ai_model.training.ping.train import train
 from ai_model.inference.ping.predict import predict
 
