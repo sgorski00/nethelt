@@ -1,5 +1,5 @@
 device_id: uuid-1
-device_type: PC # PC / IOT / ROUTER / AP / OTHERS
+device_group: client-lan # client-lan, client-wifi, infra, iot
 
 interval_seconds: 5
 duration_minutes: 2880

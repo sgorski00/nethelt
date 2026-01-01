@@ -11,7 +11,7 @@ def run():
         config = yaml.safe_load(f)
 
     device_id = config["device_id"]
-    device_type = config["device_type"]
+    device_group = config["device_group"]
     interval = config["interval_seconds"]
     duration = config["duration_minutes"]
 
@@ -36,11 +36,11 @@ def run():
             loss_state = min(loss_state + 0.05, failure["packet_loss_rate"])
         else:
             loss_state = max(loss_state - 0.01, 0.0)
-        success = random.random() > loss_state
+        success = 1 if random.random() > loss_state else 0
 
         if minute >= failure["start_minute"]:
             if random.random() < failure["packet_loss_rate"]:
-                success = False
+                success = 0
             else:
                 ping_ms = random.uniform(
                     failure["min_ms"],
@@ -65,9 +65,9 @@ def run():
 
         rows.append({
             "device_id": device_id,
-            "device_type": device_type,
+            "device_group": device_group,
             "timestamp": current_time.isoformat(),
-            "ping_ms": None if not success else round(ping_ms, 2),
+            "ping_ms": None if success == 0 else round(ping_ms, 2),
             "success": success
         })
 
