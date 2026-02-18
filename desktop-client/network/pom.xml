@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>pl.sgorski.nethelt.network</groupId>
-  <artifactId>nethelt-network</artifactId>
+  <artifactId>network</artifactId>
   <packaging>jar</packaging>
   <name>NetHelt Client - Network Operations</name>
   <description>${project.name}</description>
@@ -18,7 +18,7 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>nethelt-core</artifactId>
+      <artifactId>core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
