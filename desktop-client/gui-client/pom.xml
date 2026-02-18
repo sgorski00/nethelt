@@ -9,20 +9,15 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>pl.sgorski.nethelt.network</groupId>
-  <artifactId>network</artifactId>
+  <artifactId>gui-client</artifactId>
   <packaging>jar</packaging>
-  <name>NetHelt Client - Network Operations</name>
+  <name>NetHelt Client - Agent GUI</name>
   <description>${project.name}</description>
 
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <artifactId>client-common</artifactId>
     </dependency>
 
     <dependency>
@@ -35,19 +30,5 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>
