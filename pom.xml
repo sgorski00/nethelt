@@ -134,7 +134,7 @@
       </modules>
     </profile>
     <profile>
-      <id>coverage-report</id>
+      <id>coverage</id>
       <modules>
         <module>core</module>
         <module>desktop-client</module>
