@@ -20,22 +20,35 @@ Network health checker with web app and desktop client.
 - Docker & Docker Compose
 - Node.js 20 or higher
 
-## Setup
+## Run & Setup
+
+### Makefile
+
+In the root directory of the project, there is a `Makefile` that provides convenient commands for building and running the project. Here are some of the available commands:
+- `make up` - Builds and starts whole environemnt, including the web API
+- `make down` - Stops and removes the environment
+- `make build` - Builds the project using Maven
+- `make logs` - Runs logs for all containers
 
 ### Maven profiles
 
-There are several Maven profiles, each of them is used for a different purpose:
-
-- `client` - Used for building the desktop client
-- `web` - Used for building the web API
-- `full` - Used for building web API and desktop client together
-- `coverage` - Used for generating code coverage reports (builds everything)
-
-To buiild any of the modules, you need to specify the profile. For example, to build the desktop client, run:
+Use `-pl` flag to build specific modules:
 
 ```bash
-mvn clean install -Pclient
+# Build everything
+mvn clean install
+
+# Build only web-api (with core dependency)
+mvn clean install -pl core,web-api
+
+# Build only desktop-client (with dependencies)
+mvn clean install -pl desktop-client -am
+
+# Generate coverage report
+mvn verify -P coverage
 ```
+
+The `-am` (also-make) flag automatically builds required dependencies.
 
 ## Status
 
