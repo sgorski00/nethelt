@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt_web_backend.controller;
+package pl.sgorski.nethelt.webapi.controller;
 
 import java.util.List;
 import java.util.Set;

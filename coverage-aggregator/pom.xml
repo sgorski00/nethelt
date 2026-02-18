@@ -17,27 +17,27 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>nethelt-core</artifactId>
+      <artifactId>core</artifactId>
     </dependency>
     <dependency>
       <groupId>pl.sgorski.nethelt.network</groupId>
-      <artifactId>nethelt-network</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pl.sgorski.nethelt.agent</groupId>
-      <artifactId>nethelt-agent-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pl.sgorski.nethelt.agent</groupId>
-      <artifactId>nethelt-agent-background</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pl.sgorski.nethelt.agent</groupId>
-      <artifactId>nethelt-agent-gui</artifactId>
+      <artifactId>network</artifactId>
     </dependency>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>nethelt-web-backend</artifactId>
+      <artifactId>client-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pl.sgorski.nethelt</groupId>
+      <artifactId>bg-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pl.sgorski.nethelt</groupId>
+      <artifactId>gui-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pl.sgorski.nethelt</groupId>
+      <artifactId>web-api</artifactId>
     </dependency>
   </dependencies>
 

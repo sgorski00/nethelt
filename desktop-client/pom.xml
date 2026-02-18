@@ -16,7 +16,9 @@
 
   <modules>
     <module>network</module>
-    <module>agent</module>
+    <module>client-common</module>
+    <module>bg-client</module>
+    <module>gui-client</module>
   </modules>
 
   <properties>
@@ -31,12 +33,17 @@
     <dependencies>
       <dependency>
         <groupId>pl.sgorski.nethelt</groupId>
-        <artifactId>nethelt-core</artifactId>
+        <artifactId>core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>pl.sgorski.nethelt.network</groupId>
-        <artifactId>nethelt-network</artifactId>
+        <artifactId>network</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>pl.sgorski.nethelt</groupId>
+        <artifactId>client-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

@@ -10,7 +10,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>backend</artifactId>
+	<artifactId>web-api</artifactId>
 	<packaging>jar</packaging>
 	<name>NetHelt - Web App - Backend</name>
 	<description>${project.name}</description>
