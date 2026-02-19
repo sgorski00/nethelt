@@ -45,8 +45,10 @@
 
 % Ustawienie spisów
 \renewcommand*\contentsname{Spis treści}
-\renewcommand\lstlistingname{Listing}
-\renewcommand\lstlistlistingname{Spis listingów}
+\renewcommand{\listfigurename}{Spis rysunków}
+\renewcommand{\listtablename}{Spis tabel}
+\renewcommand{\lstlistingname}{Listing}
+\renewcommand{\lstlistlistingname}{Spis listingów}
 
 % Wcięcie 1. akapitu
 \setlength{\parindent}{0.7cm}
@@ -88,6 +90,9 @@
 	moredelim=[is][\textcolor{pyellow}]{\%\%}{\%\%},
 	captionpos=b
 }
+
+% komenda TODO
+\newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
 
 %Początek dokumentu
 \begin{document}
