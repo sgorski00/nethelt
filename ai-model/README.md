@@ -1,13 +1,27 @@
-# AI-Model for Nethelt
+# AI Model
 
-This module is an initial version of a machine learning component for the **Nethelt** application.  
-It is designed to detect anomalies in network data, using classical ML algorithms.
+Python module for network anomaly detection using Isolation Forest algorithm.
+
+## Requirements
+
+- Python 3.12
 
 ## Installation
 
-1. Install Python 3.12.10 and run `pip install poetry`
-2. Clone the repository and enter the project folder.
-3. Run: `poetry install`
+```bash
+pip install poetry
+poetry install
+```
 
-After dependencies are installed you can run `python -m ai_model` to run application.
+## Running
 
+```bash
+python -m ai_model
+```
+
+## Dependencies
+
+- numpy
+- pandas
+- scikit-learn
+- pyod

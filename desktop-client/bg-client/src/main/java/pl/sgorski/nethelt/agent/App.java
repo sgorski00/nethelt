@@ -9,7 +9,7 @@ import pl.sgorski.nethelt.agent.serialization.impl.DefaultSerializationControlle
 
 /**
  * Main application class for the Nethelt Background agent.
- * It starts in the background as a scheduler and fetch data from the web service.
+ * It starts in the bg-client as a scheduler and fetch data from the web service.
  * After executing operations it sends results back to the web service.
  */
 public class App {
