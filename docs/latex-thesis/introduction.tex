@@ -18,7 +18,31 @@ W związku z powyższym należy monitorować stan takich urządzeń, a w przypad
 
 \section{Cel pracy}
 
+Celem niniejszej pracy jest stworzenie systemu wielomodułowego do monitorowania i zarządzania urządzeniami sieciowymi w środowisku lokalnym (LAN). System ma umożliwiać rejestrację i logowanie użytkowników, konfigurację połączeń sieciowych oraz monitorowanie stanu urządzeń. 
+
+Dodatkowym celem jest opracowanie modułu detekcji anomalii z wykorzystaniem algorytmu \emph{isolation forest}, który pozwoli na wczesne wykrywanie nieprawidłowości w funkcjonowaniu sieci. System powinien wspierać dwa typy użytkowników – administratora oraz użytkownika zwykłego – z odpowiednimi uprawnieniami do zarządzania systemem i dostępem do danych. 
+
+Projekt obejmuje także wdrożenie aplikacji webowej w środowisku chmurowym, zapewniając dostępność dla użytkowników końcowych niezależnie od lokalizacji. Aplikacja desktopowa będzie dostępna do pobrania bezpośrednio na stronie internetowej.
+
 \section{Zakres pracy}
+
+Zakres pracy obejmuje:
+\begin{itemize}
+	\item implementację aplikacji webowej w technologii Java 25 z użyciem frameworka Spring Boot oraz interfejsu w TypeScript i Angular 21,
+	\item stworzenie desktopowego klienta w Javie 25, działającego w trybie serwisu, umożliwiającego komunikację z serwerem,
+	\item opracowanie modułu AI w Pythonie, wykorzystującego algorytm \emph{isolation forest} do detekcji typowych anomalii w sieci,
+	\item integrację modułów z centralną bazą danych PostgreSQL 18.2, współdzieloną między aplikacjami,
+	\item wdrożenie aplikacji w środowisku chmurowym (Google Cloud Console) w celu zapewnienia dostępności dla użytkowników.
+\end{itemize}
+
+W zakresie pracy nie przewiduje się:
+\begin{itemize}
+	\item stworzenia mobilnej aplikacji,
+	\item obsługi wszystkich możliwych typów anomalii w sieci – moduł AI ograniczony jest do najczęściej występujących przypadków,
+	\item rozbudowanego GUI w aplikacji desktopowej - wersja komputerowa będzie dostępna w trybie konsolowym. Wersja z interfejsem użytkownika zostanie zaimplementowana, jeśli pozostałe moduły będą gotowe przed ostatecznym terminem.
+\end{itemize}
+
+Zakres dokumentacji obejmuje przygotowanie instrukcji użytkownika, dokumentacji technicznej, diagramów UML oraz podstawowych statystyk działania systemu.
 
 \section{Założenia projektowe}
 
@@ -33,18 +57,8 @@ System zostanie zaprojektowany w taki sposób, aby umożliwić użytkownikowi re
 
 System przewiduje co najmniej dwa typy użytkowników: administratora oraz użytkownika zwykłego. Zalogowanie do systemu będzie obowiązkowe, a proces logowania zostanie udostępniony zarówno poprzez protokół OAuth2 (Google), jak i w formie lokalnej autoryzacji. Administrator będzie posiadał rozszerzone uprawnienia, w tym możliwość zarządzania użytkownikami oraz przeglądania podstawowych statystyk dotyczących korzystania z systemu.  
 
-Aplikacja webowa będzie realizowana w oparciu o nowoczesną wersję języka Java (wersja 25) oraz framework Spring Boot (w wersji 4.x.x), który ułatwia implementację i utrzymanie systemu. Interfejs użytkownika zostanie zbudowany przy użyciu TypeScript oraz frameworka Angular (wersja 21). Moduł AI zostanie opracowany w języku Python z wykorzystaniem odpowiednich bibliotek do uczenia maszynowego, co przyspieszy proces modelowania i analizy danych. Aplikacja desktopowa zostanie stworzona w tej samej wersji Javy, z wykorzystaniem biblioteki Swing, co pozwoli na jej uruchamianie na różnych systemach operacyjnych.
+Aplikacja webowa będzie realizowana w oparciu o nowoczesną wersję języka Java (wersja 25) oraz framework Spring Boot (w wersji 4.x.x), który ułatwia implementację i utrzymanie systemu. Interfejs użytkownika zostanie zbudowany przy użyciu TypeScript oraz frameworka Angular (wersja 21). Moduł AI zostanie opracowany w języku Python z wykorzystaniem odpowiednich bibliotek do uczenia maszynowego, co przyspieszy proces modelowania i analizy danych. Aplikacja desktopowa zostanie stworzona w tej samej wersji Javy, z której korzysta program internetowy, co pozwoli na jej uruchamianie na różnych systemach operacyjnych.
 
 Dane pomiędzy modułami systemu będą współdzielone poprzez centralną bazę danych, której silnik wykorzysta PostgreSQL w wersji 18.2.  
 
 Projekt przewiduje wdrożenie aplikacji w środowisku chmurowym w celu zapewnienia dostępności dla użytkowników końcowych z dowolnej lokalizacji. Wstępnie planowane jest wykorzystanie platformy Google Cloud Console do tego celu.
-
-\subsection{Ograniczenia i potencjalne trudności}
-
-W ramach projektu należy uwzględnić następujące ograniczenia i możliwe trudności:
-\begin{itemize}
-	\item Moduł AI będzie wykrywał jedynie wybrane typowe anomalie w sieci i może nie uwzględniać wszystkich możliwych scenariuszy awarii.
-	\item Desktopowy klient nie będzie posiadał zaawansowanego GUI i jego funkcjonalność ograniczy się do komunikacji z serwerem oraz wyświetlania podstawowych powiadomień.
-	\item Wersja mobilna aplikacji nie jest przewidziana w początkowej fazie wdrożenia.
-	\item Wydajność i dostępność systemu mogą być ograniczone przez wybraną infrastrukturę chmurową oraz przez ograniczenia przepustowości sieci użytkowników.
-\end{itemize}
