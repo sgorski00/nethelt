@@ -1,14 +1,14 @@
 \chapter{Wstęp}
 
-\section{Wprowadzenie}
-Aktualnie nie sposób wyobrazić sobie firmy, przedsiębiorstwa, a nawet gospodarstwa domowego, w którym nie korzysta się z internetu. Dostęp do zewnętrznych serwisów i usług stał się naszą codziennością. Korzystamy z internetu oraz urządzeń, łączących się do niego każdego dnia. W domach internet służy nam często do rozrywki i ułatwiania codziennych czynności, do wyszukiwania informacji i rozwiązywania problemów. Dzięki niemu jesteśmy w stałym kontakcie z innymi, mamy dostęp do płatności elektronicznych, a zakupy możemy zrobić nie wychodząc z domu. W pracy korzystamy z niego w celu wyszukiwania informacji i przesyłania ich dalej, wysyłania maili, pobierania danych z Państwowych spółek, czy chociażby robienia wideokonferencji z klientami z całego Świata.
+\section{Wprowadzenie do problematyki}
+Aktualnie nie sposób wyobrazić sobie firmy, przedsiębiorstwa, a nawet gospodarstwa domowego, w którym nie korzysta się z internetu. Dostęp do zewnętrznych serwisów i usług stał się naszą codziennością. Korzystamy z internetu oraz urządzeń, łączących się do niego każdego dnia. W domach internet służy nam często do rozrywki i ułatwiania codziennych czynności, do wyszukiwania informacji i rozwiązywania problemów. Dzięki niemu jesteśmy w stałym kontakcie z innymi, mamy dostęp do płatności elektronicznych, a zakupy możemy zrobić nie wychodząc z domu. W pracy korzystamy z niego w celu wyszukiwania informacji i przesyłania ich dalej, wysyłania maili, pobierania danych z Państwowych spółek, czy chociażby robienia wideokonferencji z klientami z całego świata.
 
-Poza dostępem do zewnętrznych usług coraz większą popularność zyskują urządzenia Smart oraz IoT (Internet of Things). Wielu z nas nawet nie ma pojęcia na temat tego jak wiele takich urządzeń znajduje się w naszym otoczeniu. Według IoT Analytics pod koniec 2025 r. liczba podłączonych urządzeń IoT na świecie miała osiągnąć 21,1 miliarda. To wzrost o ok. 14\% w stosunku do roku poprzedniego (DO WERYFIKACJI PRZED ODDANIEM). Według prognozy liczba ta będzie tylko rosła i w 2030 roku może sięgnąć 39 miliardów. Tendencję tą można zaobserwować na rysunku \ref{fig:iot-devices} przedstawiający liczbę aktywnych urządzeń typu IoT wraz z prognozą na przyszłe lata.
+Poza dostępem do zewnętrznych usług coraz większą popularność zyskują urządzenia Smart oraz IoT (Internet of Things). Wielu z nas nawet nie ma pojęcia na temat tego jak wiele takich urządzeń znajduje się w naszym otoczeniu. Według IoT Analytics pod koniec 2025 r. liczba podłączonych urządzeń IoT na świecie miała osiągnąć 21,1 miliarda To wzrost o ok. 14\% w stosunku do roku poprzedniego \TODO{zweryfikować dane przed oddaniem pracy}. Według prognozy liczba ta będzie tylko rosła i w 2030 roku może sięgnąć 39 miliardów\cite{iot-analytics}. Tendencję tę można zaobserwować na rysunku \ref{fig:iot-devices} przedstawiający liczbę aktywnych urządzeń typu IoT wraz z prognozą na przyszłe lata.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.8\textwidth]{./images/liczba-urzadzen-iot.png}
-	\caption{Liczba urządzeń typu IoT w latach 2020-2035\\Źródło: https://iot-analytics.com/number-connected-iot-devices/}
+	\caption{Liczba urządzeń typu IoT w latach 2020--2035\\Źródło: https://iot-analytics.com/number-connected-iot-devices/}
 	\label{fig:iot-devices}
 \end{figure}
 
@@ -18,6 +18,47 @@ W związku z powyższym należy monitorować stan takich urządzeń, a w przypad
 
 \section{Cel pracy}
 
+Celem niniejszej pracy jest stworzenie systemu wielomodułowego do monitorowania i zarządzania urządzeniami sieciowymi w środowisku lokalnym (LAN). System ma umożliwiać rejestrację i logowanie użytkowników, konfigurację połączeń sieciowych oraz monitorowanie stanu urządzeń. 
+
+Dodatkowym celem jest opracowanie modułu detekcji anomalii z wykorzystaniem algorytmu \emph{isolation forest}, który pozwoli na wczesne wykrywanie nieprawidłowości w funkcjonowaniu sieci. System powinien wspierać dwa typy użytkowników – administratora oraz użytkownika zwykłego – z odpowiednimi uprawnieniami do zarządzania systemem i dostępem do danych. 
+
+Projekt obejmuje także wdrożenie aplikacji webowej w środowisku chmurowym, zapewniając dostępność dla użytkowników końcowych niezależnie od lokalizacji. Aplikacja desktopowa będzie dostępna do pobrania bezpośrednio na stronie internetowej.
+
 \section{Zakres pracy}
 
+Zakres pracy obejmuje:
+\begin{itemize}
+	\item implementację aplikacji webowej w technologii Java 25 z użyciem frameworka Spring Boot oraz interfejsu w TypeScript i Angular 21,
+	\item stworzenie desktopowego klienta w Javie 25, działającego w trybie serwisu, umożliwiającego komunikację z serwerem,
+	\item opracowanie modułu AI w Pythonie, wykorzystującego algorytm \emph{isolation forest} do detekcji typowych anomalii w sieci,
+	\item integrację modułów z centralną bazą danych PostgreSQL 18.2, współdzieloną między aplikacjami,
+	\item wdrożenie aplikacji w środowisku chmurowym (Google Cloud Console) w celu zapewnienia dostępności dla użytkowników.
+\end{itemize}
+
+W zakresie pracy nie przewiduje się:
+\begin{itemize}
+	\item stworzenia mobilnej aplikacji,
+	\item obsługi wszystkich możliwych typów anomalii w sieci – moduł AI ograniczony jest do najczęściej występujących przypadków,
+	\item rozbudowanego GUI w aplikacji desktopowej - wersja komputerowa będzie dostępna w trybie konsolowym. Wersja z interfejsem użytkownika zostanie zaimplementowana, jeśli pozostałe moduły będą gotowe przed ostatecznym terminem.
+\end{itemize}
+
+Zakres dokumentacji obejmuje przygotowanie instrukcji użytkownika, dokumentacji technicznej, diagramów UML oraz podstawowych statystyk działania systemu.
+
 \section{Założenia projektowe}
+
+Projekt ma charakter wielomodułowy i obejmuje trzy główne komponenty:
+\begin{itemize}
+	\item aplikację webową,
+	\item aplikację desktopową,
+	\item moduł detekcji anomalii oparty na algorytmie AI typu \emph{isolation forest}.
+\end{itemize}
+
+System zostanie zaprojektowany w taki sposób, aby umożliwić użytkownikowi rejestrację, logowanie, konfigurację połączenia ze swoją siecią LAN, dodawanie lokalnych urządzeń sieciowych, monitorowanie ich stanu oraz zmianę ustawień powiadomień. Aplikacja desktopowa będzie pełniła rolę klienta komunikującego się z serwerem, co jest niezbędne do prawidłowego funkcjonowania systemu w środowisku wielomodułowym. Dodatkowym wyzwaniem projektu będzie integracja wytrenowanego modelu AI, który będzie wspierał wczesne wykrywanie anomalii w sieci.
+
+System przewiduje co najmniej dwa typy użytkowników: administratora oraz użytkownika zwykłego. Zalogowanie do systemu będzie obowiązkowe, a proces logowania zostanie udostępniony zarówno poprzez protokół OAuth2 (Google), jak i w formie lokalnej autoryzacji. Administrator będzie posiadał rozszerzone uprawnienia, w tym możliwość zarządzania użytkownikami oraz przeglądania podstawowych statystyk dotyczących korzystania z systemu.  
+
+Aplikacja webowa będzie realizowana w oparciu o nowoczesną wersję języka Java (wersja 25) oraz framework Spring Boot (w wersji 4.x.x), który ułatwia implementację i utrzymanie systemu. Interfejs użytkownika zostanie zbudowany przy użyciu TypeScript oraz frameworka Angular (wersja 21). Moduł AI zostanie opracowany w języku Python z wykorzystaniem odpowiednich bibliotek do uczenia maszynowego, co przyspieszy proces modelowania i analizy danych. Aplikacja desktopowa zostanie stworzona w tej samej wersji Javy, z której korzysta program internetowy, co pozwoli na jej uruchamianie na różnych systemach operacyjnych.
+
+Dane pomiędzy modułami systemu będą współdzielone poprzez centralną bazę danych, której silnik wykorzysta PostgreSQL w wersji 18.2.  
+
+Projekt przewiduje wdrożenie aplikacji w środowisku chmurowym w celu zapewnienia dostępności dla użytkowników końcowych z dowolnej lokalizacji. Wstępnie planowane jest wykorzystanie platformy Google Cloud Console do tego celu.
