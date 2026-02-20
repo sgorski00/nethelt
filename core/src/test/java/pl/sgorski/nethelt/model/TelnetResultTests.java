@@ -21,7 +21,7 @@ public class TelnetResultTests {
 
   @Test
   void construction_shouldCreateEmptyTelnetResult() {
-    TelnetResult emptyResult = new TelnetResult();
+    var emptyResult = new TelnetResult();
     assertNotNull(emptyResult, "Telnet result should contain empty constructor for deserializing!");
     assertNotNull(emptyResult.getTimestamp());
   }
@@ -38,7 +38,7 @@ public class TelnetResultTests {
 
   @Test
   void setDevice_shouldUpdateDevice() {
-    Device newDevice = new Device("Device2", "192.168.1.2", 8081);
+    var newDevice = new Device("Device2", "192.168.1.2", 8081);
 
     result.setDevice(newDevice);
 
@@ -75,7 +75,7 @@ public class TelnetResultTests {
 
   @Test
   void toString_shouldReturnStringRepresentation() {
-    String str = result.toString();
+    var str = result.toString();
 
     assertTrue(str.contains("TelnetResult{"));
     assertTrue(str.contains("portOpen=true"));

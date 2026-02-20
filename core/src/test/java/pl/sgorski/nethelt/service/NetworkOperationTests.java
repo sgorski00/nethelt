@@ -10,7 +10,7 @@ public class NetworkOperationTests {
 
   @Test
   void shouldCalculateElapsedTimeCorrectly() {
-    NetworkOperation<Device, Result> operation = device -> null;
+    NetworkOperation<Device, Result> operation = _ -> null;
 
     long startTime = System.nanoTime();
     long elapsedTime = operation.getElapsedTimeInMs(startTime);

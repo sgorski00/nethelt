@@ -1,9 +1,15 @@
 package pl.sgorski.nethelt.model;
 
+import lombok.*;
+
 /**
  * Represents the result of a telnet operation on a network device.
  * Extends the generic {@link Result} class to include specific details about the telnet operation.
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@NoArgsConstructor
 public class TelnetResult extends Result{
 
   private boolean portOpen;
@@ -11,20 +17,5 @@ public class TelnetResult extends Result{
   public TelnetResult(Device device, boolean success, String message, long responseTimeMs, boolean portOpen) {
     super(device, success, message, responseTimeMs);
     this.portOpen = portOpen;
-  }
-
-  public TelnetResult() { super(); } //empty constructor for deserializing - DO NOT REMOVE
-
-  public boolean isPortOpen() {
-    return portOpen;
-  }
-
-  public void setPortOpen(boolean portOpen) {
-    this.portOpen = portOpen;
-  }
-
-  @Override
-  public String toString() {
-    return "TelnetResult{" + "portOpen=" + portOpen + ", " + super.toString() + "}";
   }
 }

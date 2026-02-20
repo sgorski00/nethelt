@@ -18,7 +18,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnTrue_EmptyList() {
-    List<String> list = List.of();
+    var list = List.of();
 
     boolean result = CollectionUtils.isEmpty(list);
 
@@ -27,7 +27,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnTrue_EmptySet() {
-    Set<String> set = Set.of();
+    var set = Set.of();
 
     boolean result = CollectionUtils.isEmpty(set);
 
@@ -36,7 +36,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnFalse_NonEmptyList() {
-    List<String> list = List.of("item");
+    var list = List.of("item");
 
     boolean result = CollectionUtils.isEmpty(list);
 
@@ -45,7 +45,7 @@ public class CollectionUtilsTests {
 
   @Test
   void shouldReturnFalse_NonEmptySet() {
-    Set<String> set = Set.of("item");
+    var set = Set.of("item");
 
     boolean result = CollectionUtils.isEmpty(set);
 

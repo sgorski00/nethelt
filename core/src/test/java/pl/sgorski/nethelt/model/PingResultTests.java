@@ -21,7 +21,7 @@ public class PingResultTests {
 
   @Test
   void construction_shouldCreateEmptyPingResult() {
-    PingResult emptyResult = new PingResult();
+    var emptyResult = new PingResult();
     assertNotNull(emptyResult,"Ping result should contain empty constructor for deserializing!");
     assertNotNull(emptyResult.getTimestamp());
   }
@@ -37,7 +37,7 @@ public class PingResultTests {
 
   @Test
   void setDevice_shouldUpdateDevice() {
-    Device newDevice = new Device("Device2", "192.168.1.2", 8081);
+    var newDevice = new Device("Device2", "192.168.1.2", 8081);
 
     result.setDevice(newDevice);
 
@@ -67,7 +67,7 @@ public class PingResultTests {
 
   @Test
   void toString_shouldReturnStringRepresentation() {
-    String str = result.toString();
+    var str = result.toString();
 
     assertTrue(str.contains("PingResult{Result{device="));
     assertTrue(str.contains("timestamp="));

@@ -19,7 +19,7 @@ public class NetworkConfigTests {
 
   @Test
   void constructionEmpty_shouldCreateConfig() {
-    NetworkConfig config = new NetworkConfig();
+    var config = new NetworkConfig();
 
     assertNotNull(config, "NetworkConfig should contain empty constructor for deserializing!");
   }
@@ -53,7 +53,7 @@ public class NetworkConfigTests {
 
   @Test
   void toString_shouldReturnStringRepresentation() {
-    String expected = "NetworkConfig{operation=PING, enabled=true, intervalSeconds=60}";
+    var expected = "NetworkConfig{operation=PING, enabled=true, intervalSeconds=60}";
 
     assertEquals(expected, config.toString());
   }

@@ -11,14 +11,14 @@ class DeviceTests {
 
   @Test
   void constructionEmpty_shouldCreateDevice() {
-    Device device = new Device();
+    var device = new Device();
 
     assertNotNull(device, "Device should contain empty constructor for deserializing!");
   }
 
   @Test
   void constructionWithPort_shouldCreateDevice_WithPort() {
-    Device device = new Device("Device1", "192.168.1.1", 8080);
+    var device = new Device("Device1", "192.168.1.1", 8080);
 
     assertEquals("Device1", device.getName());
     assertEquals("192.168.1.1", device.getAddress().getHostAddress());
@@ -27,7 +27,7 @@ class DeviceTests {
 
   @Test
   void constructionWithPort_shouldCreateDevice_WithoutPort() {
-    Device device = new Device("Device1", "192.168.1.1", null);
+    var device = new Device("Device1", "192.168.1.1", null);
 
     assertEquals("Device1", device.getName());
     assertEquals("192.168.1.1", device.getAddress().getHostAddress());
@@ -51,7 +51,7 @@ class DeviceTests {
 
   @Test
   void constructionWithoutPort_shouldCreateDevice() {
-    Device device = new Device("Device2", "10.0.0.1");
+    var device = new Device("Device2", "10.0.0.1");
 
     assertEquals("Device2", device.getName());
     assertEquals("10.0.0.1", device.getAddress().getHostAddress());
@@ -65,7 +65,7 @@ class DeviceTests {
 
   @Test
   void setName_shouldUpdateDeviceName() {
-    Device device = new Device("Device4", "127.0.0.1", 80);
+    var device = new Device("Device4", "127.0.0.1", 80);
     device.setName("UpdatedDevice");
 
     assertEquals("UpdatedDevice", device.getName());
@@ -73,7 +73,7 @@ class DeviceTests {
 
   @Test
   void setAddress_shouldUpdateDeviceAddress() throws Exception {
-    Device device = new Device("Device5", "192.168.0.1", 22);
+    var device = new Device("Device5", "192.168.0.1", 22);
     InetAddress newAddress = InetAddress.getByName("10.0.0.2");
     device.setAddress(newAddress);
 
@@ -82,7 +82,7 @@ class DeviceTests {
 
   @Test
   void setPort_shouldUpdateDevicePort() {
-    Device device = new Device("Device", "172.16.0.1", 443);
+    var device = new Device("Device", "172.16.0.1", 443);
     device.setPort(8443);
 
     assertEquals(8443, device.getPort());
@@ -90,76 +90,76 @@ class DeviceTests {
 
   @Test
   void equals_shouldReturnTrue_EqualDevices() {
-    Device device1 = new Device("Device", "192.168.1.1", 8080);
-    Device device2 = new Device("Device", "192.168.1.1", 8080);
+    var device1 = new Device("Device", "192.168.1.1", 8080);
+    var device2 = new Device("Device", "192.168.1.1", 8080);
 
     assertEquals(device1, device2);
   }
 
   @Test
   void equals_shouldReturnTrue_SameDevices() {
-    Device device1 = new Device("Device", "192.168.1.1", 8080);
+    var device1 = new Device("Device", "192.168.1.1", 8080);
 
     assertEquals(device1, device1);
   }
 
   @Test
   void equals_shouldReturnFalse_NotADevice() {
-    Device device1 = new Device("PC", "192.168.1.1", 8080);
+    var device1 = new Device("PC", "192.168.1.1", 8080);
 
     assertNotEquals("Something else", device1);
   }
 
   @Test
   void equals_shouldReturnFalse_DevicesWithDifferentNames() {
-    Device device1 = new Device("PC", "192.168.1.1", 8080);
-    Device device2 = new Device("Server", "192.168.1.1", 8080);
+    var device1 = new Device("PC", "192.168.1.1", 8080);
+    var device2 = new Device("Server", "192.168.1.1", 8080);
 
     assertNotEquals(device1, device2);
   }
 
   @Test
   void equals_shouldReturnFalse_DevicesWithDifferentAddresses() {
-    Device device1 = new Device("Device", "192.168.1.1", 8080);
-    Device device2 = new Device("Device", "10.0.0.1", 8080);
+    var device1 = new Device("Device", "192.168.1.1", 8080);
+    var device2 = new Device("Device", "10.0.0.1", 8080);
 
     assertNotEquals(device1, device2);
   }
 
   @Test
   void equals_shouldReturnFalse_DevicesWithDifferentPorts() {
-    Device device1 = new Device("Device", "192.168.1.1", 8080);
-    Device device2 = new Device("Device", "192.168.1.1", 9090);
+    var device1 = new Device("Device", "192.168.1.1", 8080);
+    var device2 = new Device("Device", "192.168.1.1", 9090);
 
     assertNotEquals(device1, device2);
   }
 
   @Test
   void toString_shouldReturnCorrectData_WithPort() {
-    Device device = new Device("Server", "192.168.1.1", 8080);
-    String expected = "Device{name='Server', ipv4Address=192.168.1.1, port=8080}";
+    var device = new Device("Server", "192.168.1.1", 8080);
+    var expected = "Device{name='Server', ipv4Address=192.168.1.1, port=8080}";
     assertEquals(expected, device.toString());
   }
 
   @Test
   void toString_shouldReturnCorrectData_WithoutPort() {
-    Device device = new Device("Server", "192.168.1.1");
-    String expected = "Device{name='Server', ipv4Address=192.168.1.1, port=null}";
+    var device = new Device("Server", "192.168.1.1");
+    var expected = "Device{name='Server', ipv4Address=192.168.1.1, port=null}";
     assertEquals(expected, device.toString());
   }
 
   @Test
   void hashCode_shouldBeConsistent_ForEqualDevices() {
-    Device device1 = new Device("Device", "192.168.1.1", 8080);
-    Device device2 = new Device("Device", "192.168.1.1", 8080);
+    var device1 = new Device("Device", "192.168.1.1", 8080);
+    var device2 = new Device("Device", "192.168.1.1", 8080);
 
     assertEquals(device1.hashCode(), device2.hashCode());
   }
 
   @Test
   void hashCode_shouldNotBeConsistent_ForEqualDevices() {
-    Device device1 = new Device("Device", "192.168.1.1", 8080);
-    Device device2 = new Device("Device", "192.168.1.2", 8080);
+    var device1 = new Device("Device", "192.168.1.1", 8080);
+    var device2 = new Device("Device", "192.168.1.2", 8080);
 
     assertNotEquals(device1.hashCode(), device2.hashCode());
   }

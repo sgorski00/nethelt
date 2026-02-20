@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
-import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.NetworkConfig;
 import pl.sgorski.nethelt.model.Operation;
@@ -73,7 +72,7 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
   }
 
   private void handlePing(NetworkConfig cfg, Set<Device> devices) {
-    if (!cfg.isChanged(pingEnabled, pingInterval)) return;
+    if (cfg.isNotChanged(pingEnabled, pingInterval)) return;
 
     LOG.info("Configuration change detected for PING operation.");
     pingInterval = cfg.getIntervalSeconds();
@@ -93,7 +92,7 @@ public class WebScheduledTaskManager implements ScheduledTaskManager {
   }
 
   private void handleTelnet(NetworkConfig cfg, Set<Device> devices) {
-    if (!cfg.isChanged(telnetEnabled, telnetInterval))
+    if (cfg.isNotChanged(telnetEnabled, telnetInterval))
       return;
 
     LOG.info("Configuration change detected for TELNET operation.");
