@@ -1,0 +1,24 @@
+\chapter{Dokumentacja Techniczna}
+
+\section{Struktura bazy danych}
+
+Na rysunku \ref{fig:db-diagram} przedstawiono schemat relacyjnej bazy danych aplikacji NetHelt. Diagram obrazuje strukturę tabel oraz relacje pomiędzy encjami systemu.
+
+Centralnym elementem modelu jest tabela \texttt{users}, przechowująca dane użytkowników systemu wraz z przypisaną rolą (\texttt{roles}). Każdy użytkownik może posiadać wiele urządzeń sieciowych zapisanych w tabeli \texttt{devices}.
+
+Z każdym urządzeniem powiązane są operacje sieciowe (\texttt{device\_operations}), określające typ wykonywanej operacji oraz czas między kolejnymi wywołaniami operacji. Dodatkowo w tej tabeli można przełączać wykrywanie anomalii.
+
+Wyniki wykonywanych operacji zapisywane są w \texttt{device\_operation\_stats}, gdzie gromadzone są informacje dotyczące odpowiedzi z urządzenia. Na podstawie zgromadzonych statystyk mogą być tworzone okna czasowe, wysyłane do analizy do modułu AI. W przypadku wykrycia anomalii, wpis taki generowany jest w tabeli \texttt{anomaly\_logs}.
+
+Konfiguracja powiadomień dotyczących zdarzeń monitorujących przechowywana jest w tabeli \texttt{notifications}. Powiadomienia są powiązane z operacjami monitorującymi i definiują kanał komunikacji, typ zdarzenia wywołującego alert oraz status danych powiadomień.
+
+Niektóre tabele posiadają kolumnę \texttt{deleted\_at}, która pozwala na wykonywanie miękkich usunięć z systemu, co ułatwi utrzymanie integralności danych.
+
+Kolumny takie jak: \texttt{role}, \texttt{device\_type}, \texttt{channel} itd. są ograniczone do predefiniowanych wartości, które w kodzie źródłowym programu występują jako typ enumeryczny. Pozwala to uniknąć błędnego wprowadzenia danych poprzez wyświetlenie odpowiedniego komunikatu błędu.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{./images/nethelt-db-diagram.png}
+	\caption{Diagram bazy danych aplikacji NetHelt\\Źródło: Opracowanie własne w witrynie internetowej https://dbdiagram.io/}
+	\label{fig:db-diagram}
+\end{figure}
