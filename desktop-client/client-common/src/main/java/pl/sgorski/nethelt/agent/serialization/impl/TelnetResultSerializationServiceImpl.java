@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.ResultSerializationService;
 import pl.sgorski.nethelt.exception.SerializationException;
@@ -12,12 +14,13 @@ import pl.sgorski.nethelt.model.TelnetResult;
 /**
  * Service implementation for serializing and deserializing TelnetResult objects to and from JSON.
  */
-public class TelnetResultSerializationServiceImpl implements ResultSerializationService<TelnetResult> {
+@Slf4j
+public final class TelnetResultSerializationServiceImpl implements ResultSerializationService<TelnetResult> {
 
   private final ObjectMapper objectMapper;
 
   public TelnetResultSerializationServiceImpl() {
-    this.objectMapper = ObjectMapperSingleton.getInstance();
+    this.objectMapper = ObjectMapperSingleton.INSTANCE.getMapper();
   }
 
   /**
@@ -25,6 +28,7 @@ public class TelnetResultSerializationServiceImpl implements ResultSerialization
    * In production it is recommended to use the default constructor.
    */
   public TelnetResultSerializationServiceImpl(ObjectMapper objectMapper) {
+    log.warn("Using TelnetResultSerializationServiceImpl constructor with custom ObjectMapper. This is intended for testing purposes only.");
     this.objectMapper = objectMapper;
   }
 

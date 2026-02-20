@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +34,10 @@ public class PingResultSerializationServiceImplTests {
 
   @Test
   void toJson_SingleObject_ShouldReturnJson() throws Exception {
-    String expected = "{}";
+    var expected = "{}";
     when(objectMapper.writeValueAsString(any(PingResult.class))).thenReturn(expected);
 
-    String result = service.toJson(new PingResult());
+    var result = service.toJson(new PingResult());
 
     assertEquals(expected, result);
   }
@@ -52,10 +51,10 @@ public class PingResultSerializationServiceImplTests {
 
   @Test
   void toJson_Iterable_ShouldReturnJson() throws Exception {
-    String expected = "[{}]";
+    var expected = "[{}]";
     when(objectMapper.writeValueAsString(any(Iterable.class))).thenReturn(expected);
 
-    String result = service.toJson(new ArrayList<>());
+    var result = service.toJson(new ArrayList<>());
 
     assertEquals(expected, result);
   }
@@ -69,11 +68,11 @@ public class PingResultSerializationServiceImplTests {
 
   @Test
   void toObject_ShouldReturnObject() throws Exception {
-    String json = "{}";
-    PingResult expected = new PingResult();
+    var json = "{}";
+    var expected = new PingResult();
     when(objectMapper.readValue(anyString(), eq(PingResult.class))).thenReturn(expected);
 
-    PingResult result = service.toObject(json);
+    var result = service.toObject(json);
 
     assertEquals(expected, result);
   }
@@ -87,11 +86,11 @@ public class PingResultSerializationServiceImplTests {
 
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
-    String json = "[{}]";
+    var json = "[{}]";
     Set<PingResult> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<PingResult>>>any())).thenReturn(expected);
 
-    Set<PingResult> result = service.toObjectSet(json);
+    var result = service.toObjectSet(json);
     Assertions.assertIterableEquals(expected, result);
   }
 

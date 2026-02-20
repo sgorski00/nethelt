@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationService;
 import pl.sgorski.nethelt.exception.SerializationException;
@@ -12,12 +14,13 @@ import pl.sgorski.nethelt.model.NetworkConfig;
 /**
  * Implemented service for serializing and deserializing {@link NetworkConfig} objects to and from JSON.
  */
-public class NetworkConfigSerializationServiceImpl implements SerializationService<NetworkConfig> {
+@Slf4j
+public final class NetworkConfigSerializationServiceImpl implements SerializationService<NetworkConfig> {
 
   private final ObjectMapper objectMapper;
 
   public NetworkConfigSerializationServiceImpl() {
-    this.objectMapper = ObjectMapperSingleton.getInstance();
+    this.objectMapper = ObjectMapperSingleton.INSTANCE.getMapper();
   }
 
   /**
@@ -25,6 +28,7 @@ public class NetworkConfigSerializationServiceImpl implements SerializationServi
    * In production it is recommended to use the default constructor.
    */
   public NetworkConfigSerializationServiceImpl(ObjectMapper objectMapper) {
+    log.warn("Using NetworkConfigSerializationServiceImpl constructor with custom ObjectMapper. This is intended for testing purposes only.");
     this.objectMapper = objectMapper;
   }
 

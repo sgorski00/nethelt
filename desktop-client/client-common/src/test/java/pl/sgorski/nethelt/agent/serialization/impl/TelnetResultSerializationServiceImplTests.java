@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +34,10 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toJson_SingleObject_ShouldReturnJson() throws Exception {
-    String expected = "{}";
+    var expected = "{}";
     when(objectMapper.writeValueAsString(any(TelnetResult.class))).thenReturn(expected);
 
-    String result = service.toJson(new TelnetResult());
+    var result = service.toJson(new TelnetResult());
 
     assertEquals(expected, result);
   }
@@ -52,10 +51,10 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toJson_Iterable_ShouldReturnJson() throws Exception {
-    String expected = "[{}]";
+    var expected = "[{}]";
     when(objectMapper.writeValueAsString(any(Iterable.class))).thenReturn(expected);
 
-    String result = service.toJson(new ArrayList<>());
+    var result = service.toJson(new ArrayList<>());
 
     assertEquals(expected, result);
   }
@@ -69,11 +68,11 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toObject_ShouldReturnObject() throws Exception {
-    String json = "{}";
-    TelnetResult expected = new TelnetResult();
+    var json = "{}";
+    var expected = new TelnetResult();
     when(objectMapper.readValue(anyString(), eq(TelnetResult.class))).thenReturn(expected);
 
-    TelnetResult result = service.toObject(json);
+    var result = service.toObject(json);
 
     assertEquals(expected, result);
   }
@@ -87,11 +86,11 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
-    String json = "[{}]";
+    var json = "[{}]";
     Set<TelnetResult> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<TelnetResult>>>any())).thenReturn(expected);
 
-    Set<TelnetResult> result = service.toObjectSet(json);
+    var result = service.toObjectSet(json);
     Assertions.assertIterableEquals(expected, result);
   }
 

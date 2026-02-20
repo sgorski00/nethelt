@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.PingResult;
 import pl.sgorski.nethelt.model.TelnetResult;
@@ -18,15 +18,14 @@ import pl.sgorski.nethelt.network.telnet.DefaultTelnetOperationImpl;
  * Provides methods to execute network operations on a set of devices and retrieve their results.
  * This class utilizes asynchronous operations to perform network checks concurrently for better performance.
  */
-public class ResultProvider {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ResultProvider.class);
+@Slf4j
+public final class ResultProvider {
 
   private final PingOperation ping;
   private final TelnetOperation telnet;
 
   public ResultProvider() {
-    LOG.debug("Initializing ResultProvider with default implementations");
+    log.debug("Initializing ResultProvider with default implementations");
     this.ping = new DefaultPingOperationImpl();
     this.telnet = new DefaultTelnetOperationImpl();
   }
@@ -37,6 +36,7 @@ public class ResultProvider {
    * It is recommended to use default constructor in production code.
    */
   public ResultProvider(PingOperation ping, TelnetOperation telnet) {
+    log.warn("Using ResultProvider constructor with custom implementations. This is intended for testing purposes only.");
     this.ping = ping;
     this.telnet = telnet;
   }
@@ -48,7 +48,7 @@ public class ResultProvider {
    * @return a set of PingResult objects containing the results of the ping operations
    */
   public Set<PingResult> getPingResults(Set<Device> devices) {
-    Set<CompletableFuture<PingResult>> futures = devices.stream()
+    var futures = devices.stream()
       .map(ping::executeAsync)
       .collect(Collectors.toSet());
     return waitForAll(futures);
@@ -62,7 +62,7 @@ public class ResultProvider {
    * @return a set of TelnetResult objects containing the results of the telnet operations
    */
   public Set<TelnetResult> getTelnetResults(Set<Device> devices) {
-    Set<CompletableFuture<TelnetResult>> futures = devices.stream()
+    var futures = devices.stream()
       .filter(device -> Objects.nonNull(device.getPort()))
       .map(telnet::executeAsync)
       .collect(Collectors.toSet());

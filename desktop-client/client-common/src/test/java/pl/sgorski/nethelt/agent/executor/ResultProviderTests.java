@@ -32,12 +32,12 @@ public class ResultProviderTests {
 
   @Test
   void getPingResults_ShouldReturnResults() {
-    Device device = new Device();
-    PingResult pingResult = mock(PingResult.class);
+    var device = new Device();
+    var pingResult = mock(PingResult.class);
 
     when(ping.executeAsync(device)).thenReturn(CompletableFuture.completedFuture(pingResult));
 
-    Set<PingResult> results = resultProvider.getPingResults(Collections.singleton(device));
+    var results = resultProvider.getPingResults(Collections.singleton(device));
 
     assertEquals(1, results.size());
     assertEquals(pingResult, results.iterator().next());
@@ -45,14 +45,14 @@ public class ResultProviderTests {
 
   @Test
   void getTelnetResults_ShouldReturnResults_DevicesWithPort() {
-    Device deviceWithPort = new Device();
+    var deviceWithPort = new Device();
     deviceWithPort.setPort(22);
-    TelnetResult telnetResult = mock(TelnetResult.class);
+    var telnetResult = mock(TelnetResult.class);
 
     when(telnet.executeAsync(deviceWithPort))
       .thenReturn(CompletableFuture.completedFuture(telnetResult));
 
-    Set<TelnetResult> results = resultProvider.getTelnetResults(Collections.singleton(deviceWithPort));
+    var results = resultProvider.getTelnetResults(Collections.singleton(deviceWithPort));
 
     assertEquals(1, results.size());
     assertEquals(telnetResult, results.iterator().next());
@@ -60,15 +60,15 @@ public class ResultProviderTests {
 
   @Test
   void getTelnetResults_ShouldFilterDevicesWithoutPort() {
-    Device deviceWithoutPort = new Device();
-    Device deviceWithPort = new Device();
+    var deviceWithoutPort = new Device();
+    var deviceWithPort = new Device();
     deviceWithPort.setPort(23);
-    Set<Device> devices = Set.of(deviceWithoutPort, deviceWithPort);
+    var devices = Set.of(deviceWithoutPort, deviceWithPort);
 
-    TelnetResult telnetResult = mock(TelnetResult.class);
+    var telnetResult = mock(TelnetResult.class);
     when(telnet.executeAsync(deviceWithPort)).thenReturn(CompletableFuture.completedFuture(telnetResult));
 
-    Set<TelnetResult> results = resultProvider.getTelnetResults(devices);
+    var results = resultProvider.getTelnetResults(devices);
 
     assertEquals(1, results.size());
     assertEquals(telnetResult, results.iterator().next());

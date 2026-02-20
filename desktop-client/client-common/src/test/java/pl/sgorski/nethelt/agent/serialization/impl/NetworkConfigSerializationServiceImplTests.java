@@ -34,10 +34,10 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toJson_SingleObject_ShouldReturnJson() throws Exception {
-    String expected = "{}";
+    var expected = "{}";
     when(objectMapper.writeValueAsString(any(NetworkConfig.class))).thenReturn(expected);
 
-    String result = service.toJson(new NetworkConfig());
+    var result = service.toJson(new NetworkConfig());
 
     assertEquals(expected, result);
   }
@@ -51,10 +51,10 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toJson_Iterable_ShouldReturnJson() throws Exception {
-    String expected = "[{}]";
+    var expected = "[{}]";
     when(objectMapper.writeValueAsString(any(Iterable.class))).thenReturn(expected);
 
-    String result = service.toJson(new ArrayList<>());
+    var result = service.toJson(new ArrayList<>());
 
     assertEquals(expected, result);
   }
@@ -68,11 +68,11 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toObject_ShouldReturnObject() throws Exception {
-    String json = "{}";
-    NetworkConfig expected = new NetworkConfig();
+    var json = "{}";
+    var expected = new NetworkConfig();
     when(objectMapper.readValue(anyString(), eq(NetworkConfig.class))).thenReturn(expected);
 
-    NetworkConfig result = service.toObject(json);
+    var result = service.toObject(json);
 
     assertEquals(expected, result);
   }
@@ -86,11 +86,11 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
-    String json = "[{}]";
+    var json = "[{}]";
     Set<NetworkConfig> expected = Set.of();
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<NetworkConfig>>>any())).thenReturn(expected);
 
-    Set<NetworkConfig> result = service.toObjectSet(json);
+    var result = service.toObjectSet(json);
     Assertions.assertIterableEquals(expected, result);
   }
 

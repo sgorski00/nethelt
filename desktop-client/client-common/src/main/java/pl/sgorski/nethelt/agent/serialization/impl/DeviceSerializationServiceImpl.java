@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.sgorski.nethelt.agent.config.ObjectMapperSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationService;
 import pl.sgorski.nethelt.exception.SerializationException;
@@ -12,12 +14,13 @@ import pl.sgorski.nethelt.model.Device;
 /**
  * Implemented service for serializing and deserializing Device objects to and from JSON.
  */
-public class DeviceSerializationServiceImpl implements SerializationService<Device> {
+@Slf4j
+public final class DeviceSerializationServiceImpl implements SerializationService<Device> {
 
   private final ObjectMapper objectMapper;
 
   public DeviceSerializationServiceImpl() {
-    this.objectMapper = ObjectMapperSingleton.getInstance();
+    this.objectMapper = ObjectMapperSingleton.INSTANCE.getMapper();
   }
 
   /**
@@ -25,6 +28,7 @@ public class DeviceSerializationServiceImpl implements SerializationService<Devi
    * In production it is recommended to use the default constructor.
    */
   public DeviceSerializationServiceImpl(ObjectMapper objectMapper) {
+    log.warn("Using DeviceSerializationServiceImpl constructor with custom ObjectMapper. This is intended for testing purposes only.");
     this.objectMapper = objectMapper;
   }
 
