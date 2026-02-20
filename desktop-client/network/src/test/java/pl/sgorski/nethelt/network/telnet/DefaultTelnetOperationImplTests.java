@@ -15,12 +15,10 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
-import java.util.concurrent.CompletableFuture;
 import javax.net.SocketFactory;
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.exception.NetworkException;
 import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.TelnetResult;
 import pl.sgorski.nethelt.service.TelnetOperation;
 
 public class DefaultTelnetOperationImplTests {
@@ -36,7 +34,7 @@ public class DefaultTelnetOperationImplTests {
     when(device.getPort()).thenReturn(80);
     when(socketFactory.createSocket()).thenReturn(socket);
 
-    TelnetResult result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(device);
 
     assertTrue(result.isSuccess());
     assertTrue(result.isPortOpen());
@@ -51,7 +49,7 @@ public class DefaultTelnetOperationImplTests {
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(ConnectException.class).when(socket).connect(any(), anyInt());
 
-    TelnetResult result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(device);
 
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
@@ -66,7 +64,7 @@ public class DefaultTelnetOperationImplTests {
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(SocketTimeoutException.class).when(socket).connect(any(), anyInt());
 
-    TelnetResult result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(device);
 
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
@@ -81,7 +79,7 @@ public class DefaultTelnetOperationImplTests {
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(IllegalBlockingModeException.class).when(socket).connect(any(), anyInt());
 
-    TelnetResult result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(device);
 
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
@@ -123,8 +121,8 @@ public class DefaultTelnetOperationImplTests {
     when(device.getPort()).thenReturn(80);
     when(socketFactory.createSocket()).thenReturn(socket);
 
-    CompletableFuture<TelnetResult> futureResult = telnetOperation.executeAsync(device);
-    TelnetResult result = futureResult.get();
+    var futureResult = telnetOperation.executeAsync(device);
+    var result = futureResult.get();
 
     assertTrue(result.isSuccess());
     assertTrue(result.isPortOpen());

@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pl.sgorski.nethelt.agent.config.WebClientSingleton;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.exception.WebClientException;
 import pl.sgorski.nethelt.model.Device;
@@ -22,23 +21,18 @@ import pl.sgorski.nethelt.utils.CollectionUtils;
 /**
  * Service for communicating with the web server.
  */
+@Slf4j
+@AllArgsConstructor
 public class WebClientService {
 
-  private static final String BASE_URL = "http://localhost:8080/api";
+  private static final String BASE_URL = "http://localhost:8080/api"; //TODO: make it configurable
   private static final String DEVICES_ENDPOINT = BASE_URL + "/devices";
   private static final String PING_ENDPOINT = BASE_URL + "/ping";
   private static final String TELNET_ENDPOINT = BASE_URL + "/telnet";
   private static final String JSON_MEDIA_TYPE = "application/json";
-  private static final Logger LOG = LoggerFactory.getLogger(WebClientService.class);
 
   private final OkHttpClient webServerClient;
   private final SerializationController serializer;
-
-  public WebClientService(SerializationController serializer) {
-    this.webServerClient = WebClientSingleton.getInstance();
-    this.serializer = serializer;
-    LOG.debug("WebClientService initialized with base web server URL: {}", BASE_URL);
-  }
 
   /**
    * Sends results to the server.
@@ -48,10 +42,10 @@ public class WebClientService {
    */
   public <T extends Result> void sendResult(Set<T> results, Class<T> clazz) {
     if (CollectionUtils.isEmpty(results)) return;
-    LOG.info("Attempting to send {} results of type {} to the server", results.size(), clazz.getSimpleName());
-    String json = serializer.serialize(results);
-    String endpoint = resolveEndpoint(clazz);
-    LOG.debug("Resolved endpoint: {} for class: {}", endpoint, clazz.getSimpleName());
+    log.info("Attempting to send {} results of type {} to the server", results.size(), clazz.getSimpleName());
+    var json = serializer.serialize(results);
+    var endpoint = resolveEndpoint(clazz);
+    log.debug("Resolved endpoint: {} for class: {}", endpoint, clazz.getSimpleName());
     postJson(endpoint, json);
   }
 
@@ -71,17 +65,16 @@ public class WebClientService {
    * @throws WebClientException when connection to the server cannot be established
    */
   private void postJson(String url, String json) {
-    LOG.debug("Posting JSON to URL: {}. Payload: {}", url, json);
-    RequestBody body = RequestBody.create(json, MediaType.get(JSON_MEDIA_TYPE));
-    Request request = new Request.Builder()
+    log.debug("Posting JSON to URL: {}. Payload: {}", url, json);
+    var body = RequestBody.create(json, MediaType.get(JSON_MEDIA_TYPE));
+    var request = authorizedRequestBuilder()
       .url(url)
-      .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
       .post(body)
       .build();
 
     try {
       webServerClient.newCall(request).execute().close();
-      LOG.debug("Successfully posted results to the server at URL: {}", url);
+      log.debug("Successfully posted results to the server at URL: {}", url);
     } catch (IOException e) {
       throw new WebClientException("Cannot connect to the server", e);
     }
@@ -93,11 +86,11 @@ public class WebClientService {
    * @return set of config fetched from the server
    */
   public Set<NetworkConfig> fetchNetworkConfig() {
-    LOG.debug("Fetching network configuration from the server");
-    Request request = new Request.Builder().url(BASE_URL + "/config/network")
-      .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
-      .get()
-      .build();
+    log.debug("Fetching network configuration from the server");
+    var request = authorizedRequestBuilder()
+            .url(BASE_URL + "/config/network")
+            .get()
+            .build();
     return getSetOfObjects(request, NetworkConfig.class);
   }
 
@@ -107,24 +100,29 @@ public class WebClientService {
    * @return set of devices fetched from the server
    */
   public Set<Device> fetchDevices() {
-    LOG.debug("Fetching devices from the server");
-    Request request = new Request.Builder()
+    log.debug("Fetching devices from the server");
+    var request = authorizedRequestBuilder()
       .url(DEVICES_ENDPOINT)
-      .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
       .get()
       .build();
     return getSetOfObjects(request, Device.class);
   }
 
   private <T> Set<T> getSetOfObjects(Request request, Class<T> clazz) {
-    try (Response response = webServerClient.newCall(request).execute()) {
-      if (!response.isSuccessful() || Objects.isNull(response.body())) {
+    try (var response = webServerClient.newCall(request).execute()) {
+      var body = response.body();
+      if (!response.isSuccessful() || Objects.isNull(body)) {
         return Collections.emptySet();
       }
-      String json = response.body().string();
+      var json = body.string();
       return serializer.deserializeToSet(json, clazz);
     } catch (IOException e) {
       throw new WebClientException("Error while fetching devices from server: " + e.getMessage(), e);
     }
+  }
+
+  private Request.Builder authorizedRequestBuilder() {
+    return new Request.Builder()
+            .addHeader("Authorization", "Bearer some-token");  // TODO: implement JWT Client
   }
 }

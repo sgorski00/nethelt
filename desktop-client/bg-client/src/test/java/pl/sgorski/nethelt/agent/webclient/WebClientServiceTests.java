@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,9 +22,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import pl.sgorski.nethelt.agent.config.WebClientSingleton;
-import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.exception.SerializationException;
 import pl.sgorski.nethelt.exception.WebClientException;
@@ -51,15 +47,12 @@ public class WebClientServiceTests {
     when(webServerClient.newCall(any())).thenReturn(call);
     when(call.execute()).thenReturn(response);
     serializer = mock(SerializationController.class);
-    try(MockedStatic<?> webClient = mockStatic(WebClientSingleton.class)) {
-      webClient.when(WebClientSingleton::getInstance).thenReturn(webServerClient);
-      webClientService = new WebClientService(serializer);
-    }
+    webClientService = new WebClientService(webServerClient, serializer);
   }
 
   @Test
   void sendResult_Success_PingResult() throws Exception {
-    Set<PingResult> results = Set.of(new PingResult());
+    var results = Set.of(new PingResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
     webClientService.sendResult(results, PingResult.class);
@@ -71,7 +64,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_Success_TelnetResult() throws Exception {
-    Set<TelnetResult> results = Set.of(new TelnetResult());
+    var results = Set.of(new TelnetResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
     webClientService.sendResult(results, TelnetResult.class);
@@ -83,7 +76,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_EmptySet_ShouldNotPost() throws Exception {
-    Set<PingResult> results = Set.of();
+    Set<PingResult> results = Collections.emptySet();
 
     webClientService.sendResult(results, PingResult.class);
 
@@ -94,7 +87,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_SerializationException_ShouldThrow() throws Exception {
-    Set<PingResult> results = Set.of(new PingResult());
+    var results = Set.of(new PingResult());
     when(serializer.serialize(anySet())).thenThrow(new SerializationException("Serialization Exception"));
 
     assertThrows(SerializationException.class, () -> webClientService.sendResult(results, PingResult.class));
@@ -106,7 +99,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_IllegalEndpoint_ShouldThrow() throws Exception {
-    Set<NotConfiguredResult> results = Set.of(new NotConfiguredResult());
+    var results = Set.of(new NotConfiguredResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
     assertThrows(IllegalArgumentException.class, () -> webClientService.sendResult(results, NotConfiguredResult.class));
@@ -118,7 +111,7 @@ public class WebClientServiceTests {
 
   @Test
   void sendResult_IOException_ShouldThrow() throws Exception {
-    Set<PingResult> results = Set.of(new PingResult());
+    var results = Set.of(new PingResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
     when(call.execute()).thenThrow(new IOException("IO Exception"));
 
@@ -131,15 +124,15 @@ public class WebClientServiceTests {
 
   @Test
   void fetchNetworkConfig_Success() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
-    Set<NetworkConfig> expectedSet = Set.of(new NetworkConfig());
+    var responseBody = mock(ResponseBody.class);
+    var expectedSet = Set.of(new NetworkConfig());
 
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
     when(serializer.deserializeToSet(anyString(), any())).thenReturn(Collections.singleton(expectedSet));
 
-    Set<?> result = webClientService.fetchNetworkConfig();
+    var result = webClientService.fetchNetworkConfig();
 
     assertNotNull(result);
     assertFalse(result.isEmpty());
@@ -161,7 +154,7 @@ public class WebClientServiceTests {
 
   @Test
   void fetchNetworkConfig_DeserializationException_ShouldThrow() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
+    var responseBody = mock(ResponseBody.class);
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
@@ -179,7 +172,7 @@ public class WebClientServiceTests {
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(null);
 
-    Set<?> result = webClientService.fetchNetworkConfig();
+    var result = webClientService.fetchNetworkConfig();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
@@ -192,7 +185,7 @@ public class WebClientServiceTests {
   void fetchNetworkConfig_NotSuccessfulCall_ShouldReturnEmptySet() throws Exception {
     when(response.isSuccessful()).thenReturn(false);
 
-    Set<?> result = webClientService.fetchNetworkConfig();
+    var result = webClientService.fetchNetworkConfig();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
@@ -203,15 +196,15 @@ public class WebClientServiceTests {
 
   @Test
   void fetchDevices_Success() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
-    Set<NetworkConfig> expectedSet = Set.of(new NetworkConfig());
+    var responseBody = mock(ResponseBody.class);
+    var expectedSet = Set.of(new NetworkConfig());
 
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
     when(serializer.deserializeToSet(anyString(), any())).thenReturn(Collections.singleton(expectedSet));
 
-    Set<?> result = webClientService.fetchDevices();
+    var result = webClientService.fetchDevices();
 
     assertNotNull(result);
     assertFalse(result.isEmpty());
@@ -233,7 +226,7 @@ public class WebClientServiceTests {
 
   @Test
   void fetchDevices_DeserializationException_ShouldThrow() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
+    var responseBody = mock(ResponseBody.class);
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
@@ -251,7 +244,7 @@ public class WebClientServiceTests {
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(null);
 
-    Set<?> result = webClientService.fetchDevices();
+    var result = webClientService.fetchDevices();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
@@ -264,7 +257,7 @@ public class WebClientServiceTests {
   void fetchDevices_NotSuccessfulCall_ShouldReturnEmptySet() throws Exception {
     when(response.isSuccessful()).thenReturn(false);
 
-    Set<?> result = webClientService.fetchDevices();
+    var result = webClientService.fetchDevices();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
@@ -273,5 +266,5 @@ public class WebClientServiceTests {
     verify(serializer, never()).deserializeToSet(anyString(), any());
   }
 
-  private static class NotConfiguredResult extends Result { }
+  private static final class NotConfiguredResult extends Result { }
 }

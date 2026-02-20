@@ -2,13 +2,10 @@ package pl.sgorski.nethelt.agent.scheduler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.model.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -44,12 +41,12 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldReschedulePing_Enabled() {
-    NetworkConfig cfg = new NetworkConfig(Operation.PING, true, 10);
-    Device device = new Device();
+    var cfg = new NetworkConfig(Operation.PING, true, 10);
+    var device = new Device();
 
     mockConfigAndDevices(cfg, device);
     when(resultProvider.getPingResults(any())).thenReturn(Collections.singleton(mock(PingResult.class)));
-    when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any())).thenReturn((ScheduledFuture)scheduledFuture);
+    doReturn(scheduledFuture).when(scheduler).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any());
 
     invokeUpdateTasks();
 
@@ -58,7 +55,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldNotReschedulePing_Disabled() {
-    NetworkConfig cfg = new NetworkConfig(Operation.PING, false, 10);
+    var cfg = new NetworkConfig(Operation.PING, false, 10);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -70,7 +67,7 @@ class WebScheduledTaskManagerTests {
     setPrivateField(manager, "pingInterval", 5);
     setPrivateField(manager, "pingEnabled", true);
 
-    NetworkConfig cfg = new NetworkConfig(Operation.PING, true, 5);
+    var cfg = new NetworkConfig(Operation.PING, true, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -82,7 +79,7 @@ class WebScheduledTaskManagerTests {
     setPrivateField(manager, "pingEnabled", true);
     setPrivateField(manager, "pingTask", scheduledFuture);
 
-    NetworkConfig cfg = new NetworkConfig(Operation.PING, false, 5);
+    var cfg = new NetworkConfig(Operation.PING, false, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -92,13 +89,13 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldRescheduleTelnet_Enabled() {
-    NetworkConfig cfg = new NetworkConfig(Operation.TELNET, true, 5);
-    Device device = new Device();
+    var cfg = new NetworkConfig(Operation.TELNET, true, 5);
+    var device = new Device();
     device.setPort(22);
 
     mockConfigAndDevices(cfg, device);
     when(resultProvider.getTelnetResults(any())).thenReturn(Collections.singleton(mock(TelnetResult.class)));
-    when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any())).thenReturn((ScheduledFuture) scheduledFuture);
+    doReturn(scheduledFuture).when(scheduler).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any());
 
     invokeUpdateTasks();
 
@@ -107,7 +104,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldNotRescheduleTelnet_Disabled() {
-    NetworkConfig cfg = new NetworkConfig(Operation.TELNET, false, 5);
+    var cfg = new NetworkConfig(Operation.TELNET, false, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -119,8 +116,8 @@ class WebScheduledTaskManagerTests {
     setPrivateField(manager, "telnetInterval", 5);
     setPrivateField(manager, "telnetEnabled", true);
 
-    NetworkConfig cfg = new NetworkConfig(Operation.TELNET, true, 5);
-    Device device = new Device();
+    var cfg = new NetworkConfig(Operation.TELNET, true, 5);
+    var device = new Device();
     device.setPort(22);
 
     mockConfigAndDevices(cfg, device);
@@ -131,7 +128,7 @@ class WebScheduledTaskManagerTests {
 
   @Test
   void updateTasks_ShouldNotReschedule_NullOperation() {
-    NetworkConfig cfg = new NetworkConfig(null, true, 5);
+    var cfg = new NetworkConfig(null, true, 5);
     mockConfigAndDevices(cfg, new Device());
     invokeUpdateTasks();
 
@@ -156,7 +153,7 @@ class WebScheduledTaskManagerTests {
 
   private void invokeUpdateTasks() {
     try {
-      Method m = WebScheduledTaskManager.class.getDeclaredMethod("updateTasks");
+      var m = WebScheduledTaskManager.class.getDeclaredMethod("updateTasks");
       m.setAccessible(true);
       m.invoke(manager);
     } catch (Exception e) {
@@ -165,7 +162,7 @@ class WebScheduledTaskManagerTests {
   }
 
   private static void setPrivateField(Object target, String fieldName, Object value) throws Exception {
-    Field f = target.getClass().getDeclaredField(fieldName);
+    var f = target.getClass().getDeclaredField(fieldName);
     f.setAccessible(true);
     f.set(target, value);
   }

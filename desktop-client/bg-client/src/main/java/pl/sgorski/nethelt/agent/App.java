@@ -1,10 +1,9 @@
 package pl.sgorski.nethelt.agent;
 
+import pl.sgorski.nethelt.agent.config.WebClientSingleton;
 import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
-import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
-import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.agent.serialization.impl.DefaultSerializationController;
 
 /**
@@ -14,11 +13,12 @@ import pl.sgorski.nethelt.agent.serialization.impl.DefaultSerializationControlle
  */
 public class App {
 
-  public static void main(String[] args) {
-    SerializationController serializer = new DefaultSerializationController();
-    WebClientService webClientService = new WebClientService(serializer);
-    ResultProvider resultProvider = new ResultProvider();
-    ScheduledTaskManager taskManager = new WebScheduledTaskManager(webClientService, resultProvider);
+  static void main() {
+    var webClient = WebClientSingleton.INSTANCE.getHttpClient();
+    var serializer = new DefaultSerializationController();
+    var webClientService = new WebClientService(webClient, serializer);
+    var resultProvider = new ResultProvider();
+    var taskManager = new WebScheduledTaskManager(webClientService, resultProvider);
 
     taskManager.start();
 

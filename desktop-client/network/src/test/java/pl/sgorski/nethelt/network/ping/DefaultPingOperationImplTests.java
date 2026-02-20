@@ -11,13 +11,11 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.exception.NetworkException;
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.Result;
 import pl.sgorski.nethelt.service.PingOperation;
 
 public class DefaultPingOperationImplTests {
@@ -32,7 +30,7 @@ public class DefaultPingOperationImplTests {
     when(device.getAddress()).thenReturn(address);
     when(address.isReachable(anyInt())).thenReturn(true);
 
-    Result result = pingOperation.execute(device);
+    var result = pingOperation.execute(device);
 
     assertInstanceOf(PingResult.class, result);
     assertTrue(result.isSuccess());
@@ -46,7 +44,7 @@ public class DefaultPingOperationImplTests {
     when(device.getAddress()).thenReturn(address);
     when(address.isReachable(anyInt())).thenReturn(false);
 
-    Result result = pingOperation.execute(device);
+    var result = pingOperation.execute(device);
 
     assertInstanceOf(PingResult.class, result);
     assertFalse(result.isSuccess());
@@ -60,7 +58,7 @@ public class DefaultPingOperationImplTests {
     when(device.getAddress()).thenReturn(address);
     when(address.isReachable(anyInt())).thenThrow(new IOException("A network error occurs!"));
 
-    NetworkException ex = assertThrows(NetworkException.class, () -> pingOperation.execute(device));
+    var ex = assertThrows(NetworkException.class, () -> pingOperation.execute(device));
     assertTrue(ex.getMessage().contains("Ping failed for device Device"));
   }
 
@@ -70,8 +68,8 @@ public class DefaultPingOperationImplTests {
     when(device.getAddress()).thenReturn(address);
     when(address.isReachable(anyInt())).thenReturn(true);
 
-    CompletableFuture<PingResult> futureResult = pingOperation.executeAsync(device);
-    PingResult result = futureResult.get();
+    var futureResult = pingOperation.executeAsync(device);
+    var result = futureResult.get();
 
     assertTrue(result.isSuccess());
     assertEquals("Ping successful", result.getMessage());
@@ -84,9 +82,9 @@ public class DefaultPingOperationImplTests {
     when(device.getAddress()).thenReturn(address);
     when(address.isReachable(anyInt())).thenThrow(new IOException("Connection error"));
 
-    CompletableFuture<PingResult> futureResult = pingOperation.executeAsync(device);
+    var futureResult = pingOperation.executeAsync(device);
 
-    ExecutionException exception = assertThrows(ExecutionException.class, futureResult::get);
+    var exception = assertThrows(ExecutionException.class, futureResult::get);
     assertInstanceOf(NetworkException.class, exception.getCause());
   }
 }

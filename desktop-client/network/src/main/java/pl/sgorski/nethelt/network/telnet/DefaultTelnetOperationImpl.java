@@ -9,17 +9,19 @@ import java.nio.channels.IllegalBlockingModeException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.net.SocketFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import pl.sgorski.nethelt.exception.NetworkException;
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.TelnetResult;
 import pl.sgorski.nethelt.service.TelnetOperation;
 
 /** Default implementation of TelnetOperation */
+@Slf4j
+@RequiredArgsConstructor
 public class DefaultTelnetOperationImpl implements TelnetOperation {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DefaultTelnetOperationImpl.class);
   private static final int TELNET_TIMEOUT_MS = 5_000;
 
   private final SocketFactory socketFactory;
@@ -28,20 +30,16 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
     this(SocketFactory.getDefault());
   }
 
-  public DefaultTelnetOperationImpl(SocketFactory socketFactory) {
-    this.socketFactory = socketFactory;
-  }
-
   @Override
   public TelnetResult execute(Device device) throws NetworkException {
-    LOG.info("Checking port {} of device: {}", device.getPort(), device.getName());
-    long startTime = System.nanoTime();
-    boolean isPortOpen = checkIfPortIsOpen(device);
-    long responseTime = getElapsedTimeInMs(startTime);
-    String message = isPortOpen ?
+    log.info("Checking port {} of device: {}", device.getPort(), device.getName());
+    var startTime = System.nanoTime();
+    var isPortOpen = checkIfPortIsOpen(device);
+    var responseTime = getElapsedTimeInMs(startTime);
+    var message = isPortOpen ?
       "Port " + device.getPort() + " is open in device " + device.getName() :
       "Port " + device.getPort() + " is closed in device " + device.getName();
-    LOG.info("Telnet check for {} result: {}", device.getName(), message);
+    log.info("Telnet check for {} result: {}", device.getName(), message);
     return new TelnetResult(device, true, message, responseTime, isPortOpen);
   }
 
