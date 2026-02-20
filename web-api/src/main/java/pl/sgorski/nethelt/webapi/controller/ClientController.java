@@ -32,7 +32,7 @@ public class ClientController {
 
   @GetMapping("/devices")
   public ResponseEntity<?> getDevices() {
-    Set<Device> devices = Set.of(
+    var devices = Set.of(
       new Device("Server2", "150.158.50.2"),
       new Device("Server3", "150.158.50.3"),
       new Device("Server8 - etatyczytnik", "150.158.50.8", 80)
@@ -44,7 +44,7 @@ public class ClientController {
 
   @GetMapping("/config/network")
   public ResponseEntity<?> getNetworkConfig() {
-    List<NetworkConfig> config = List.of(
+    var config = List.of(
       new NetworkConfig(Operation.PING, true, 30),
       new NetworkConfig(Operation.TELNET, true, 45)
     );
