@@ -7,19 +7,17 @@ from sklearn.preprocessing import StandardScaler
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 FEATURES = [
-    #*"ping_avg_1m",
+    #"ping_avg_1m",
     "ping_std_1m",
     "packet_loss_1m",
-    #"ping_diff_1m",
-    #"ping_zscore_15m"
+    #"ping_diff_1m"
 ]
 
 def train(csv_path: Path, model_out: Path, contamination: float = 0.02, n_estimators: int = 100):
-    df = pd.read_csv(csv_path)
-
-    X = df[FEATURES]
-
     model = create_model(contamination, n_estimators)
+
+    df = pd.read_csv(csv_path)
+    X = df[FEATURES]
     feature_scaler = StandardScaler()
     X_scaled = feature_scaler.fit_transform(X)
     model.fit(X_scaled)

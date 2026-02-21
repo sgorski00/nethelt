@@ -76,7 +76,7 @@ def run():
     with open(BASE_DIR / "output/raw_ping.csv", "w", newline="") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["device_id", "device_type", "timestamp", "ping_ms", "success"]
+            fieldnames=["device_id", "device_group", "timestamp", "ping_ms", "success"]
         )
         writer.writeheader()
         writer.writerows(rows)
