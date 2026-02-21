@@ -7,6 +7,7 @@
 \usepackage[polish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{microtype}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -73,6 +74,7 @@
 \definecolor{gray}{rgb}{0.95,0.95,0.95}
 \definecolor{darkgray}{rgb}{0.4,0.4,0.4}
 
+% Globalny styl Java
 \lstset{
 	language=Java,
 	showspaces=false,
@@ -92,6 +94,29 @@
 	captionpos=b
 }
 
+% Styl dla Pythona
+\lstdefinestyle{pythonstyle}{
+	language=Python,
+	showspaces=false,
+	showtabs=false,
+	breaklines=true,
+	showstringspaces=false,
+	breakatwhitespace=true,
+	commentstyle=\color{pgreen},
+	keywordstyle=\color{pblue}\bfseries,
+	stringstyle=\color{pred},
+	basicstyle=\ttfamily\small,
+	backgroundcolor=\color{gray},
+	frame=single,
+	rulecolor=\color{darkgray},
+	numbers=left,
+	numberstyle=\tiny\color{darkgray},
+	stepnumber=1,
+	numbersep=8pt,
+	tabsize=4,
+	captionpos=b
+}
+
 % komenda TODO
 \newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
 
@@ -107,7 +132,8 @@
 	
 	%Rozdziały
 	\include{introduction}
-	\include{technical-docs}
+	\include{api}
+	\include{ai-model}
 	
 	%Listingi i bibliografia
 	\listoffigures

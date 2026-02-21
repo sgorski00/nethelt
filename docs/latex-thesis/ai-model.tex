@@ -1,0 +1,117 @@
+\chapter{Model SI do wykrywania anomalii}
+
+\section{Założenia}
+
+Jednym z kluczowych elementów systemu jest model sztucznej inteligencji przeznaczony do wykrywania anomalii w parametrach jakości połączenia sieciowego na wczesnym etapie ich występowania.
+
+Na obecnym etapie implementacji model umożliwia analizę wyłącznie parametrów związanych z pomiarami czasu odpowiedzi (ping). Dane wejściowe mają postać zagregowanych statystyk obliczanych w stałych oknach czasowych, co pozwala na ograniczenie wpływu pojedynczych, losowych odchyleń oraz umożliwia podejmowanie decyzji w krótkim czasie po zakończeniu danego interwału.
+
+Model wykorzystuje algorytm \texttt{Isolation Forest}, do którego przekazywane są przetworzone dane wejściowe. Przyjęto podejście uczenia nienadzorowanego, zakładające brak oznaczonych przykładów anomalii w zbiorze treningowym. Algorytm uczy się rozkładu obserwacji uznawanych za typowe, a istotne odchylenia od tego rozkładu klasyfikuje jako anomalie.
+
+Ze względu na różnice w specyfikacji i przeznaczeniu w różnego typu urządzeniach sieciowych, model będzie musiał powstać w conajmniej 3 wariantach. Na początkowym etapie projektu zakłada się wytrenowanie modelu na 3 zestawach danych: zebranych z urządzeń podłączonych do sieci poprzez protokół WiFi, z urządzeń typu IoT oraz z urządzeń typu klient LAN (wliczając w to: komputery stacjonarne, serwery, oraz infrastrukturę sieciową - router, switch, AP).
+
+Założono możliwość dalszego rozszerzenia modelu o dodatkowe parametry jakości połączenia oraz ponowne trenowanie modelu wraz ze zmianą charakterystyki środowiska sieciowego.
+
+\section{Użyte narzędzia}
+
+Model został zaimplementowany w języku Python (wersja 3.12) z wykorzystaniem odpowiednich bibliotek wspierających uczenie maszynowe i analizę danych. Wśród tych bibliotek znalazły się:
+\begin{itemize}
+	\item \textbf{Pandas} – do wczytywania, przetwarzania i agregacji danych pomiarowych,
+	\item \textbf{scikit-learn} – do implementacji algorytmu \texttt{Isolation Forest} oraz standaryzacji cech,
+	\item \textbf{Matplotlib} oraz \textbf{Seaborn} – do wizualizacji wyników i analizy rozkładu danych
+\end{itemize}
+
+Środowisko projektu zostało zarządzane z wykorzystaniem narzędzia Poetry. Dodatkowo wykorzystana zostałą biblioteka \texttt{requests} pozwalająca na komunikację z API aplikacji.
+
+\section{Trening modelu SI}
+
+\subsection{Źródło danych}
+
+Dane wykorzystane w procesie trenowania modelu zostały podzielone na dwa zbiory: zbiór treningowy oraz zbiór testowy. Część danych pochodzi z rzeczywistego środowiska sieciowego, w którym cyklicznie wykonywano pomiary czasu odpowiedzi (ping), a następnie zapisywano je do plików tekstowych.
+
+Pomiary zostały wykonane dla różnych typów urządzeń: komputera stacjonarnego (połączenie Ethernet), laptopa (WiFi), serwera, macierzy dyskowej, routera, przełącznika sieciowego, punktu dostępowego oraz urządzenia typu IoT. Pozwoliło to uzyskać zróżnicowany zbiór danych odzwierciedlający rzeczywiste warunki pracy sieci.
+
+Dodatkowo wygenerowano dane syntetyczne, symulujące skrajne przypadki, takie jak wysoka utrata pakietów lub niestabilny czas odpowiedzi. Dane te umożliwiły weryfikację zachowania modelu w kontrolowanych warunkach.
+
+\subsection{Przygotowanie i agregacja danych}
+
+Surowe dane zostały poddane wstępnemu przetworzeniu obejmującemu usunięcie nieprawidłowych rekordów, zbędnych kolumn oraz ujednolicenie formatu danych. 
+
+Następnie pomiary zostały zagregowane do stałych, jednominutowych okien czasowych. Dla każdego okna obliczono wybrane statystyki opisujące jakość połączenia. Kluczowe cechy wejściowe modelu stanowiły:
+
+\begin{itemize}
+	\item \textbf{packet\_loss\_1m} – procent utraconych pakietów w danym oknie czasowym,
+	\item \textbf{ping\_std\_1m} – odchylenie standardowe czasu odpowiedzi w danym oknie.
+\end{itemize}
+
+Rozważano również wykorzystanie cech \texttt{ping\_avg\_1m} oraz \texttt{ping\_diff\_1m}, jednak w dalszych eksperymentach skoncentrowano się na parametrach najlepiej opisujących niestabilność połączenia.
+
+Fragment implementacji agregacji przedstawiono na listingu \ref{lst:aggregation}.
+
+\newpage
+
+\begin{lstlisting}[style=pythonstyle, caption={Agregacja danych do okien czasowych}, label={lst:aggregation}]
+	for window, g in grouped:
+	successful = g[g["success"] == 1]
+	
+	if len(successful) >= 3:
+	ping_std = successful["ping_ms"].std()
+	else:
+	ping_std = float("nan")
+	
+	packet_loss = 1 - len(successful) / len(g)
+	
+	windows.append({
+		"window_start": window,
+		"device_group": g["device_group"].iloc[0],
+		"ping_std_1m": round(ping_std, 3),
+		"packet_loss_1m": round(packet_loss, 3)
+	})
+\end{lstlisting}
+
+\subsection{Trening modelu}
+
+Przygotowany zbiór danych treningowych został wykorzystany do uczenia modelu opartego na algorytmie \texttt{Isolation Forest}. Przed rozpoczęciem procesu uczenia dane wejściowe zostały poddane standaryzacji z wykorzystaniem klasy \texttt{StandardScaler}. 
+
+Standaryzacja polega na przekształceniu każdej cechy do rozkładu o średniej równej 0 oraz odchyleniu standardowym równym 1, co zapobiega dominacji cech o większym zakresie wartości.
+
+Proces przygotowania danych i trenowania modelu przedstawiono na listingu \ref{lst:training}.
+
+\begin{lstlisting}[style=pythonstyle, caption={Skalowanie danych i trening modelu}, label={lst:training}]
+	df = pd.read_csv(csv_path)
+	X = df[FEATURES]
+	
+	feature_scaler = StandardScaler()
+	X_scaled = feature_scaler.fit_transform(X)
+	
+	model.fit(X_scaled)
+\end{lstlisting}
+
+\subsection{Parametry modelu}
+
+Model \texttt{Isolation Forest} został skonfigurowany z wykorzystaniem następujących parametrów:
+
+\begin{itemize}
+	\item \textbf{n\_estimators} – liczba drzew izolacyjnych budujących model,
+	\item \textbf{contamination} – oczekiwany udział anomalii w zbiorze danych,
+	\item \textbf{random\_state} – parametr zapewniający powtarzalność wyników.
+\end{itemize}
+
+Parametr \texttt{contamination} wpływa bezpośrednio na próg decyzyjny modelu i określa, jaki odsetek obserwacji zostanie zaklasyfikowany jako anomalny. Parametr \texttt{n\_estimators} odpowiada za stabilność działania modelu – większa liczba drzew zwiększa powtarzalność wyników kosztem wydłużenia czasu treningu.
+
+Konfigurację modelu przedstawiono na listingu \ref{lst:model}.
+
+\begin{lstlisting}[style=pythonstyle, caption={Inicjalizacja modelu Isolation Forest}, label={lst:model}]
+	RANDOM_STATE = 42
+	
+	def create_model(contamination: float, n_estimators: int) -> IsolationForest:
+	return IsolationForest(
+		n_estimators=n_estimators,
+		contamination=contamination,
+		random_state=RANDOM_STATE,
+	)
+\end{lstlisting}
+
+Po zakończeniu procesu uczenia wytrenowany model wraz ze skalarem został zapisany do pliku w formacie \texttt{joblib}, co umożliwia jego późniejsze wykorzystanie w aplikacji bez konieczności ponownego trenowania.
+
+\TODO{Dodać testowanie modelu (wykresy itd)}
