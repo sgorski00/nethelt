@@ -8,7 +8,7 @@ Na obecnym etapie implementacji model umożliwia analizę wyłącznie parametró
 
 Model wykorzystuje algorytm \texttt{Isolation Forest}, do którego przekazywane są przetworzone dane wejściowe. Przyjęto podejście uczenia nienadzorowanego, zakładające brak oznaczonych przykładów anomalii w zbiorze treningowym. Algorytm uczy się rozkładu obserwacji uznawanych za typowe, a istotne odchylenia od tego rozkładu klasyfikuje jako anomalie.
 
-Ze względu na różnice w specyfikacji i przeznaczeniu w różnego typu urządzeniach sieciowych, model będzie musiał powstać w conajmniej 3 wariantach. Na początkowym etapie projektu zakłada się wytrenowanie modelu na 3 zestawach danych: zebranych z urządzeń podłączonych do sieci poprzez protokół WiFi, z urządzeń typu IoT oraz z urządzeń typu klient LAN (wliczając w to: komputery stacjonarne, serwery, oraz infrastrukturę sieciową - router, switch, AP).
+Ze względu na różnice w specyfikacji i przeznaczeniu w różnego typu urządzeniach sieciowych, model będzie musiał powstać w co najmniej 3 wariantach. Na początkowym etapie projektu zakłada się wytrenowanie modelu na 3 zestawach danych: zebranych z urządzeń podłączonych do sieci poprzez protokół WiFi, z urządzeń typu IoT oraz z urządzeń typu klient LAN (wliczając w to: komputery stacjonarne, serwery, oraz infrastrukturę sieciową - router, switch, AP).
 
 Założono możliwość dalszego rozszerzenia modelu o dodatkowe parametry jakości połączenia oraz ponowne trenowanie modelu wraz ze zmianą charakterystyki środowiska sieciowego.
 
@@ -21,7 +21,7 @@ Model został zaimplementowany w języku Python (wersja 3.12) z wykorzystaniem o
 	\item \textbf{Matplotlib} oraz \textbf{Seaborn} – do wizualizacji wyników i analizy rozkładu danych
 \end{itemize}
 
-Środowisko projektu zostało zarządzane z wykorzystaniem narzędzia Poetry. Dodatkowo wykorzystana zostałą biblioteka \texttt{requests} pozwalająca na komunikację z API aplikacji.
+Środowisko projektu zostało zarządzane z wykorzystaniem narzędzia Poetry. Dodatkowo wykorzystana została biblioteka \texttt{requests} pozwalająca na komunikację z API aplikacji.
 
 \section{Trening modelu SI}
 
