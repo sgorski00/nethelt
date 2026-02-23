@@ -16,6 +16,8 @@
 \usepackage{float}
 \usepackage{caption}
 \usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{makecell}
 
 % Ustawienie czcionki na Times New Roman
 \usepackage{tgtermes}
@@ -49,8 +51,10 @@
 \renewcommand{\listfigurename}{Spis rysunków}
 \renewcommand{\figurename}{Rysunek}
 \renewcommand{\listtablename}{Spis tabel}
+\renewcommand{\tablename}{Tabela}
 \renewcommand{\lstlistingname}{Listing}
 \renewcommand{\lstlistlistingname}{Spis listingów}
+\renewcommand{\bibname}{Bibliografia}
 
 % Wcięcie 1. akapitu
 \setlength{\parindent}{0.7cm}
@@ -61,6 +65,17 @@
 	font={small,stretch=1},
 	labelfont={bf},
 	textfont={},
+	justification=Centering,
+	singlelinecheck=false,
+	skip=10pt
+}
+
+% Ustawienie tabel
+\captionsetup[table]{
+	position=top,
+	width=0.8\textwidth,
+	font={small,stretch=1},
+	labelfont={bf},
 	justification=Centering,
 	singlelinecheck=false,
 	skip=10pt

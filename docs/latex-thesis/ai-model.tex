@@ -8,6 +8,15 @@ Na obecnym etapie implementacji model umożliwia analizę wyłącznie parametró
 
 Model wykorzystuje algorytm \texttt{Isolation Forest}, do którego przekazywane są przetworzone dane wejściowe. Przyjęto podejście uczenia nienadzorowanego, zakładające brak oznaczonych przykładów anomalii w zbiorze treningowym. Algorytm uczy się rozkładu obserwacji uznawanych za typowe, a istotne odchylenia od tego rozkładu klasyfikuje jako anomalie.
 
+Wybór algorytmu \texttt{Isolation Forest} został podyktowany kilkoma czynnikami: 
+\begin{itemize}
+	\item efektywnością w wykrywaniu anomalii w danych nienadzorowanych, gdzie brak jest oznaczonych przykładów problematycznych obserwacji, 
+	\item zdolnością do radzenia sobie z wysoką zmiennością i niestabilnością w sygnale sieciowym, typową dla pomiarów czasu odpowiedzi (ping), 
+	\item skalowalnością dla dużych zbiorów danych oraz stosunkowo niskimi wymaganiami obliczeniowymi w porównaniu z innymi algorytmami wykrywania anomalii, 
+	\item prostotą interpretacji wyników – obserwacje zaklasyfikowane jako anomalie są łatwe do identyfikacji w analizie eksperckiej.
+\end{itemize}
+Dzięki tym właściwościom \texttt{Isolation Forest} jest szczególnie dobrze dopasowany do monitorowania jakości połączenia sieciowego w czasie rzeczywistym.
+
 Ze względu na różnice w specyfikacji i przeznaczeniu w różnego typu urządzeniach sieciowych, model będzie musiał powstać w co najmniej 3 wariantach. Na początkowym etapie projektu zakłada się wytrenowanie modelu na 3 zestawach danych: zebranych z urządzeń podłączonych do sieci poprzez protokół WiFi, z urządzeń typu IoT oraz z urządzeń typu klient LAN (wliczając w to: komputery stacjonarne, serwery, oraz infrastrukturę sieciową - router, switch, AP).
 
 Założono możliwość dalszego rozszerzenia modelu o dodatkowe parametry jakości połączenia oraz ponowne trenowanie modelu wraz ze zmianą charakterystyki środowiska sieciowego.
@@ -44,29 +53,27 @@ Następnie pomiary zostały zagregowane do stałych, jednominutowych okien czaso
 	\item \textbf{ping\_std\_1m} – odchylenie standardowe czasu odpowiedzi w danym oknie.
 \end{itemize}
 
-Rozważano również wykorzystanie cech \texttt{ping\_avg\_1m} oraz \texttt{ping\_diff\_1m}, jednak w dalszych eksperymentach skoncentrowano się na parametrach najlepiej opisujących niestabilność połączenia.
+Rozważano również wykorzystanie cech \texttt{ping\_avg\_1m} (średni czas odpowiedzi w danym oknie czasowym) oraz \texttt{ping\_diff\_1m} (różnica między aktualnym, a poprzednim średnim czasem odpowiedzi w dwóch kolejnych oknach czasowych), jednak w dalszych eksperymentach skoncentrowano się na parametrach najlepiej opisujących niestabilność połączenia.
 
 Fragment implementacji agregacji przedstawiono na listingu \ref{lst:aggregation}.
 
-\newpage
-
 \begin{lstlisting}[style=pythonstyle, caption={Agregacja danych do okien czasowych}, label={lst:aggregation}]
 	for window, g in grouped:
-	successful = g[g["success"] == 1]
+		successful = g[g["success"] == 1]
 	
-	if len(successful) >= 3:
-	ping_std = successful["ping_ms"].std()
-	else:
-	ping_std = float("nan")
+		if len(successful) >= 3:
+			ping_std = successful["ping_ms"].std()
+		else:
+			ping_std = float("nan")
 	
-	packet_loss = 1 - len(successful) / len(g)
+		packet_loss = 1 - len(successful) / len(g)
 	
-	windows.append({
-		"window_start": window,
-		"device_group": g["device_group"].iloc[0],
-		"ping_std_1m": round(ping_std, 3),
-		"packet_loss_1m": round(packet_loss, 3)
-	})
+		windows.append({
+			"window_start": window,
+			"device_group": g["device_group"].iloc[0],
+			"ping_std_1m": round(ping_std, 3),
+			"packet_loss_1m": round(packet_loss, 3)
+		})
 \end{lstlisting}
 
 \subsection{Trening modelu}
@@ -76,6 +83,8 @@ Przygotowany zbiór danych treningowych został wykorzystany do uczenia modelu o
 Standaryzacja polega na przekształceniu każdej cechy do rozkładu o średniej równej 0 oraz odchyleniu standardowym równym 1, co zapobiega dominacji cech o większym zakresie wartości.
 
 Proces przygotowania danych i trenowania modelu przedstawiono na listingu \ref{lst:training}.
+
+\newpage
 
 \begin{lstlisting}[style=pythonstyle, caption={Skalowanie danych i trening modelu}, label={lst:training}]
 	df = pd.read_csv(csv_path)
@@ -88,6 +97,7 @@ Proces przygotowania danych i trenowania modelu przedstawiono na listingu \ref{l
 \end{lstlisting}
 
 \subsection{Parametry modelu}
+\label{subsec:model-parameters}
 
 Model \texttt{Isolation Forest} został skonfigurowany z wykorzystaniem następujących parametrów:
 
@@ -97,7 +107,9 @@ Model \texttt{Isolation Forest} został skonfigurowany z wykorzystaniem następu
 	\item \textbf{random\_state} – parametr zapewniający powtarzalność wyników.
 \end{itemize}
 
-Parametr \texttt{contamination} wpływa bezpośrednio na próg decyzyjny modelu i określa, jaki odsetek obserwacji zostanie zaklasyfikowany jako anomalny. Parametr \texttt{n\_estimators} odpowiada za stabilność działania modelu – większa liczba drzew zwiększa powtarzalność wyników kosztem wydłużenia czasu treningu.
+Parametr \texttt{contamination} wpływa bezpośrednio na próg decyzyjny modelu i określa, jaki odsetek obserwacji zostanie zaklasyfikowany jako anomalny. Wartość ta jest procentowa, podawana w zakresie 0-1. Wartość parametru \texttt{contamination} powinna być dobrana eksperymentalnie, tak aby zminimalizować liczbę fałszywych anomalii przy zachowaniu wysokiej wykrywalności istotnych odchyleń.
+
+Parametr \texttt{n\_estimators} odpowiada za stabilność działania modelu – większa liczba drzew zwiększa powtarzalność i precyzyjność wyników, kosztem wydłużenia czasu treningu, co jest spowodowane większą złożonością obliczeniową.
 
 Konfigurację modelu przedstawiono na listingu \ref{lst:model}.
 
@@ -114,4 +126,203 @@ Konfigurację modelu przedstawiono na listingu \ref{lst:model}.
 
 Po zakończeniu procesu uczenia wytrenowany model wraz ze skalarem został zapisany do pliku w formacie \texttt{joblib}, co umożliwia jego późniejsze wykorzystanie w aplikacji bez konieczności ponownego trenowania.
 
-\TODO{Dodać testowanie modelu (wykresy itd)}
+\section{Testowanie modelu}
+
+W celu jak najlepszego przystosowania modelu do realiów sieci komputerowej, należało przeprowadzić rozległe testy jakościowe. Przeprowadzone testy pomogły zdecydować o doborze odpowiednich cech danych wejściowych i parametrów modelu. Jest to szczególnie istotne, ponieważ nieodpowiednio dobrane dane mogą powodować efekt niewykrywania istotnych szczegółów, czyli np.: utraconych pakietów i nagłych różnic w czasie odpowiedzi.
+
+Wszystkie testy opisane w niniejszej pracy przedstawiono dla modelu trenowanego na danych z urządzeń typu klient LAN. Analogiczne testy przeprowadzono również dla modeli wytrenowanych do urządzeń typu WiFi oraz IoT, uzyskując spójne wnioski, przy czym charakterystyka anomalii różni się w zależności od typu urządzenia.
+
+Poza dobieraniem odpowiednich cech, należało również dobrać jak najbardziej dopasowane parametry. Wśród nich najistotniejsze były: \texttt{contamination} oraz \texttt{n\_estimators}, które opisane zostały w sekcji \ref{subsec:model-parameters}.
+
+\subsection{Założenia dotyczące testowania modelu}
+
+Aby uzyskać jak najlepiej dopasowany model, przetestowano różne kombinacje cech i parametrów, w celu znalezienia najlepszej z tych konfiguracji.
+
+Jakość algorytmu była mierzona na podstawie analizy histogramu, wykresu skrzypcowego oraz dwóch tabel zawierających najważniejsze dane wynikowe.
+
+Poza odczytami wykresów i tabeli posłużono się również wiedzą ekspercką, polegającą na odczycie danych wejściowych i wyjściowych, a następnie manualnej analizie zawartych w nich informacji.
+
+Z przyczyn braku danych etykietowanych, nie można było posłużyć się bardziej precyzyjnymi metodami analizy wyników, która wprost wskazałaby na procentową jakość modelu.
+
+Test każdej z kombinacji odbywał się na dwóch, takich samych dla każdej konfiguracji, zbiorów danych. Pierwszy zbiór zawierał dane rzeczywiste, zebrane w sposób naturalny w istniejącej i działającej sieci komputerowej, składającej się z dwóch podsieci i ok. 300 urządzeń. Drugi zestaw danych, to dane spreparowane, wygenerowane przez specjalnie stworzony do tego celu program.
+
+\subsection{Plan testów}
+
+Faza testowa, została podzielona na dwa etapy. W pierwszym szukany był odpowiedni zestaw cech wejściowych. W drugim etapie, korzystając z najlepszych cech, uzyskanych w fazie pierwszej, korygowane zostały parametry modelu, aby znaleźć odpowiedni środek ciężkości między jakością a wydajnością.
+
+W testach nie uwzględniono np. kombinacji bez cechy \texttt{packet\_loss\_1m}, ponieważ odgrywa ona kluczową rolę i jest najmocniejszym kandydatem wskazującym na prawdopodobne anomalie w sieci.
+
+Mając na uwadze powyższe względy, powstała macierz testów, zaprezentowana w tabeli \ref{tab:model-test-plan}.
+
+\begin{table}[hptb]
+	\centering
+	\caption{Konfiguracje parametrów w poszczególnych fazach eksperymentu}
+	\label{tab:model-test-plan}
+	\vspace{10pt}
+	
+	\begin{tabular}{clcc}
+		\toprule[1.5]
+		Lp & Cechy & n\_estimators & contamination \\
+		\midrule
+		
+		\multicolumn{4}{c}{\textbf{FAZA 1}} \\
+		\midrule
+		1 & ping\_std\_1m, packet\_loss\_1m & 200 & 0.015 \\
+		2 & ping\_avg\_1m, packet\_loss\_1m & 200 & 0.015 \\
+		3 & ping\_diff\_1m, packet\_loss\_1m & 200 & 0.015 \\
+		4 & ping\_diff\_1m, ping\_std\_1m, ping\_avg\_1m, packet\_loss\_1m & 200 & 0.015 \\
+		
+		\midrule
+		\multicolumn{4}{c}{\textbf{FAZA 2}} \\
+		\midrule
+		1 & ping\_std\_1m, packet\_loss\_1m & 100 & 0.015 \\
+		2 & ping\_std\_1m, packet\_loss\_1m & 300 & 0.015 \\
+		3 & ping\_std\_1m, packet\_loss\_1m & 200 & 0.010 \\
+		4 & ping\_std\_1m, packet\_loss\_1m & 200 & 0.020 \\
+		
+		\bottomrule[1.5]
+	\end{tabular}
+	
+	\vspace{10pt}
+	\small Źródło: opracowanie własne.
+\end{table}
+
+\subsection{Wyniki testów}
+
+Testy przeprowadzono na dwóch zestawach danych: generowanych oraz rzeczywistych z serwera. W fazie 1 porównywano różne kombinacje cech wejściowych. Mimo, że najlepszy wynik wskazywał wariant 4 - kombinacja wszystkich cech, to jednak ręczna analiza wyników okazała inny rezultat. Najlepiej wypadł zestaw \texttt{ping\_std\_1m} i \texttt{packet\_loss\_1m} – generowane dane wykrywały anomalie prawidłowo, bez wyników fałszywie pozytywnych, choć pojedyncze zgubione pakiety przy niskim odchyleniu standardowym czasami nie były wykrywane. Dane serwera wskazały, że w tej konfiguracji niskie odchylenia są traktowane jako normalne, a istotne anomalie zostały rozpoznane, co potwierdzają wartości procentu anomalii i separacji w tabelach \ref{tab:results-generated-ping} i \ref{tab:results-server-ping}. Pozostałe zestawy cech wykazywały niską wykrywalność (zestawy 2 i 3) lub nadmiar fałszywych alarmów (zestaw 4).
+
+W fazie 2 testowano różne parametry \texttt{n\_estimators} i \texttt{contamination}. Wariant z 200 drzew i \texttt{contamination}=0.015, który był wartością bazową w fazie pierwszej, zapewniał najlepszy kompromis – na danych generowanych wykrywał niemal wszystkie anomalie bez fałszywych alarmów, natomiast dane serwera wskazywały na nadmiar wyników fałszywie pozytywnych przy innych konfiguracjach. Warianty z niską wykrywalnością (contamination 0.01) lub nadmiernymi fałszywymi alarmami (contamination 0.02) zostały odrzucone.
+
+\begin{table}[H]
+	\centering
+	\caption{Wyniki eksperymentów – wygenerowany klient - czas odpowiedzi}
+	\label{tab:results-generated-ping}
+	\vspace{10pt}
+	
+	\begin{tabular}{lcccc}
+		\toprule
+		Wariant & n\_estimators & contamination & \% anomalii & separacja \\
+		\midrule
+		
+		\multicolumn{5}{c}{\textbf{FAZA 1 – porównanie cech}} \\
+		\midrule
+		ping\_std\_1m, packet\_loss\_1m & 200 & 0.015 & 6.005 & 0.00132 \\
+		ping\_avg\_1m, packet\_loss\_1m & 200 & 0.015 & 7.046 & 0.00022 \\
+		ping\_diff\_1m, packet\_loss\_1m & 200 & 0.015 & 5.970 & 0.00052 \\
+		\makecell[l]{ping\_avg\_1m, ping\_std\_1m,\\packet\_loss\_1m, ping\_diff\_1m} & 200 & 0.015 & 7.289 & 0.00150 \\
+		
+		\midrule
+		\multicolumn{5}{c}{\textbf{FAZA 2 – zmiana parametrów}} \\
+		\midrule
+		100 drzew & 100 & 0.015 & 6.213 & 0.00141 \\
+		300 drzew & 300 & 0.015 & 6.144 & 0.00145 \\
+		contamination 0.01 & 200 & 0.010 & 5.276 & 0.00013 \\
+		contamination 0.02 & 200 & 0.020 & 7.567 & 0.00037 \\
+		
+		\bottomrule
+	\end{tabular}
+	
+	\vspace{10pt}
+	\small Źródło: opracowanie własne.
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Wyniki eksperymentów – serwer - czas odpowiedzi}
+	\label{tab:results-server-ping}
+	\vspace{10pt}
+	
+	\begin{tabular}{lcccc}
+		\toprule
+		Wariant & n\_estimators & contamination & \% anomalii & separacja \\
+		\midrule
+		
+		\multicolumn{5}{c}{\textbf{FAZA 1 – porównanie cech}} \\
+		\midrule
+		ping\_std\_1m, packet\_loss\_1m & 200 & 0.015 & 1.118 & 0.00382 \\
+		ping\_avg\_1m, packet\_loss\_1m & 200 & 0.015 & 0.000 & -- \\
+		ping\_diff\_1m, packet\_loss\_1m & 200 & 0.015 & 0.319 & 0.03637 \\
+		\makecell[l]{ping\_avg\_1m, ping\_std\_1m,\\packet\_loss\_1m, ping\_diff\_1m} & 200 & 0.015 & 0.799 & 0.01630 \\
+		
+		\midrule
+		\multicolumn{5}{c}{\textbf{FAZA 2 – zmiana parametrów}} \\
+		\midrule
+		100 drzew & 100 & 0.015 & 9.425 & 0.00331 \\
+		300 drzew & 300 & 0.015 & 1.118 & 0.00507 \\
+		contamination 0.01 & 200 & 0.010 & 0.319 & 0.07925 \\
+		contamination 0.02 & 200 & 0.020 & 14.537 & 0.00374 \\
+		
+		\bottomrule
+	\end{tabular}
+	
+	\vspace{10pt}
+	\small Źródło: opracowanie własne.
+\end{table}
+
+Dodatkowym elementem podlegającym analizie sa wykresy, przedstawione poniżej. Ukazują one wizualizację wyników, gdzie dane mniejsze od 0 wskazują na prawdopodobną anomalię, a te większe od 0 na wyniki w granicach normy.
+
+Dzięki analizie wykresów, jak i kolumny określającą separację w tabelach \ref{tab:results-generated-ping} i \ref{tab:results-server-ping}, można zauważyć problematyczną stronę aktualnego modelu i miejsce do dalszego udoskonalania. Widać tutaj, że granica między anomalią, a wynikiem oznaczonym jako normalny, bywa cienka. Oznacza to, że skrajne wyniki są wykrywane ze znaczną pewnością, lecz rezultaty pośrednie są położone blisko siebie.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f1-v1.png}
+	\caption{Wykresy rezultatów wariantu 1. fazy 1.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}
+	\label{fig:ping-test-charts-f1-v1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f1-v2.png}
+	\caption{Wykresy rezultatów wariantu 2. fazy 1.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f1-v2}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f1-v3.png}
+	\caption{Wykresy rezultatów wariantu 3. fazy 1.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f1-v3}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f1-v4.png}
+	\caption{Wykresy rezultatów wariantu 4. fazy 1.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f1-v4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f2-v1.png}
+	\caption{Wykresy rezultatów wariantu 1. fazy 2.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f2-v1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f2-v2.png}
+	\caption{Wykresy rezultatów wariantu 2. fazy 2.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f2-v2}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f2-v3.png}
+	\caption{Wykresy rezultatów wariantu 3. fazy 2.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f2-v3}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./images/ping-test-charts-f2-v4.png}
+	\caption{Wykresy rezultatów wariantu 4. fazy 2.\\Źródło: opracowanie własne (Python, biblioteki matplotlib i seaborn)}}
+	\label{fig:ping-test-charts-f2-v4}
+\end{figure}
+
+Podsumowując, zarówno analiza ekspercka, jak i dane tabelaryczne potwierdzają, że optymalnym wyborem jest model z cechami \texttt{ping\_std\_1m} i \texttt{packet\_loss\_1m}, z parametrami \texttt{n\_estimators}=200 i \texttt{contamination}=0.015. Konfiguracja ta zapewnia równowagę między skutecznością wykrywania rzeczywistych anomalii a ograniczeniem wyników fałszywie pozytywnych. Należy jednak mieć na uwadze, że żaden z testowanych wariantów nie pozwoli uzyskać 100\% skuteczności i mimo wysokiej jakości wytrenowanego modelu, mogą zdarzać się wyniki fałszywie pozytywne, lub pozytywnie fałszywe.
+
+\section{Podsumowanie testów}
+
+Analiza testów jakościowych wykazała, że dobór odpowiednich cech wejściowych (\texttt{ping\_std\_1m}, \texttt{packet\_loss\_1m}) oraz parametrów modelu (\texttt{n\_estimators}=200, \texttt{contamination}=0.015) pozwala na skuteczne wykrywanie anomalii w danych z urządzeń typu klient LAN. 
+Podobne testy dla urządzeń WiFi i IoT wskazały, że model wymaga indywidualnego dopasowania parametrów ze względu na różną charakterystykę sygnału i częstotliwość występowania anomalii. 
+Otrzymane wyniki pokazują, że algorytm \texttt{Isolation Forest} jest efektywny w analizie niestabilności sieci oraz pozwala ograniczyć wpływ fałszywych pozytywów w większości scenariuszy testowych.
