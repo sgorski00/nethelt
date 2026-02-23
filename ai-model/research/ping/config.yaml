@@ -1,0 +1,21 @@
+device_id: uuid-1
+device_group: client-lan # client-lan, client-wifi, infra, iot
+
+interval_seconds: 5
+duration_minutes: 1440
+
+normal:
+  mean_ms: 4.0
+  std_ms: 1.2
+  jitter_ms: 1.0
+
+degradation:
+  start_minute: 1400 #2592
+  end_minute: 1435 #2822
+  final_mean_ms: 10.0
+
+failure:
+  start_minute: 1435 #2822
+  packet_loss_rate: 0.1
+  min_ms: 20
+  max_ms: 100

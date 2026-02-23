@@ -7,6 +7,7 @@
 \usepackage[polish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{microtype}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -15,6 +16,8 @@
 \usepackage{float}
 \usepackage{caption}
 \usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{makecell}
 
 % Ustawienie czcionki na Times New Roman
 \usepackage{tgtermes}
@@ -48,8 +51,10 @@
 \renewcommand{\listfigurename}{Spis rysunków}
 \renewcommand{\figurename}{Rysunek}
 \renewcommand{\listtablename}{Spis tabel}
+\renewcommand{\tablename}{Tabela}
 \renewcommand{\lstlistingname}{Listing}
 \renewcommand{\lstlistlistingname}{Spis listingów}
+\renewcommand{\bibname}{Bibliografia}
 
 % Wcięcie 1. akapitu
 \setlength{\parindent}{0.7cm}
@@ -65,6 +70,17 @@
 	skip=10pt
 }
 
+% Ustawienie tabel
+\captionsetup[table]{
+	position=top,
+	width=0.8\textwidth,
+	font={small,stretch=1},
+	labelfont={bf},
+	justification=Centering,
+	singlelinecheck=false,
+	skip=10pt
+}
+
 % Ustawienie kolorowania listingów
 \definecolor{pblue}{rgb}{0.13,0.13,1}
 \definecolor{pgreen}{rgb}{0,0.5,0}
@@ -73,6 +89,7 @@
 \definecolor{gray}{rgb}{0.95,0.95,0.95}
 \definecolor{darkgray}{rgb}{0.4,0.4,0.4}
 
+% Globalny styl Java
 \lstset{
 	language=Java,
 	showspaces=false,
@@ -92,11 +109,35 @@
 	captionpos=b
 }
 
+% Styl dla Pythona
+\lstdefinestyle{pythonstyle}{
+	language=Python,
+	showspaces=false,
+	showtabs=false,
+	breaklines=true,
+	showstringspaces=false,
+	breakatwhitespace=true,
+	commentstyle=\color{pgreen},
+	keywordstyle=\color{pblue}\bfseries,
+	stringstyle=\color{pred},
+	basicstyle=\ttfamily\small,
+	backgroundcolor=\color{gray},
+	frame=single,
+	rulecolor=\color{darkgray},
+	numbers=left,
+	numberstyle=\tiny\color{darkgray},
+	stepnumber=1,
+	numbersep=8pt,
+	tabsize=4,
+	captionpos=b
+}
+
 % komenda TODO
 \newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
 
 %Początek dokumentu
 \begin{document}
+\sloppy
 	
 	%Strona tytułowa
 	\includepdf[pages=-]{images/title-page.pdf}
@@ -107,7 +148,8 @@
 	
 	%Rozdziały
 	\include{introduction}
-	\include{technical-docs}
+	\include{api}
+	\include{ai-model}
 	
 	%Listingi i bibliografia
 	\listoffigures
