@@ -12,8 +12,9 @@ import pl.sgorski.nethelt.model.TelnetResult;
 
 @RestController
 @RequestMapping(version = "1")
+@Deprecated(forRemoval = true)
 public class ClientController {
-
+//TODO: implement real controller in the proper place
   @PostMapping("/ping")
   public ResponseEntity<?> receivePingResults(@RequestBody Set<PingResult> body) {
     System.out.println("Received ping results: " + body);

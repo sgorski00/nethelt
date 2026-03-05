@@ -59,7 +59,7 @@ services:
 
 volumes:
   nh-postgres-data:
-    
+
 networks:
   nh-network:
     driver: bridge
