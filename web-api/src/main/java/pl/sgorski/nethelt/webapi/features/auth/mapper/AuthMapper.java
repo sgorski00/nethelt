@@ -2,7 +2,9 @@ package pl.sgorski.nethelt.webapi.features.auth.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
+import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
@@ -10,6 +12,8 @@ import pl.sgorski.nethelt.webapi.features.user.domain.User;
 public interface AuthMapper {
 
     RegisterUserCommand toCommand(RegisterUserRequest request);
+
+    LoginUserCommand toCommand(LoginRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)

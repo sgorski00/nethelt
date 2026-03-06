@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
+import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
 import pl.sgorski.nethelt.webapi.features.auth.service.AuthService;
@@ -21,6 +23,14 @@ public final class AuthController {
     private final AuthService authService;
     private final AuthMapper authMapper;
     private final UserMapper userMapper;
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtResponse> login(
+            @RequestBody @Valid LoginRequest request
+    ) {
+        var token = new JwtResponse(authService.login(authMapper.toCommand(request)));
+        return ResponseEntity.ok(token);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(

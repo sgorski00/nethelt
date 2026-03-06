@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public final class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserService userService;
 
