@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.user.dto.request;
+package pl.sgorski.nethelt.webapi.features.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

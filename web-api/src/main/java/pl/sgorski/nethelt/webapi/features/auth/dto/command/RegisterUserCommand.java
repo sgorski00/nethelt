@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.user.dto.command;
+package pl.sgorski.nethelt.webapi.features.auth.dto.command;
 
 import pl.sgorski.nethelt.webapi.features.user.dto.contract.PasswordChange;
 

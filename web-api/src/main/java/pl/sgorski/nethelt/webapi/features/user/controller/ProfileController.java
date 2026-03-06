@@ -10,8 +10,6 @@ import pl.sgorski.nethelt.webapi.features.user.dto.response.UserResponse;
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping(path = "/profile", version = "1")
 @RequiredArgsConstructor

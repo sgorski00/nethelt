@@ -21,6 +21,7 @@
 		<version.mapstruct>1.6.3</version.mapstruct>
 		<version.flyway>12.0.3</version.flyway>
 		<version.lombok>1.18.42</version.lombok>
+		<version.jjwt>0.13.0</version.jjwt>
 	</properties>
 
 	<dependencies>
@@ -59,6 +60,23 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${version.mapstruct}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${version.jjwt}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${version.jjwt}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${version.jjwt}</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
