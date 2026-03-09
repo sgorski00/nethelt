@@ -1,13 +1,11 @@
 package pl.sgorski.nethelt.webapi.features.auth.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.UserAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
-import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.user.domain.Role;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
