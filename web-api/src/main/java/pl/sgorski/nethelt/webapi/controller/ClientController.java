@@ -1,14 +1,11 @@
 package pl.sgorski.nethelt.webapi.controller;
 
-import java.util.List;
-import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.NetworkConfig;
-import pl.sgorski.nethelt.model.Operation;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.TelnetResult;
+import pl.sgorski.nethelt.model.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(version = "1")

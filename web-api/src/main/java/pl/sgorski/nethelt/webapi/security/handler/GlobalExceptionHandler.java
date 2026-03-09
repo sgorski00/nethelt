@@ -1,6 +1,5 @@
 package pl.sgorski.nethelt.webapi.security.handler;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
