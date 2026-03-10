@@ -1,6 +1,8 @@
 package pl.sgorski.nethelt.webapi.features.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.UserAlreadyExistsException;
@@ -21,6 +23,7 @@ public final class AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public User registerUser(RegisterUserCommand command) {
         if(userService.isUserPresent(command.email(), command.username())) {
@@ -43,11 +46,14 @@ public final class AuthService {
      * Validate user's login request and returns JWT token if credentials are correct
      */
     public String login(LoginUserCommand command) {
-        var user = userService.getUser(command.username());
-        if(!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("Invalid username or password"); //TODO: replace this with domain exception
-        }
-
+        var auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        command.identifier(),
+                        command.password()
+                )
+        );
+        var principal = Objects.requireNonNull(auth.getPrincipal(), "Authentication failed");
+        var user = (User) principal;
         return jwtService.generateAccessToken(user);
     }
 }

@@ -3,6 +3,6 @@ package pl.sgorski.nethelt.webapi.features.auth.dto.request;
 import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
-        @NotBlank String username,
+        @NotBlank String identifier,
         @NotBlank String password
 ) { }

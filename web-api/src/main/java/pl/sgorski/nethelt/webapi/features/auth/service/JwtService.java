@@ -33,7 +33,7 @@ public final class JwtService {
         return Jwts
                 .builder()
                 .subject(String.valueOf(user.getId()))
-                .claim("username", user.getUsername())
+                .claim("identifier", user.getUsername())
                 .claim("email", user.getEmail())
                 .claim("roles", authorities)
                 .issuedAt(Date.from(now))
@@ -52,7 +52,7 @@ public final class JwtService {
     }
 
     public String getUsernameFromToken(String token) {
-        return getClaimsFromToken(token).get("username", String.class);
+        return getClaimsFromToken(token).get("identifier", String.class);
     }
 
     private Claims getClaimsFromToken(String token) {

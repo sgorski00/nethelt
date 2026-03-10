@@ -16,9 +16,10 @@ public final class UserService {
         return userRepository.save(user);
     }
 
-    public User getUser(String username) {
-        return userRepository.findByUsernameAndDeletedAtIsNull(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+    public User getUser(String identifier) {
+        return userRepository.findByUsernameAndDeletedAtIsNull(identifier)
+                .or(() -> userRepository.findByEmailAndDeletedAtIsNull(identifier))
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + identifier));
     }
 
     public boolean isUserPresent(String email, String username) {
