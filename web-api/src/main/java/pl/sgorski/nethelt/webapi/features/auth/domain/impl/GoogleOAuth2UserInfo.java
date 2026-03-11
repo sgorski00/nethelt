@@ -10,13 +10,13 @@ import java.util.Map;
 public final class GoogleOAuth2UserInfo implements OAuthUserInfo {
 
     private final Map<String, Object> attributes;
-    private final AuthProvider authProvider;
+    private final AuthProvider provider;
     private final String providerId;
     private final String email;
 
     public GoogleOAuth2UserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
-        this.authProvider = AuthProvider.GOOGLE;
+        this.provider = AuthProvider.GOOGLE;
         this.providerId = (String) attributes.get("sub");
         this.email = (String) attributes.get("email");
     }

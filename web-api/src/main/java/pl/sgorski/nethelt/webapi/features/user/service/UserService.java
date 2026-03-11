@@ -16,24 +16,30 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
-        if(user.getRole() == null) {
-            user.setRole(Role.USER);
-        }
         return userRepository.save(user);
     }
 
-    public User getUser(String identifier) {
-        return userRepository.findByUsernameAndDeletedAtIsNull(identifier)
-                .or(() -> userRepository.findByEmailAndDeletedAtIsNull(identifier))
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + identifier));
+    public User getUser(String email) {
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
+    }
+
+    public User getUserWithIdentities(String email) {
+        return userRepository.findWithIdentitiesByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
     }
 
     public boolean isUserPresent(String email) {
         return userRepository.existsByEmailAndDeletedAtIsNull(email);
     }
 
-    public boolean isUserPresent(String email, String username) {
-        return userRepository.existsByEmailAndDeletedAtIsNull(email)
-                || userRepository.existsByUsernameAndDeletedAtIsNull(username);
+    @Transactional
+    public User findOrCreateByEmail(String email) {
+        return userRepository.findWithIdentitiesByEmailAndDeletedAtIsNull(email).orElseGet(() -> {
+            var user = new User();
+            user.setEmail(email);
+            user.setRole(Role.USER);
+            return userRepository.save(user);
+        });
     }
 }

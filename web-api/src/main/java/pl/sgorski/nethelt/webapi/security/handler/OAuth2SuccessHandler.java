@@ -30,8 +30,8 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         var principal = (OAuth2User) Objects.requireNonNull(authentication.getPrincipal(), "Authentication failed");
         var email = (String) Objects.requireNonNull(principal.getAttribute("email"), "OAuth email is missing");
-        var user = userService.getUser(email);
-        if(user.getAuthProvider() == AuthProvider.LOCAL) {
+        var user = userService.getUserWithIdentities(email);
+        if(user.getIdentities().isEmpty()) {
             throw new AccessDeniedException("Local users are not allowed to login with OAuth");
         }
         var token = jwtService.generateAccessToken(user);

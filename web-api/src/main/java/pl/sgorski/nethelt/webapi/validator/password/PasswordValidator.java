@@ -27,7 +27,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Pas
     @Override
     public boolean isValid(PasswordChange request, ConstraintValidatorContext context) {
 
-        if (!request.password().equals(request.repeatPassword())) {
+        if (!request.newPassword().equals(request.repeatNewPassword())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Passwords do not match")
                     .addPropertyNode("repeatPassword")
@@ -35,7 +35,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Pas
             return false;
         }
 
-        if (!PASSWORD_PATTERN.matcher(request.password()).matches()) {
+        if (!PASSWORD_PATTERN.matcher(request.newPassword()).matches()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(
                             "Password must be at least 8 chars, contain uppercase letter, digit and special char"

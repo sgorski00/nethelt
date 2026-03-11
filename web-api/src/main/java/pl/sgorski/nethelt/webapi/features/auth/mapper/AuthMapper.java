@@ -8,6 +8,7 @@ import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
+import pl.sgorski.nethelt.webapi.features.user.domain.UserIdentity;
 
 @Mapper(componentModel = "spring")
 public interface AuthMapper {
@@ -18,19 +19,15 @@ public interface AuthMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
+    @Mapping(target = "role", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "identities", ignore = true)
     @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "providerId", ignore = true)
     User toEntity(RegisterUserCommand command);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "passwordHash", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "role", ignore = true)
-    User toEntity(OAuthUserInfo oauthUser);
+    @Mapping(target = "user", ignore = true)
+    UserIdentity toIdentity(OAuthUserInfo userInfo);
 }

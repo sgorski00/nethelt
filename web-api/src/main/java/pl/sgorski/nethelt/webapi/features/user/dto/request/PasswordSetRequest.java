@@ -5,8 +5,7 @@ import pl.sgorski.nethelt.webapi.features.user.dto.contract.PasswordChange;
 import pl.sgorski.nethelt.webapi.validator.password.ValidPassword;
 
 @ValidPassword
-public record PasswordChangeRequest(
-        @NotBlank String oldPassword,
+public record PasswordSetRequest(
         @NotBlank String newPassword,
         @NotBlank String repeatNewPassword
 ) implements PasswordChange { }

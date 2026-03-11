@@ -32,7 +32,6 @@ public final class JwtService {
         return Jwts
                 .builder()
                 .subject(String.valueOf(user.getId()))
-                .claim("identifier", user.getUsername())
                 .claim("email", user.getEmail())
                 .claim("roles", authorities)
                 .issuedAt(Date.from(now))
@@ -50,8 +49,8 @@ public final class JwtService {
         }
     }
 
-    public String getUsernameFromToken(String token) {
-        return getClaimsFromToken(token).get("identifier", String.class);
+    public String getEmailFromToken(String token) {
+        return getClaimsFromToken(token).get("email", String.class);
     }
 
     private Claims getClaimsFromToken(String token) {

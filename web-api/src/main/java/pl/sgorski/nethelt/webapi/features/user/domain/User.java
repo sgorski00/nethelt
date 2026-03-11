@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.features.user.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,17 +11,19 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"email", "deleted_at"})
+)
 @Data
 @ToString(exclude = "passwordHash")
+@EqualsAndHashCode(exclude = "identities")
 @NoArgsConstructor
 public class User implements UserDetails {
 
@@ -28,12 +31,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //partial unique constraint in the V1.0.0 migration
-    //partial nullable constraint in the V1.0.1 migration
-    @Nullable
-    private String username;
-
-    //partial unique constraint in the V1.0.0 migration
     @Column(nullable = false)
     private String email;
 
@@ -43,16 +40,10 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Nullable
-    private Role role;
+    private Role role = Role.USER;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AuthProvider authProvider;
-
-    //partial nullable constraint in the V1.0.1 migration
-    @Nullable
-    private String providerId;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<UserIdentity> identities = new HashSet<>();
 
     @CreationTimestamp
     private Instant createdAt;
@@ -75,6 +66,11 @@ public class User implements UserDetails {
     }
 
     @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
         return deletedAt == null;
     }
@@ -92,5 +88,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return deletedAt == null;
+    }
+
+    public void addIdentity(UserIdentity identity) {
+        identities.add(identity);
+        identity.setUser(this);
     }
 }

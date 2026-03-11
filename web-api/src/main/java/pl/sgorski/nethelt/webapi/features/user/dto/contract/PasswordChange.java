@@ -1,6 +1,6 @@
 package pl.sgorski.nethelt.webapi.features.user.dto.contract;
 
 public interface PasswordChange {
-    String password();
-    String repeatPassword();
+    String newPassword();
+    String repeatNewPassword();
 }
