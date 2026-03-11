@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - nh-postgres-data:/var/lib/postgresql/data
+      - nh-postgres-data:/var/lib/postgresql
     networks:
       - nh-network
     healthcheck:
