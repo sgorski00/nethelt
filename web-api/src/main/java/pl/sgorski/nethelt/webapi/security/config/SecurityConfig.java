@@ -12,9 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.sgorski.nethelt.webapi.security.filter.JwtAuthenticationFilter;
 
@@ -26,6 +30,8 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationSuccessHandler oauth2SuccessHandler;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
@@ -33,11 +39,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/auth/**").not().authenticated()
+                        .requestMatchers("/oauth2/code/**", "/login/auth2/code/**").not().authenticated()
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().denyAll())
-                .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(user -> user
+                                .userService(oauth2UserService))
+                        .successHandler(oauth2SuccessHandler))
+                .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler)

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.auth.config.properties;
+package pl.sgorski.nethelt.webapi.security.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -6,12 +6,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.UserAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.user.domain.Role;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
+import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 
 import java.util.Objects;
 
@@ -38,6 +40,7 @@ public final class AuthService {
         );
 
         user.setRole(Role.USER);
+        user.setAuthProvider(AuthProvider.LOCAL);
         user.setPasswordHash(hashPassword);
         return userService.save(user);
     }

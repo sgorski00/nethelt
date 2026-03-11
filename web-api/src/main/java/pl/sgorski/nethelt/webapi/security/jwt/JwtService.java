@@ -1,11 +1,10 @@
-package pl.sgorski.nethelt.webapi.features.auth.service;
+package pl.sgorski.nethelt.webapi.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import pl.sgorski.nethelt.webapi.features.auth.config.properties.JwtProperties;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
 import javax.crypto.SecretKey;
