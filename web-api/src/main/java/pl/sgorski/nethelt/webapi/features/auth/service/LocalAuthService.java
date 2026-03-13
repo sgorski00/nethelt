@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class LocalAuthService {
 
     private final AuthMapper authMapper;
     private final UserService userService;
