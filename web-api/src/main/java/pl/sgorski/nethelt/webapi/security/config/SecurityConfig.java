@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().denyAll())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        .sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(user -> user
                                 .userService(oauth2UserService))

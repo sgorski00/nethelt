@@ -91,6 +91,11 @@ public class User implements UserDetails {
     }
 
     public void addIdentity(UserIdentity identity) {
+        var isProviderPresent = identities.stream()
+                .anyMatch(i -> i.getProvider().equals(identity.getProvider()));
+        if (isProviderPresent) {
+            throw new IllegalStateException("User already has identity for provider: " + identity.getProvider());
+        }
         identities.add(identity);
         identity.setUser(this);
     }

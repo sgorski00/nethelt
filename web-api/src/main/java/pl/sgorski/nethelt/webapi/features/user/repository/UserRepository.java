@@ -10,5 +10,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndDeletedAtIsNull(String email);
     Optional<User> findByEmailAndDeletedAtIsNull(String email);
     @EntityGraph(attributePaths = "identities")
-    Optional<User> findWithIdentitiesByEmailAndDeletedAtIsNull(String email);
+    Optional<User> findWithIdentitiesByIdAndDeletedAtIsNull(Long id);
 }

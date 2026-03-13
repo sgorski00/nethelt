@@ -9,7 +9,10 @@ import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
 @Entity
 @Table(
         name = "user_identities",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "provider_id"})
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"provider", "provider_id"}),
+                @UniqueConstraint(columnNames = {"user_id", "provider"})
+        }
 )
 @Data
 @EqualsAndHashCode(exclude = "user")

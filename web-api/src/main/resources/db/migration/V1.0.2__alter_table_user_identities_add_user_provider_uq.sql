@@ -1,0 +1,1 @@
+ALTER TABLE user_identities ADD CONSTRAINT user_provider_uq UNIQUE (user_id, provider);
