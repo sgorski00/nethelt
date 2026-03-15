@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordChangeRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordSetRequest;

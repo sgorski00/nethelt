@@ -10,9 +10,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import pl.sgorski.nethelt.webapi.exception.IdentityNotFoundException;
-import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
-import pl.sgorski.nethelt.webapi.features.auth.service.OAuth2UserInfoFactory;
+import pl.sgorski.nethelt.webapi.exception.domain.IdentityNotFoundException;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.factory.OAuth2UserInfoFactory;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 

@@ -2,7 +2,7 @@ package pl.sgorski.nethelt.webapi.features.auth.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import pl.sgorski.nethelt.webapi.features.auth.domain.OAuthUserInfo;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.OAuthUserInfo;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;

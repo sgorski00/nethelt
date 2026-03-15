@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import pl.sgorski.nethelt.webapi.exception.RoleNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.RoleNotFoundException;
 
 import java.util.Arrays;
 

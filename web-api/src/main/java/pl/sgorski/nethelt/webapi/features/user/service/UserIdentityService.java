@@ -2,8 +2,8 @@ package pl.sgorski.nethelt.webapi.features.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.sgorski.nethelt.webapi.exception.IdentityNotFoundException;
-import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
+import pl.sgorski.nethelt.webapi.exception.domain.IdentityNotFoundException;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.domain.UserIdentity;
 import pl.sgorski.nethelt.webapi.features.user.repository.UserIdentityRepository;
 

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 
 @Entity
 @Table(
