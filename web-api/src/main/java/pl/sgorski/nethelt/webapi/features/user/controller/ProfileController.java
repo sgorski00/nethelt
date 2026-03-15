@@ -64,13 +64,16 @@ public final class ProfileController {
             HttpServletRequest request,
             Authentication authentication
     ) {
+        log.debug("Linking account with provider: {}", provider);
         var userId = authenticatedUserResolver.requireUser(authentication).getId();
+        log.debug("Logged user ID: {}", userId);
         addOAuth2SessionAttributes(request, userId);
 
         var redirectPath = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/oauth2/authorization/")
                 .path(provider.name().toLowerCase(Locale.ROOT))
                 .build().toUri();
+        log.debug("Redirecting to OAuth2 authorization endpoint: {}", redirectPath);
         return ResponseEntity.status(HttpStatus.FOUND).location(redirectPath).build();
     }
 

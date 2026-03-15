@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.exception.IdentityNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.domain.AuthProvider;
-import pl.sgorski.nethelt.webapi.features.auth.service.OAuthUserInfoFactory;
+import pl.sgorski.nethelt.webapi.features.auth.service.OAuth2UserInfoFactory;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 
@@ -34,7 +34,7 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
         var oAuth2Token = (OAuth2AuthenticationToken) authentication;
         var provider = AuthProvider.fromString(oAuth2Token.getAuthorizedClientRegistrationId());
         var principal = (OAuth2User) Objects.requireNonNull(authentication.getPrincipal(), "Authentication failed");
-        var userInfo = OAuthUserInfoFactory.create(provider, principal.getAttributes());
+        var userInfo = OAuth2UserInfoFactory.create(provider, principal.getAttributes());
         try {
             //TODO: add refresh token here as a cookie
             var identity = identityService.findIdentity(userInfo.getProvider(), userInfo.getProviderId());

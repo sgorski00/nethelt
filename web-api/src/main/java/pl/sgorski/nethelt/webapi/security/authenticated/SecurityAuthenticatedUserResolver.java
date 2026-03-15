@@ -10,7 +10,7 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 
 @Component
 @RequiredArgsConstructor
-public class SecurityAuthenticatedUserResolver implements AuthenticatedUserResolver {
+public final class SecurityAuthenticatedUserResolver implements AuthenticatedUserResolver {
 
     private final UserIdentityService identityService;
 

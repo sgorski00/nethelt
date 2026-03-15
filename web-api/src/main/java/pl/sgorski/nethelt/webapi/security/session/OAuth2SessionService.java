@@ -8,7 +8,7 @@ import static pl.sgorski.nethelt.webapi.security.session.OAuthSessionAttributes.
 import static pl.sgorski.nethelt.webapi.security.session.OAuthSessionAttributes.OAUTH_MODE;
 
 @Service
-public class OAuthSessionService {
+public final class OAuth2SessionService {
 
     public boolean isLinkMode(HttpSession session) {
         return "link".equals(session.getAttribute(OAUTH_MODE.getAttributeName()));

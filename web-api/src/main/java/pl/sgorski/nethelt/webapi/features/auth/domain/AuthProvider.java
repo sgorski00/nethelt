@@ -6,7 +6,8 @@ import pl.sgorski.nethelt.webapi.exception.ProviderNotFoundException;
 import java.util.Arrays;
 
 public enum AuthProvider {
-    GOOGLE;
+    GOOGLE,
+    GITHUB;
 
     @JsonCreator
     public static AuthProvider fromString(String value) {

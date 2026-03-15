@@ -11,7 +11,7 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class OAuth2AccountLinkService {
+public final class OAuth2AccountLinkService {
 
     private final AuthMapper authMapper;
     private final UserService userService;
