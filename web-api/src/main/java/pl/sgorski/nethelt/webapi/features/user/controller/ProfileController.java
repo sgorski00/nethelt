@@ -13,8 +13,9 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordChangeRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordSetRequest;
-import pl.sgorski.nethelt.webapi.features.user.dto.response.UserResponse;
+import pl.sgorski.nethelt.webapi.features.user.dto.response.DetailedUserResponse;
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;
+import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
 
 import java.util.Locale;
@@ -28,14 +29,15 @@ import static pl.sgorski.nethelt.webapi.security.session.OAuthSessionAttributes.
 public final class ProfileController {
 
     private final LocalAuthService localAuthService;
+    private final UserService userService;
     private final UserMapper userMapper;
     private final AuthenticatedUserResolver authenticatedUserResolver;
 
-    //TODO: replace UserResponse with ProfileResponse (user + identities)
     @GetMapping
-    public ResponseEntity<UserResponse> showProfile(Authentication authentication) {
-        var user = authenticatedUserResolver.requireUser(authentication);
-        return ResponseEntity.ok(userMapper.toResponse(user));
+    public ResponseEntity<DetailedUserResponse> showProfile(Authentication authentication) {
+        var userId = authenticatedUserResolver.requireUserId(authentication);
+        var user = userService.getUserWithIdentities(userId);
+        return ResponseEntity.ok(userMapper.toDetailedResponse(user));
     }
 
     @PutMapping("/password")
@@ -43,7 +45,8 @@ public final class ProfileController {
             @RequestBody @Valid PasswordSetRequest request,
             Authentication authentication
     ) {
-        var user = authenticatedUserResolver.requireUser(authentication);
+        var userId = authenticatedUserResolver.requireUserId(authentication);
+        var user = userService.getUser(userId);
         localAuthService.setLocalPassword(user, request.newPassword());
         return ResponseEntity.noContent().build();
     }
@@ -53,7 +56,8 @@ public final class ProfileController {
             @RequestBody @Valid PasswordChangeRequest request,
             Authentication authentication
     ) {
-        var user = authenticatedUserResolver.requireUser(authentication);
+        var userId = authenticatedUserResolver.requireUserId(authentication);
+        var user = userService.getUser(userId);
         localAuthService.changePassword(user, request.oldPassword(), request.newPassword());
         return ResponseEntity.noContent().build();
     }
@@ -65,7 +69,7 @@ public final class ProfileController {
             Authentication authentication
     ) {
         log.debug("Linking account with provider: {}", provider);
-        var userId = authenticatedUserResolver.requireUser(authentication).getId();
+        var userId = authenticatedUserResolver.requireUserId(authentication);
         log.debug("Logged user ID: {}", userId);
         addOAuth2SessionAttributes(request, userId);
 

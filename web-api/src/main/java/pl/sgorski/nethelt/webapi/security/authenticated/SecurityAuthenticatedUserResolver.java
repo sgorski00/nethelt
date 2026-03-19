@@ -15,17 +15,17 @@ public final class SecurityAuthenticatedUserResolver implements AuthenticatedUse
     private final UserIdentityService identityService;
 
     @Override
-    public User requireUser(Authentication authentication) {
+    public Long requireUserId(Authentication authentication) {
         var principal = authentication.getPrincipal();
 
         if (principal instanceof User user) {
-            return user;
+            return user.getId();
         }
         if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
             var providerId = oauthToken.getName();
             var provider = AuthProvider.fromString(oauthToken.getAuthorizedClientRegistrationId());
             var identity = identityService.findIdentity(provider, providerId);
-            return identity.getUser();
+            return identity.getUser().getId();
         }
 
         throw new IllegalStateException("Unsupported authentication principal");

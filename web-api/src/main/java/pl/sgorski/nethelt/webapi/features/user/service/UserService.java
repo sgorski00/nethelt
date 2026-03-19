@@ -23,6 +23,11 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
     }
 
+    public User getUser(Long id) {
+        return userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    }
+
     public User getUserWithIdentities(Long id) {
         return userRepository.findWithIdentitiesByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));

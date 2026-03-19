@@ -22,7 +22,7 @@ import java.util.*;
         uniqueConstraints = @UniqueConstraint(columnNames = {"email", "deleted_at"})
 )
 @Data
-@ToString(exclude = "passwordHash")
+@ToString(exclude = {"passwordHash", "identities"})
 @EqualsAndHashCode(exclude = "identities")
 @NoArgsConstructor
 public class User implements UserDetails {

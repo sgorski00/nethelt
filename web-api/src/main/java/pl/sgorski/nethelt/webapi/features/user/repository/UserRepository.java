@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndDeletedAtIsNull(String email);
     Optional<User> findByEmailAndDeletedAtIsNull(String email);
-    @EntityGraph(attributePaths = "identities")
-    Optional<User> findWithIdentitiesByIdAndDeletedAtIsNull(Long id);
+    @EntityGraph(attributePaths = "identities") Optional<User> findWithIdentitiesByIdAndDeletedAtIsNull(Long id);
+    Optional<User> findByIdAndDeletedAtIsNull(Long id);
 }
