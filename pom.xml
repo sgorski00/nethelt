@@ -102,6 +102,9 @@
                         <excludes>
                             <exclude>**/config/**</exclude>
                             <exclude>**/exception/**</exclude>
+                            <exclude>**/dto/**</exclude>
+                            <exclude>**/mapper/**</exclude>
+                            <exclude>**/*Properties.*</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
