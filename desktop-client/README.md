@@ -17,11 +17,17 @@ Desktop application for network health monitoring. Contains background service a
 mvn clean install -pl desktop-client -am
 ```
 
-## Running Background Client
+## Building and running background client
+
+Tho build background client, you can run:
 
 ```bash
-java -jar bg-client/target/bg-client-1.0-SNAPSHOT.jar
+mvn clean install -pl :bg-client -am
 ```
+
+This command will generate your os-type specific executable in `bg-client/target/packed/exe` directory. You can run it directly from there.
+
+On Windows application will be built as a `.exe` service.
 
 ## Dependencies
 

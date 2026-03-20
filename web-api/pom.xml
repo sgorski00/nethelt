@@ -22,6 +22,7 @@
 		<version.flyway>12.0.3</version.flyway>
 		<version.lombok>1.18.42</version.lombok>
 		<version.jjwt>0.13.0</version.jjwt>
+		<version.h2>2.4.240</version.h2>
 	</properties>
 
 	<dependencies>
@@ -110,6 +111,12 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${version.h2}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>${version.lombok}</version>
@@ -186,11 +193,19 @@
 					</locations>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>test</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>test</spring.profiles.active>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

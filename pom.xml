@@ -15,6 +15,9 @@
         <version.spring>4.0.2</version.spring>
         <version.maven.compiler>3.15.0</version.maven.compiler>
         <version.jacoco>0.8.14</version.jacoco>
+        <version.jpackage.plugin>1.7.4</version.jpackage.plugin>
+        <version.surefire.plugin>3.5.5</version.surefire.plugin>
+        <version.failsafe.plugin>3.5.5</version.failsafe.plugin>
     </properties>
 
     <modules>
@@ -102,8 +105,37 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.panteleyev</groupId>
+                    <artifactId>jpackage-maven-plugin</artifactId>
+                    <version>${version.jpackage.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.surefire.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${version.failsafe.plugin}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>

@@ -1,4 +1,4 @@
-<configuration debug="false" statusListenerClass="ch.qos.logback.core.status.NopStatusListener">
+<configuration>
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %cyan(%-40logger{36}) - %msg%n</pattern>

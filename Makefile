@@ -11,3 +11,9 @@ build:
 
 logs:
 	docker-compose -f infrastructure/docker-compose.yml logs -f
+
+coverage:
+	mvn clean verify -Pcoverage -Dspring.profiles.active=test
+
+install-bg-client:
+	mvn clean install -pl :bg-client -am -DskipTests
