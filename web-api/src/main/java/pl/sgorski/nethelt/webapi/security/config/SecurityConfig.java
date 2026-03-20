@@ -38,6 +38,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/auth/logout", "/auth/refresh").authenticated()
                         .requestMatchers("/auth/**").not().authenticated()
                         .requestMatchers("/oauth2/code/**", "/login/auth2/code/**").not().authenticated()
                         .requestMatchers("/profile/**").authenticated()

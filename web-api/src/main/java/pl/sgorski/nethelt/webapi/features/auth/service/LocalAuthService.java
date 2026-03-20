@@ -23,7 +23,6 @@ public class LocalAuthService {
     private final AuthMapper authMapper;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Transactional
@@ -38,9 +37,9 @@ public class LocalAuthService {
     }
 
     /**
-     * Validate user's login request and returns JWT token if credentials are correct
+     * Validate user's login request and returns user if credentials are correct
      */
-    public String login(LoginUserCommand command) {
+    public User login(LoginUserCommand command) {
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         command.email(),
@@ -49,7 +48,7 @@ public class LocalAuthService {
         );
         var principal = Objects.requireNonNull(auth.getPrincipal(), "Authentication failed");
         var user = (User) principal;
-        return jwtService.generateAccessToken(user);
+        return userService.getUser(user.getId());
     }
 
     /**

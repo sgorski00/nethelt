@@ -1,0 +1,21 @@
+package pl.sgorski.nethelt.webapi.features.auth.scheduler;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class RefreshTokenCleanupJob {
+
+    private final RefreshTokenService refreshTokenService;
+
+    @Scheduled(cron = "0 0 3 * * *")
+    public void cleanUpInvalidTokens() {
+        log.info("Cleaning up expired and revoked refresh tokens...");
+        refreshTokenService.deletedInvalidTokens();
+    }
+}

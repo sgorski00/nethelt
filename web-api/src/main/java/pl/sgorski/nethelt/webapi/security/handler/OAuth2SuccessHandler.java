@@ -1,9 +1,11 @@
 package pl.sgorski.nethelt.webapi.security.handler;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.exception.domain.IdentityNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.oauth.factory.OAuth2UserInfoFactory;
+import pl.sgorski.nethelt.webapi.features.auth.service.CookieResponseHelper;
+import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 
@@ -24,6 +28,8 @@ import java.util.Objects;
 public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserIdentityService identityService;
+    private final RefreshTokenService refreshTokenService;
+    private final CookieResponseHelper cookieResponseHelper;
     private final JwtService jwtService;
 
     @Value("${nh.frontend.oauth-success-url}")
@@ -36,10 +42,15 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
         var principal = (OAuth2User) Objects.requireNonNull(authentication.getPrincipal(), "Authentication failed");
         var userInfo = OAuth2UserInfoFactory.create(provider, principal.getAttributes());
         try {
-            //TODO: add refresh token here as a cookie
             var identity = identityService.findIdentity(userInfo.getProvider(), userInfo.getProviderId());
-            var token = jwtService.generateAccessToken(identity.getUser());
+            var user = identity.getUser();
+            var token = jwtService.generateAccessToken(user);
+            var refreshToken = refreshTokenService.generateRefreshToken(user);
+            var cookie = cookieResponseHelper.createRefreshTokenCookie(
+                    refreshToken.getToken(),
+                    refreshTokenService.getExpirationSecond());
             var redirectUrl = String.format("%s?token=%s", frontendOauth2SuccessUrl, token);
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             response.sendRedirect(redirectUrl);
         } catch (IdentityNotFoundException ex) {
             throw new AccessDeniedException("Local users are not allowed to login with OAuth");
