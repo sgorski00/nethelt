@@ -10,6 +10,13 @@ Table devices {
   deleted_at timestamp
 }
 
+Table user_identities {
+  id integer [primary key]
+  user_id integer [not null]
+  provider varchar [not null, note: "eg: 'google', 'facebook'"]
+  provider_id varchar [not null]
+}
+
 Table users {
   id integer [primary key]
   username varchar [not null, unique]
@@ -42,6 +49,14 @@ Table notifications {
   updated_at timestamp
 }
 
+Table notification_preferences {
+  id integer [primary key]
+  user_id integer [not null]
+  channel varchar [not null, note: "eg. 'email', 'sms', 'pushup'"]
+  is_enabled bool [not null, default: false]
+
+}
+
 Table device_operation_stats {
   id integer [primary key]
   operation_id integer [not null]
@@ -60,6 +75,8 @@ Table anomaly_logs {
 }
 
 Ref: users.id < devices.user_id
+Ref: users.id < user_identities.user_id
+Ref: users.id < notification_preferences.user_id
 Ref: devices.id < device_operations.device_id
 Ref: device_operations.id < notifications.operation_id
 Ref: device_operations.id < device_operation_stats.operation_id

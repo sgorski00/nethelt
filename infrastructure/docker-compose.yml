@@ -1,7 +1,7 @@
 services:
   nh-postgres:
     image: postgres:18.2-alpine
-    container_name: db
+    container_name: nh-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -13,6 +13,11 @@ services:
       - nh-postgres-data:/var/lib/postgresql/data
     networks:
       - nh-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nh-web-api:
     build:
@@ -25,7 +30,30 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - nh-postgres
+      nh-postgres:
+        condition: service_healthy
+    networks:
+      - nh-network
+
+  nh-ai-model:
+    build:
+      context: ../ai-model
+      dockerfile: Dockerfile
+    container_name: nh-ai-model
+    restart: unless-stopped
+    networks:
+      - nh-network
+
+  nh-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: nh-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - nh-web-api
     networks:
       - nh-network
 
