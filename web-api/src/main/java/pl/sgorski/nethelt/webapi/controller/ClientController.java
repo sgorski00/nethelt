@@ -1,23 +1,17 @@
 package pl.sgorski.nethelt.webapi.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pl.sgorski.nethelt.model.*;
+
 import java.util.List;
 import java.util.Set;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.NetworkConfig;
-import pl.sgorski.nethelt.model.Operation;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.TelnetResult;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(version = "1")
+@Deprecated(forRemoval = true)
 public class ClientController {
-
+//TODO: implement real controller in the proper place
   @PostMapping("/ping")
   public ResponseEntity<?> receivePingResults(@RequestBody Set<PingResult> body) {
     System.out.println("Received ping results: " + body);

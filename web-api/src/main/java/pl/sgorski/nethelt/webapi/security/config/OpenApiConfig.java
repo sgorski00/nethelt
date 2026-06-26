@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.config;
+package pl.sgorski.nethelt.webapi.security.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
