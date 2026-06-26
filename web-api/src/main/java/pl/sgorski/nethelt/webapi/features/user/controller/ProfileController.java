@@ -84,6 +84,7 @@ public final class ProfileController {
     //todo: add password reset flow - send email with token, validate token, set new password
 
     private void addOAuth2SessionAttributes(HttpServletRequest request, Long userId) {
+        //todo: replace session with cookies
         var session = request.getSession(true);
         session.setAttribute(OAUTH_MODE.getAttributeName(), "link");
         session.setAttribute(OAUTH_LINK_USER_ID.getAttributeName(), userId);
