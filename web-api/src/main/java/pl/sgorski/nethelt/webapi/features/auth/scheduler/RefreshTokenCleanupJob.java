@@ -13,9 +13,14 @@ public class RefreshTokenCleanupJob {
 
     private final RefreshTokenService refreshTokenService;
 
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 */2 * * *")
     public void cleanUpInvalidTokens() {
-        log.info("Cleaning up expired and revoked refresh tokens...");
-        refreshTokenService.deletedInvalidTokens();
+        try {
+            log.debug("Starting cleanup of expired and revoked refresh tokens...");
+            refreshTokenService.deletedInvalidTokens();
+            log.info("Refresh token cleanup completed successfully");
+        } catch (Exception e) {
+            log.error("Error during refresh token cleanup", e);
+        }
     }
 }

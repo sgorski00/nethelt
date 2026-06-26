@@ -12,7 +12,6 @@ import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
-import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 
 import java.util.Objects;
 
@@ -24,6 +23,7 @@ public class LocalAuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public User registerUser(RegisterUserCommand command) {
@@ -53,6 +53,7 @@ public class LocalAuthService {
 
     /**
      * Method that allows oauth2 users to create local password and login with email and password.
+     * Revokes all existing refresh tokens to force re-authentication.
      */
     @Transactional
     public void setLocalPassword(User user, String rawPassword) {
@@ -61,6 +62,7 @@ public class LocalAuthService {
         }
         user.setPasswordHash(hashPassword(rawPassword));
         userService.save(user);
+        refreshTokenService.revokeAllUserTokens(user.getId());
     }
 
     @Transactional
@@ -75,6 +77,7 @@ public class LocalAuthService {
 
         user.setPasswordHash(hashPassword(newPassword));
         userService.save(user);
+        refreshTokenService.revokeAllUserTokens(user.getId());
     }
 
     private String hashPassword(String rawPassword) {

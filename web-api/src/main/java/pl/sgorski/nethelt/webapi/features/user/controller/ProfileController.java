@@ -45,7 +45,6 @@ public final class ProfileController {
             @RequestBody @Valid PasswordSetRequest request,
             Authentication authentication
     ) {
-        //todo: revoke refreshtokens when password is changed
         var userId = authenticatedUserResolver.requireUserId(authentication);
         var user = userService.getUser(userId);
         localAuthService.setLocalPassword(user, request.newPassword());
@@ -57,7 +56,6 @@ public final class ProfileController {
             @RequestBody @Valid PasswordChangeRequest request,
             Authentication authentication
     ) {
-        //todo: revoke refreshtokens when password is changed
         var userId = authenticatedUserResolver.requireUserId(authentication);
         var user = userService.getUser(userId);
         localAuthService.changePassword(user, request.oldPassword(), request.newPassword());

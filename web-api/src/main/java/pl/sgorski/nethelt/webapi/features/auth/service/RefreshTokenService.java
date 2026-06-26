@@ -27,16 +27,22 @@ public class RefreshTokenService {
     }
 
     /**
-     * Validates the refresh token, throws exception if invalid.
+     * Validates and retrieves user from refresh token.
+     * Throws exception if token is invalid, expired, or revoked.
      *
-     * @param tokenStr the token string
-     * @param user     the user
+     * @param tokenStr the refresh token string
+     * @return the user associated with the token
      * @throws NotFoundException if token not found or invalid
      */
-    public void validateToken(String tokenStr, User user) {
-        if (!isTokenValid(tokenStr, user)) {
+    public User validateAndGetUser(String tokenStr) {
+        var token = refreshTokenRepository.findWithUserByToken(tokenStr)
+                .orElseThrow(() -> new NotFoundException("Invalid or expired refresh token"));
+
+        if (token.isRevoked() || token.getExpiresAt().isBefore(Instant.now())) {
             throw new NotFoundException("Invalid or expired refresh token");
         }
+
+        return token.getUser();
     }
 
     @Transactional
@@ -45,6 +51,11 @@ public class RefreshTokenService {
             t.setRevoked(true);
             refreshTokenRepository.save(t);
         });
+    }
+
+    @Transactional
+    public void revokeAllUserTokens(Long userId) {
+        refreshTokenRepository.revokeAllUserTokens(userId);
     }
 
     public long getExpirationSecond() {
