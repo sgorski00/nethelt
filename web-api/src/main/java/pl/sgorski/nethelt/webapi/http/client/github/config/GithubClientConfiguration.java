@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.http.client.github.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +15,7 @@ import pl.sgorski.nethelt.webapi.http.client.github.GithubClient;
 
 import java.nio.charset.StandardCharsets;
 
-@Log4j2
+@Slf4j
 @Configuration
 @ImportHttpServices(group = "github", types = {GithubClient.class})
 @RequiredArgsConstructor

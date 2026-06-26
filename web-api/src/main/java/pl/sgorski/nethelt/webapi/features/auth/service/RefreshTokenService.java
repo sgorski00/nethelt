@@ -63,14 +63,6 @@ public class RefreshTokenService {
     }
 
 
-    private boolean isTokenValid(String tokenStr, User user) {
-        var token = refreshTokenRepository.findByToken(tokenStr)
-                .orElseThrow(() -> new NotFoundException("Token not found"));
-        return !token.isRevoked() &&
-                token.getExpiresAt().isAfter(Instant.now()) &&
-                token.getUser().getId().equals(user.getId());
-    }
-
     @Transactional
     public void deletedInvalidTokens() {
         refreshTokenRepository.deleteAllByExpiresAtBeforeOrIsRevokedTrue(Instant.now());
