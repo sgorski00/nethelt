@@ -28,8 +28,8 @@ public final class OAuth2AccountLinkService {
             throw new IllegalStateException("Account is already linked to another user");
         }
         if (userId == null) {
-            log.error("There is no user id in the session! Cannot link an oauth2 account");
-            throw new IllegalStateException("User id is required to link an account");
+            log.error("There is no OAuth2 link context! Cannot link an oauth2 account");
+            throw new IllegalStateException("OAuth2 link context is required to link an account");
         }
         var user = userService.getUserWithIdentities(userId);
         log.debug("Linking new identity {} to existing user {}", provider.name(), user.getEmail());

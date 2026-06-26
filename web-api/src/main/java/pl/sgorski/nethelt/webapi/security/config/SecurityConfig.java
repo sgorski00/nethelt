@@ -21,6 +21,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.sgorski.nethelt.webapi.security.filter.JwtAuthenticationFilter;
+import pl.sgorski.nethelt.webapi.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AuthenticationSuccessHandler oauth2SuccessHandler;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
+    private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
@@ -42,8 +44,11 @@ public class SecurityConfig {
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().denyAll())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.NEVER))
+                                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .requestCache(AbstractHttpConfigurer::disable)
                 .oauth2Login(oauth -> oauth
+                                        .authorizationEndpoint(auth -> auth
+                                                .authorizationRequestRepository(authorizationRequestRepository))
                         .userInfoEndpoint(user -> user
                                 .userService(oauth2UserService))
                         .successHandler(oauth2SuccessHandler))

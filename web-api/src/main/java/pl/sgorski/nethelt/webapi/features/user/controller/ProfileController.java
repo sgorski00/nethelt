@@ -1,6 +1,5 @@
 package pl.sgorski.nethelt.webapi.features.user.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,10 +16,11 @@ import pl.sgorski.nethelt.webapi.features.user.dto.response.DetailedUserResponse
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
+import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextCookieService;
+import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextService;
+import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2Mode;
 
 import java.util.Locale;
-
-import static pl.sgorski.nethelt.webapi.security.session.OAuthSessionAttributes.*;
 
 @Log4j2
 @RestController
@@ -32,6 +32,8 @@ public final class ProfileController {
     private final UserService userService;
     private final UserMapper userMapper;
     private final AuthenticatedUserResolver authenticatedUserResolver;
+    private final OAuth2ContextService oAuth2ContextService;
+    private final OAuth2ContextCookieService oAuth2ContextCookieService;
 
     @GetMapping
     public ResponseEntity<DetailedUserResponse> showProfile(Authentication authentication) {
@@ -65,13 +67,13 @@ public final class ProfileController {
     @GetMapping("/link/{provider}")
     public ResponseEntity<Void> linkAccount(
             @SuppressWarnings("SpringMvcPathVariableDeclarationInspection") @PathVariable("provider") AuthProvider provider,
-            HttpServletRequest request,
             Authentication authentication
     ) {
         log.debug("Linking account with provider: {}", provider);
         var userId = authenticatedUserResolver.requireUserId(authentication);
         log.debug("Logged user ID: {}", userId);
-        addOAuth2SessionAttributes(request, userId);
+        var token = oAuth2ContextService.generate(userId, OAuth2Mode.LINK);
+        oAuth2ContextCookieService.write(token);
 
         var redirectPath = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/oauth2/authorization/")
@@ -82,11 +84,4 @@ public final class ProfileController {
     }
 
     //todo: add password reset flow - send email with token, validate token, set new password
-
-    private void addOAuth2SessionAttributes(HttpServletRequest request, Long userId) {
-        //todo: replace session with cookies
-        var session = request.getSession(true);
-        session.setAttribute(OAUTH_MODE.getAttributeName(), "link");
-        session.setAttribute(OAUTH_LINK_USER_ID.getAttributeName(), userId);
-    }
 }
