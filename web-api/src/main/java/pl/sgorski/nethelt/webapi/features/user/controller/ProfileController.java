@@ -45,6 +45,7 @@ public final class ProfileController {
             @RequestBody @Valid PasswordSetRequest request,
             Authentication authentication
     ) {
+        //todo: revoke refreshtokens when password is changed
         var userId = authenticatedUserResolver.requireUserId(authentication);
         var user = userService.getUser(userId);
         localAuthService.setLocalPassword(user, request.newPassword());
@@ -56,6 +57,7 @@ public final class ProfileController {
             @RequestBody @Valid PasswordChangeRequest request,
             Authentication authentication
     ) {
+        //todo: revoke refreshtokens when password is changed
         var userId = authenticatedUserResolver.requireUserId(authentication);
         var user = userService.getUser(userId);
         localAuthService.changePassword(user, request.oldPassword(), request.newPassword());
@@ -80,6 +82,8 @@ public final class ProfileController {
         log.debug("Redirecting to OAuth2 authorization endpoint: {}", redirectPath);
         return ResponseEntity.status(HttpStatus.FOUND).location(redirectPath).build();
     }
+
+    //todo: add password reset flow - send email with token, validate token, set new password
 
     private void addOAuth2SessionAttributes(HttpServletRequest request, Long userId) {
         var session = request.getSession(true);

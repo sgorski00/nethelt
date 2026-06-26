@@ -37,10 +37,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/auth/logout", "/auth/refresh").authenticated()
-                        .requestMatchers("/auth/**").not().authenticated()
-                        .requestMatchers("/oauth2/code/**", "/login/auth2/code/**").not().authenticated()
+                        .requestMatchers("/actuator/**", "/auth/refresh", "/auth/logout").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/authorization/**", "/oauth2/code/**", "/login/oauth2/code/**").not().authenticated()
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().denyAll())
                 .sessionManagement(session -> session
@@ -54,6 +52,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler)
                         .authenticationEntryPoint(authenticationEntryPoint))
+                //todo: configure cors
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();

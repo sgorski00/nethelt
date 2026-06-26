@@ -49,6 +49,7 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
             var cookie = cookieResponseHelper.createRefreshTokenCookie(
                     refreshToken.getToken(),
                     refreshTokenService.getExpirationSecond());
+            //todo: return tokens in the body with tokenReposnseEntityCreator
             var redirectUrl = String.format("%s?token=%s", frontendOauth2SuccessUrl, token);
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             response.sendRedirect(redirectUrl);

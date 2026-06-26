@@ -63,6 +63,7 @@ public final class AuthController {
             @CookieValue(CookieResponseHelper.REFRESH_TOKEN_COOKIE_KEY) String refreshTokenCookie,
             Authentication authentication
     ) {
+        //todo: remove jwt from the request and validate only refresh token - user must be identified by refresh token only, not jwt
         var userId = authenticatedUserResolver.requireUserId(authentication);
         var user = userService.getUser(userId);
         refreshTokenService.validateToken(refreshTokenCookie, user);

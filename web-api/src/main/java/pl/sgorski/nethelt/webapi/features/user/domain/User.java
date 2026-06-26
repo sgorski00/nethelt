@@ -17,10 +17,7 @@ import java.util.*;
 
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Entity
-@Table(
-        name = "users",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"email", "deleted_at"})
-)
+@Table(name = "users")
 @Data
 @ToString(exclude = {"passwordHash", "identities"})
 @EqualsAndHashCode(exclude = "identities")

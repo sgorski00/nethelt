@@ -30,7 +30,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Pas
         if (!request.newPassword().equals(request.repeatNewPassword())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Passwords do not match")
-                    .addPropertyNode("repeatPassword")
+                    .addPropertyNode("repeatNewPassword")
                     .addConstraintViolation();
             return false;
         }
@@ -39,7 +39,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Pas
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(
                             "Password must be at least 8 chars, contain uppercase letter, digit and special char"
-                    ).addPropertyNode("password")
+                    ).addPropertyNode("newPassword")
                     .addConstraintViolation();
             return false;
         }

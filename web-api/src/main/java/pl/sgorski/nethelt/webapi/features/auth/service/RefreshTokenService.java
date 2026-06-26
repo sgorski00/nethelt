@@ -41,10 +41,10 @@ public class RefreshTokenService {
 
     @Transactional
     public void revokeToken(String tokenStr) {
-        var token = refreshTokenRepository.findByToken(tokenStr)
-                .orElseThrow(() -> new NotFoundException("Token not found"));
-        token.setRevoked(true);
-        refreshTokenRepository.save(token);
+        refreshTokenRepository.findByToken(tokenStr).ifPresent(t -> {
+            t.setRevoked(true);
+            refreshTokenRepository.save(t);
+        });
     }
 
     public long getExpirationSecond() {
