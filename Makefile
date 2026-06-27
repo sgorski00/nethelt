@@ -17,3 +17,6 @@ coverage:
 
 install-bg-client:
 	mvn clean install -pl :bg-client -am -DskipTests
+
+psql:
+	docker exec -it nh-postgres psql -U postgres -d nh-db

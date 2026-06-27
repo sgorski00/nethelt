@@ -12,8 +12,12 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordChangeRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordSetRequest;
+import pl.sgorski.nethelt.webapi.features.user.dto.request.ProfileCreateRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.DetailedUserResponse;
+import pl.sgorski.nethelt.webapi.features.user.dto.response.ProfileResponse;
+import pl.sgorski.nethelt.webapi.features.user.mapper.ProfileMapper;
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;
+import pl.sgorski.nethelt.webapi.features.user.service.ProfileService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextCookieService;
@@ -31,15 +35,28 @@ public final class ProfileController {
     private final LocalAuthService localAuthService;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final ProfileMapper profileMapper;
     private final AuthenticatedUserResolver authenticatedUserResolver;
     private final OAuth2ContextService oAuth2ContextService;
     private final OAuth2ContextCookieService oAuth2ContextCookieService;
+    private final ProfileService profileService;
 
     @GetMapping
     public ResponseEntity<DetailedUserResponse> showProfile(Authentication authentication) {
         var userId = authenticatedUserResolver.requireUserId(authentication);
-        var user = userService.getUserWithIdentities(userId);
+        var user = userService.getUserWithProfileAndIdentities(userId);
         return ResponseEntity.ok(userMapper.toDetailedResponse(user));
+    }
+
+    @PostMapping
+    public ResponseEntity<ProfileResponse> createProfile(
+            @RequestBody ProfileCreateRequest request,
+            Authentication authentication
+    ) {
+        var userId = authenticatedUserResolver.requireUserId(authentication);
+        var command = profileMapper.toCreateCommand(userId, request);
+        var profile = profileService.createProfile(command);
+        return ResponseEntity.status(HttpStatus.CREATED).body(profileMapper.toProfileResponse(profile));
     }
 
     @PutMapping("/password")

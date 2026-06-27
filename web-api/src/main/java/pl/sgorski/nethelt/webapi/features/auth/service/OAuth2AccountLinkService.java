@@ -31,7 +31,7 @@ public final class OAuth2AccountLinkService {
             log.error("There is no OAuth2 link context! Cannot link an oauth2 account");
             throw new IllegalStateException("OAuth2 link context is required to link an account");
         }
-        var user = userService.getUserWithIdentities(userId);
+        var user = userService.getUserWithProfileAndIdentities(userId);
         log.debug("Linking new identity {} to existing user {}", provider.name(), user.getEmail());
         var identity = authMapper.toIdentity(userInfo);
         user.addIdentity(identity);

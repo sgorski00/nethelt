@@ -43,7 +43,7 @@ public class User implements UserDetails {
     private Set<UserIdentity> identities = new HashSet<>();
 
     @Nullable
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
 
     @CreationTimestamp
