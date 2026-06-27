@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import pl.sgorski.nethelt.webapi.exception.application.AlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.application.NotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.UserAlreadyExistsException;
 
@@ -32,8 +33,8 @@ public final class GlobalExceptionHandler {
         return problem;
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ProblemDetail handleAlreadyExistsException(AlreadyExistsException ex) {
         var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problem.setTitle("Conflict");
         problem.setDetail(ex.getMessage());

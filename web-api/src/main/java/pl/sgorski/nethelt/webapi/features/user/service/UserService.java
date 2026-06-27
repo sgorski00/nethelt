@@ -28,8 +28,8 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
-    public User getUserWithIdentities(Long id) {
-        return userRepository.findWithIdentitiesByIdAndDeletedAtIsNull(id)
+    public User getUserWithProfileAndIdentities(Long id) {
+        return userRepository.findWithIdentitiesAndProfileByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
