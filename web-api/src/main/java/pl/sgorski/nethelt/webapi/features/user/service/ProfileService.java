@@ -3,6 +3,7 @@ package pl.sgorski.nethelt.webapi.features.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.domain.Profile;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileCreateCommand;
@@ -21,21 +22,20 @@ public class ProfileService {
     @Transactional
     public Profile createProfile(ProfileCreateCommand command) {
         var user = userService.getUser(command.userId());
+        if(user.getProfile() != null) {
+            throw new ProfileAlreadyExistsException();
+        }
         var profile = profileMapper.toProfile(command);
         user.setProfile(profile);
         userService.save(user);
-        return profileRepository.findByUserId(command.userId())
-                .orElseThrow(() -> new ProfileNotFoundException("Your profile is not found"));
+        return profile;
     }
 
     @Transactional
     public Profile updateProfile(ProfileUpdateCommand command) {
-        var existingProfile = profileRepository.findByUserId(command.userId())
+        var existingProfile = profileRepository.findWithUserByUserId(command.userId())
                 .orElseThrow(() -> new ProfileNotFoundException("Couldn't update the non-existing profile"));
-        var user = userService.getUser(command.userId());
         profileMapper.update(existingProfile, command);
-        user.setProfile(existingProfile);
-        userService.save(user);
         return existingProfile;
     }
 }

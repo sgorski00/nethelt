@@ -1,6 +1,8 @@
 package pl.sgorski.nethelt.webapi.exception.domain;
 
-public final class UserAlreadyExistsException extends RuntimeException {
+import pl.sgorski.nethelt.webapi.exception.application.AlreadyExistsException;
+
+public final class UserAlreadyExistsException extends AlreadyExistsException {
     public UserAlreadyExistsException() {
         super("User with passed identifier already exists");
     }

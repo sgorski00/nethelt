@@ -41,4 +41,11 @@ public class Profile {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    void setUser(User user) {
+        this.user = user;
+        if(user.getProfile() != this) {
+            user.setProfile(this);
+        }
+    }
 }

@@ -101,10 +101,8 @@ public class User implements UserDetails {
         identity.setUser(this);
     }
 
-    public void setProfile(@Nullable Profile profile) {
+    public void setProfile(Profile profile) {
         this.profile = profile;
-        if(profile != null) {
-            profile.setUser(this);
-        }
+        profile.setUser(this);
     }
 }

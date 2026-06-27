@@ -1,4 +1,4 @@
-.PHONY: up down build logs
+.PHONY: up down build logs test coverage install-bg-client psql
 
 up:
 	docker compose -f infrastructure/docker-compose.yml up -d
@@ -11,6 +11,9 @@ build:
 
 logs:
 	docker compose -f infrastructure/docker-compose.yml logs -f
+
+test:
+	mvn clean verify -Dspring.profiles.active=test
 
 coverage:
 	mvn clean verify -Pcoverage -Dspring.profiles.active=test
