@@ -6,8 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-public record ProfileCreateRequest(
-        @NotNull @Size(min = 3, max = 100) String username,
+public record ProfileUpdateRequest(
         String firstName,
         String lastName,
         @Past LocalDate birthDate,

@@ -13,6 +13,7 @@ import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordChangeRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordSetRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.ProfileCreateRequest;
+import pl.sgorski.nethelt.webapi.features.user.dto.request.ProfileUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.DetailedUserResponse;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.ProfileResponse;
 import pl.sgorski.nethelt.webapi.features.user.mapper.ProfileMapper;
@@ -57,6 +58,17 @@ public final class ProfileController {
         var command = profileMapper.toCreateCommand(userId, request);
         var profile = profileService.createProfile(command);
         return ResponseEntity.status(HttpStatus.CREATED).body(profileMapper.toProfileResponse(profile));
+    }
+
+    @PutMapping
+    public ResponseEntity<ProfileResponse> updateProfile(
+            @RequestBody ProfileUpdateRequest request,
+            Authentication authentication
+    ) {
+        var userId = authenticatedUserResolver.requireUserId(authentication);
+        var command = profileMapper.toUpdateCommand(userId, request);
+        var profile = profileService.updateProfile(command);
+        return ResponseEntity.ok(profileMapper.toProfileResponse(profile));
     }
 
     @PutMapping("/password")
