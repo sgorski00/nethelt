@@ -1,6 +1,5 @@
 package pl.sgorski.nethelt.webapi.features.user.dto.request;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
