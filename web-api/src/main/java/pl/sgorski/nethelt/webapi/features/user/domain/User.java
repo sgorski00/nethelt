@@ -42,6 +42,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<UserIdentity> identities = new HashSet<>();
 
+    @Nullable
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Profile profile;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -95,5 +99,12 @@ public class User implements UserDetails {
         }
         identities.add(identity);
         identity.setUser(this);
+    }
+
+    public void setProfile(@Nullable Profile profile) {
+        this.profile = profile;
+        if(profile != null) {
+            profile.setUser(this);
+        }
     }
 }
