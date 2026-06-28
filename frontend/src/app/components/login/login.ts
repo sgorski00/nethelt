@@ -27,7 +27,6 @@ export class Login {
     const request: LoginRequest = this.loginForm.getRawValue();
 
     this.authService.login(request).subscribe({
-        next: res => console.log(res),
         error: err => console.log(err)
     });
   }
