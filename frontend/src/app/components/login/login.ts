@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LoginRequest } from '../../models/auth/login-request';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,7 @@ export class Login {
 
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   public readonly loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -27,6 +29,7 @@ export class Login {
     const request: LoginRequest = this.loginForm.getRawValue();
 
     this.authService.login(request).subscribe({
+        next: () => this.router.navigateByUrl('/profile'),
         error: err => console.log(err)
     });
   }
