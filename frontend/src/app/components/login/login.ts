@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth-service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LoginRequest } from '../../models/auth/login-request';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -38,5 +39,13 @@ export class Login {
           console.log(err.error)
         }
     });
+  }
+
+  public loginWithGoogle() {
+    window.location.href = `${environment.apiUrl}/oauth2/authorization/google`
+  }
+
+  public loginWithGithub() {
+    window.location.href = `${environment.apiUrl}/oauth2/authorization/github`
   }
 }
