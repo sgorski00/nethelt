@@ -22,6 +22,6 @@ export const routes: Routes = [
     },
     {
         path: 'oauth2/success',
-        component: Oauth2Callback
+        component: Oauth2Callback,
     }
 ];

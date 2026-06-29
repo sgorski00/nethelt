@@ -1,3 +1,5 @@
+import { IdentityProvider } from "./identity-provider"
+
 export interface DetailedUser {
   id: number,
   email: string,
@@ -10,7 +12,7 @@ export interface DetailedUser {
 }
 
 export interface UserIdentity {
-  provider: string,
+  provider: IdentityProvider,
   providerId: string
 }
 

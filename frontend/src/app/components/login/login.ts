@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LoginRequest } from '../../models/auth/login-request';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { IdentityProvider } from '../../models/user/identity-provider';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,8 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+
+  protected readonly IdentityProvider = IdentityProvider;
 
   public readonly errorMessage = signal('');
   public readonly loginForm = this.fb.nonNullable.group({
@@ -41,11 +44,7 @@ export class Login {
     });
   }
 
-  public loginWithGoogle() {
-    window.location.href = `${environment.apiUrl}/oauth2/authorization/google`
-  }
-
-  public loginWithGithub() {
-    window.location.href = `${environment.apiUrl}/oauth2/authorization/github`
+  public loginWithProvider(provider: IdentityProvider) {
+    window.location.href = `${environment.apiUrl}/oauth2/authorization/${provider.toLocaleLowerCase()}`
   }
 }

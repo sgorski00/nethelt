@@ -23,7 +23,7 @@
     }
   </form>
   <div>
-    <button (click)="loginWithGoogle()">Continue with Google</button>
-    <button (click)="loginWithGithub()">Continue with Github</button>
+    <button (click)="loginWithProvider(IdentityProvider.GOOGLE)">Continue with Google</button>
+    <button (click)="loginWithProvider(IdentityProvider.GITHUB)">Continue with Github</button>
   </div>
 </div>

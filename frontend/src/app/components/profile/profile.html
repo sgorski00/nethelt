@@ -1,20 +1,37 @@
 @if (user(); as user) {
+<div>
   <p>Welcome, {{ user.email }}!</p>
   <small>Account created at: {{ user.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
+</div>
+<div>
   @if (user.profile; as profile) {
-    <p>Detailed info:</p>
-    <ul>
-      <li>Username: {{ profile.username }}</li>
-      <li>First Name: {{ profile.firstName }}</li>
-      <li>Last Name: {{ profile.lastName }}</li>
-      <li>Birth Date: {{ profile.birthDate }}</li>
-      <li>Bio: {{ profile.bio }}</li>
-    </ul>
-    <button type="button" (click)="openUpdateProfile()">Update Profile</button>
+  <p>Detailed info:</p>
+  <ul>
+    <li>Username: {{ profile.username }}</li>
+    <li>First Name: {{ profile.firstName }}</li>
+    <li>Last Name: {{ profile.lastName }}</li>
+    <li>Birth Date: {{ profile.birthDate }}</li>
+    <li>Bio: {{ profile.bio }}</li>
+  </ul>
+  <button type="button" (click)="openUpdateProfile()">Update Profile</button>
   } @else {
-    <p>No profile information available.</p>
-    <button type="button" (click)="openCreateProfile()">Create Profile</button>
+  <p>No profile information available.</p>
+  <button type="button" (click)="openCreateProfile()">Create Profile</button>
   }
+</div>
+<div>
+  <p>Social media:</p>
+  @if (hasIdentity(user, IdentityProvider.GOOGLE)) {
+  <p>{{ IdentityProvider.GOOGLE }} is linked!</p>
+  } @else {
+  <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">Link Google account</button>
+  }
+  @if (hasIdentity(user, IdentityProvider.GITHUB)) {
+    <p>{{ IdentityProvider.GITHUB }} is linked!</p>
+  } @else {
+  <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">Link Github account</button>
+  }
+</div>
 } @else {
-  <p>Loading...</p>
+<p>Loading...</p>
 }
