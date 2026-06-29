@@ -10,6 +10,7 @@
       <li>Birth Date: {{ profile.birthDate }}</li>
       <li>Bio: {{ profile.bio }}</li>
     </ul>
+    <button type="button" (click)="openUpdateProfile()">Update Profile</button>
   } @else {
     <p>No profile information available.</p>
     <button type="button" (click)="openCreateProfile()">Create Profile</button>

@@ -3,7 +3,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {DetailedUser, UserProfile} from '../models/user/user-response';
-import {ProfileCreateRequest} from '../models/user/profile-create-request';
+import {ProfileCreateRequest, ProfileUpdateRequest} from '../models/user/profile-request';
 
 @Injectable({
   providedIn: 'root',
@@ -19,5 +19,9 @@ export class UserService {
 
   public createProfile(profileData: ProfileCreateRequest): Observable<UserProfile> {
     return this.httpClient.post<UserProfile>(`${this.apiUrl}/profile`, profileData);
+  }
+
+  public updateProfile(profileData: ProfileUpdateRequest): Observable<UserProfile> {
+    return this.httpClient.put<UserProfile>(`${this.apiUrl}/profile`, profileData);
   }
 }

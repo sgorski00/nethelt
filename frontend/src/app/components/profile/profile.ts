@@ -3,7 +3,7 @@ import { UserService } from '../../services/user-service';
 import {DetailedUser, UserProfile} from '../../models/user/user-response';
 import { OnInit } from '@angular/core';
 import {DatePipe} from '@angular/common';
-import {Dialog, DialogModule} from '@angular/cdk/dialog';
+import {Dialog, DialogModule, DialogRef} from '@angular/cdk/dialog';
 import {ProfileDialog} from './profile-dialog/profile-dialog';
 
 @Component({
@@ -25,18 +25,32 @@ export class Profile implements OnInit {
   }
 
   public openCreateProfile() {
-    const ref = this.dialog.open<UserProfile>(ProfileDialog);
+    const ref = this.dialog.open<UserProfile>(
+      ProfileDialog,
+      {data: {mode: 'create'}}
+    );
+    this.updateProfileView(ref);
+  }
 
-    ref.closed.subscribe(createdProfile => {
-      if (!createdProfile) return;
+  public openUpdateProfile() {
+    const ref = this.dialog.open<UserProfile>(
+      ProfileDialog,
+      {data: {mode: 'update', profile: this.user()!.profile}}
+    );
+    this.updateProfileView(ref);
+  }
 
-      this.user.update(actual => {
-        if (!actual) return actual;
+  private updateProfileView(ref: DialogRef<UserProfile>) {
+    ref.closed.subscribe(newProfile => {
+      if (!newProfile) return;
+
+      this.user.update(actualProfile => {
+        if (!actualProfile) return actualProfile;
         return {
-          ...actual,
-          profile: createdProfile
+          ...actualProfile,
+          profile: newProfile
         }
       })
-    });
+    })
   }
 }
