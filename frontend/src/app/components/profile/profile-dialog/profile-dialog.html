@@ -1,0 +1,30 @@
+<h2>Create profile</h2>
+<form [formGroup]="createProfileForm" (ngSubmit)="createProfile()">
+  <label for="username">Username</label>
+  <input id="username" formControlName="username" type="text" required>
+  @if (createProfileForm.get('username')?.touched && createProfileForm.get('username')?.hasError('required')) {
+    <small>Nazwa użytkownika jest wymagana.</small>
+  }
+
+  <label for="firstName">First name</label>
+  <input id="firstName" formControlName="firstName" type="text">
+
+  <label for="lastName">Last name</label>
+  <input id="lastName" formControlName="lastName" type="text">
+
+  <label for="birthDate">Birth date</label>
+  <input id="birthDate" formControlName="birthDate" type="date" [max]="today">
+
+  <label for="bio">Bio</label>
+  <textarea id="bio" formControlName="bio"></textarea>
+
+  <span>
+  <button type="button" (click)="closeDialog()">Cancel</button>
+  <button type="submit">Create</button>
+  </span>
+
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+
+</form>

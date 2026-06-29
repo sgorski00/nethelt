@@ -2,7 +2,7 @@ export interface DetailedUser {
   id: number,
   email: string,
   role: string,
-  profile: Profile | null,
+  profile: UserProfile | null,
   identities: UserIdentity[],
   createdAt: string,
   updatedAt: string,
@@ -14,7 +14,7 @@ export interface UserIdentity {
   providerId: string
 }
 
-export interface Profile {
+export interface UserProfile {
   id: number,
   username: string,
   firstName: string | null,

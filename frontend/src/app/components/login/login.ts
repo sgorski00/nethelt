@@ -35,7 +35,7 @@ export class Login {
         next: () => this.router.navigateByUrl('/profile'),
         error: err => {
           this.errorMessage.set(err.error.detail || 'An error occurred during login.');
-          console.log(err)
+          console.log(err.error)
         }
     });
   }
