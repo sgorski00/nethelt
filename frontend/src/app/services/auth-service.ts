@@ -3,13 +3,14 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { LoginRequest } from '../models/auth/login-request';
 import { LoginRespone } from '../models/auth/login-response';
-import { Observable, tap } from 'rxjs';
+import {finalize, Observable, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
+  private readonly jwtTokenKey = 'token';
   private readonly apiUrl = environment.apiUrl;
   private readonly httpClient = inject(HttpClient);
 
@@ -18,13 +19,19 @@ export class AuthService {
       .post<LoginRespone>(`${this.apiUrl}/auth/login`, body)
       .pipe(
         tap(res => {
-          localStorage.setItem('token', res.token)
+          localStorage.setItem(this.jwtTokenKey, res.token)
         })
       );
   }
 
   public isAuthenticated(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(this.jwtTokenKey);
     return !!token;
+  }
+
+  public logout(): Observable<void> {
+    return this.httpClient.post<void>(`${this.apiUrl}/auth/logout`, {}).pipe(
+      finalize(() => localStorage.removeItem(this.jwtTokenKey))
+    )
   }
 }
