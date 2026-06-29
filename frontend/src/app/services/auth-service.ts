@@ -9,7 +9,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  
+
   private readonly apiUrl = environment.apiUrl;
   private readonly httpClient = inject(HttpClient);
 
@@ -23,4 +23,8 @@ export class AuthService {
       );
   }
 
+  public isAuthenticated(): boolean {
+    const token = localStorage.getItem('token');
+    return !!token;
+  }
 }

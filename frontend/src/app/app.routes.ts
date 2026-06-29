@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { Profile } from './components/profile/profile';
+import {requireAuth, requireNoAuth} from './guards/auth-guard';
 
 export const routes: Routes = [
     {
@@ -10,10 +11,12 @@ export const routes: Routes = [
     },
     {
         path: 'login',
-        component: Login
+        component: Login,
+        canActivate: [requireNoAuth('/profile')]
     },
     {
         path: 'profile',
-        component: Profile
+        component: Profile,
+        canActivate: [requireAuth]
     }
 ];
