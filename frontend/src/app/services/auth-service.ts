@@ -16,7 +16,7 @@ export class AuthService {
 
   public login(body: LoginRequest): Observable<LoginRespone> {
     return this.httpClient
-      .post<LoginRespone>(`${this.apiUrl}/auth/login`, body)
+      .post<LoginRespone>(`${this.apiUrl}/auth/login`, body, {withCredentials: true})
       .pipe(
         tap(res => {
           localStorage.setItem(this.jwtTokenKey, res.token)
@@ -30,8 +30,14 @@ export class AuthService {
   }
 
   public logout(): Observable<void> {
-    return this.httpClient.post<void>(`${this.apiUrl}/auth/logout`, {}).pipe(
+    return this.httpClient.post<void>(`${this.apiUrl}/auth/logout`, {}, {withCredentials: true}).pipe(
       finalize(() => localStorage.removeItem(this.jwtTokenKey))
     )
+  }
+
+  public refresh(): Observable<LoginRespone> {
+    return this.httpClient.post<LoginRespone>(`${this.apiUrl}/auth/refresh`, {}, {withCredentials: true}).pipe(
+      tap(res => localStorage.setItem(this.jwtTokenKey, res.token))
+    );
   }
 }
