@@ -1,0 +1,39 @@
+<div class="form-container">
+  <h2>Register</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="register()" class="auth-form">
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" formControlName="email">
+      @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('required')) {
+        <small class="error-message">Email is required.</small>
+      }
+      @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('email')) {
+        <small class="error-message">Wrong email format.</small>
+      }
+    </div>
+
+    <div class="form-group">
+    <label for="password">Password:</label>
+    <input type="password" id="password" formControlName="newPassword">
+    @if (registerForm.controls.newPassword.touched && registerForm.controls.newPassword.hasError('required')) {
+      <small class="error-message">Password is required.</small>
+    }
+    </div>
+
+    <div class="form-group">
+    <label for="repeatPassword">Repeat Password:</label>
+    <input type="password" id="repeatPassword" formControlName="repeatNewPassword">
+    @if (registerForm.controls.repeatNewPassword.touched && registerForm.controls.repeatNewPassword.hasError('required')) {
+      <small class="error-message">You must confirm password</small>
+    }
+    </div>
+
+    <div class="form-actions">
+      <button type="reset">Clear</button>
+      <button type="submit">Register</button>
+    </div>
+    @if (errorMessage()) {
+      <p class="error-message centered">{{ errorMessage() }}</p>
+    }
+  </form>
+</div>
