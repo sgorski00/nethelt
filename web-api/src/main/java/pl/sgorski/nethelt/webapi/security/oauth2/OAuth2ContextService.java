@@ -19,7 +19,7 @@ public final class OAuth2ContextService {
 
     private final SecretKey secretKey;
 
-    public String generate(Long userId, OAuth2Mode mode) {
+    public String generateAccessToken(Long userId, OAuth2Mode mode) {
         var now = Instant.now();
         var expirationTime = now.plus(OAUTH2_CONTEXT_EXPIRATION);
         return Jwts.builder()

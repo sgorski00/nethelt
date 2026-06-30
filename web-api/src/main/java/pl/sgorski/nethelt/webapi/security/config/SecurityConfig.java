@@ -48,8 +48,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/**", "/auth/refresh", "/auth/logout").permitAll()
-                        .requestMatchers("/auth/**", "/oauth2/authorization/**", "/oauth2/code/**", "/login/oauth2/code/**").not().authenticated()
+                        .requestMatchers("/actuator/**", "/auth/refresh", "/auth/logout", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers("/auth/**").not().authenticated()
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().denyAll())
                 .sessionManagement(session -> session

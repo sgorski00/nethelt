@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordChangeRequest;
@@ -24,8 +23,6 @@ import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolve
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextCookieService;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextService;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2Mode;
-
-import java.util.Locale;
 
 @Log4j2
 @RestController
@@ -93,23 +90,17 @@ public final class ProfileController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/link/{provider}")
-    public ResponseEntity<Void> linkAccount(
+    @PostMapping("/link/{provider}")
+    public ResponseEntity<Void> prepareCookiesForOauthLinking(
             @SuppressWarnings("SpringMvcPathVariableDeclarationInspection") @PathVariable("provider") AuthProvider provider,
             Authentication authentication
     ) {
         log.debug("Linking account with provider: {}", provider);
         var userId = authenticatedUserResolver.requireUserId(authentication);
         log.debug("Logged user ID: {}", userId);
-        var token = oAuth2ContextService.generate(userId, OAuth2Mode.LINK);
-        oAuth2ContextCookieService.write(token);
-
-        var redirectPath = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/oauth2/authorization/")
-                .path(provider.name().toLowerCase(Locale.ROOT))
-                .build().toUri();
-        log.debug("Redirecting to OAuth2 authorization endpoint: {}", redirectPath);
-        return ResponseEntity.status(HttpStatus.FOUND).location(redirectPath).build();
+        var token = oAuth2ContextService.generateAccessToken(userId, OAuth2Mode.LINK);
+        oAuth2ContextCookieService.writeTokenToResponseSetCookieHeader(token);
+        return ResponseEntity.noContent().build();
     }
 
     //todo: add password reset flow - send email with token, validate token, set new password
