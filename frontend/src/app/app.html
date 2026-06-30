@@ -1,4 +1,17 @@
-@if (isAuthenticated()) {
-  <button type="button" (click)="logout()">Logout</button>
-}
-<router-outlet></router-outlet>
+<header>
+  <h1 class="logo">Nethelt</h1>
+  <nav>
+    <a routerLink="/" class="nav-link">Home Page</a>
+    @if (isAuthenticated()) {
+      <button type="button" (click)="logout()" class="nav-link">Logout</button>
+    } @else {
+      <a routerLink="/login" class="nav-link">Login</a>
+    }
+  </nav>
+</header>
+<main>
+  <router-outlet></router-outlet>
+</main>
+<footer>
+  &copy; {{ currentYear }} Nethelt. All rights reserved.
+</footer>

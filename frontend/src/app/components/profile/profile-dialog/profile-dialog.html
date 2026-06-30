@@ -1,33 +1,39 @@
-<h2>Create profile</h2>
-<form [formGroup]="profileForm" (ngSubmit)="submit()">
-  @if (!isEdit) {
-    <label for="username">Username</label>
-    <input id="username" formControlName="username" type="text" required>
+<div class="dialog">
+  <h2 class="centered">Create profile</h2>
+  <form class="auth-form" [formGroup]="profileForm" (ngSubmit)="submit()">
+    @if (!isEdit) {
+      <h4 class="badge danger centered">Username cannot be changed after save!</h4>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" formControlName="username" type="text" required>
 
-    @if (profileForm.get('username')?.touched && profileForm.get('username')?.hasError('required')) {
-      <small>Nazwa użytkownika jest wymagana.</small>
+        @if (profileForm.get('username')?.touched && profileForm.get('username')?.hasError('required')) {
+          <small class="error-message">Username is required</small>
+        }
+      </div>
     }
-  }
-
-  <label for="firstName">First name</label>
-  <input id="firstName" formControlName="firstName" type="text">
-
-  <label for="lastName">Last name</label>
-  <input id="lastName" formControlName="lastName" type="text">
-
-  <label for="birthDate">Birth date</label>
-  <input id="birthDate" formControlName="birthDate" type="date" [max]="today | date:'yyyy-MM-dd'">
-
-  <label for="bio">Bio</label>
-  <textarea id="bio" formControlName="bio"></textarea>
-
-  <span>
-  <button type="button" (click)="closeDialog()">Cancel</button>
-  <button type="submit">Save</button>
-  </span>
-
-  @if (errorMessage()) {
-    <p class="error-message">{{ errorMessage() }}</p>
-  }
-
-</form>
+    <div class="form-group">
+      <label for="firstName">First name</label>
+      <input id="firstName" formControlName="firstName" type="text">
+    </div>
+    <div class="form-group">
+      <label for="lastName">Last name</label>
+      <input id="lastName" formControlName="lastName" type="text">
+    </div>
+    <div class="form-group">
+      <label for="birthDate">Birth date</label>
+      <input id="birthDate" formControlName="birthDate" type="date" [max]="today | date:'yyyy-MM-dd'">
+    </div>
+    <div class="form-group">
+      <label for="bio">Bio</label>
+      <textarea id="bio" formControlName="bio"></textarea>
+    </div>
+      <div class="form-actions">
+        <button type="button" (click)="closeDialog()">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+    @if (errorMessage()) {
+      <p class="error-message centered">{{ errorMessage() }}</p>
+    }
+  </form>
+</div>
