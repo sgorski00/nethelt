@@ -2,16 +2,32 @@
   <form [formGroup]="registerForm" (ngSubmit)="register()">
     <label for="email">Email:</label>
     <input type="email" id="email" formControlName="email">
+    @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('required')) {
+      <small>Email is required.</small>
+    }
+    @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('email')) {
+      <small>Wrong email format.</small>
+    }
 
     <label for="password">Password:</label>
     <input type="password" id="password" formControlName="newPassword">
+    @if (registerForm.controls.newPassword.touched && registerForm.controls.newPassword.hasError('required')) {
+      <small>Password is required.</small>
+    }
 
     <label for="repeatPassword">Repeat Password:</label>
     <input type="password" id="repeatPassword" formControlName="repeatNewPassword">
+    @if (registerForm.controls.repeatNewPassword.touched && registerForm.controls.repeatNewPassword.hasError('required')) {
+      <small>You must confirm password</small>
+    }
 
     <div>
+      <button routerLink="/login">Go to Login</button>
       <button type="reset">Clear</button>
       <button type="submit">Register</button>
     </div>
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
   </form>
 </div>
