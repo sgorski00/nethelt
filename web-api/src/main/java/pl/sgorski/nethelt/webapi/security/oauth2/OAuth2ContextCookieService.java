@@ -23,12 +23,12 @@ public final class OAuth2ContextCookieService {
     private static final boolean HTTP_ONLY = true;
     private static final boolean SECURE = true;
 
-    public void write(String token) {
+    public void writeTokenToResponseSetCookieHeader(String token) {
         var response = getCurrentResponse();
         response.addHeader(HttpHeaders.SET_COOKIE, createCookie(token, COOKIE_EXPIRATION).toString());
     }
 
-    public Optional<String> read() {
+    public Optional<String> readOauthContextFromCookies() {
         var request = getCurrentRequest();
         if (request.getCookies() == null) {
             return Optional.empty();
