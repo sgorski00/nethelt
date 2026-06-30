@@ -1,5 +1,10 @@
 import { IdentityProvider } from "./identity-provider"
 
+export interface BasicUser {
+  email: string,
+  role: string
+}
+
 export interface DetailedUser {
   id: number,
   email: string,

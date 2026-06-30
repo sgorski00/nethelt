@@ -1,9 +1,41 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {RegisterRequest} from '../../models/auth/register-request';
+import {AuthService} from '../../services/auth-service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class Register {}
+export class Register {
+
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly fb = inject(FormBuilder);
+
+  public readonly registerForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    repeatNewPassword: ['', [Validators.required]],
+  })
+
+  public register() {
+    if (!this.registerForm.valid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    const request: RegisterRequest = this.registerForm.getRawValue();
+
+    this.authService.register(request).subscribe({
+      next: res => {
+        console.log(res);
+        this.router.navigateByUrl('/login')
+      },
+      error: err => console.error(err)
+    })
+  }
+}
