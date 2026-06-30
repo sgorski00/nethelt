@@ -20,6 +20,9 @@
     @if (errorMessage()) {
     <p class="error-message">{{ errorMessage() }}</p>
     }
+    @if (registered()) {
+    <p class="success-message">You have successfully registered. Please log in.</p>
+    }
   </form>
   <div>
     <button routerLink="/register">Don't have an account yet?</button>

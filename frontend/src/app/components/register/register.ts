@@ -32,7 +32,7 @@ export class Register {
     const request: RegisterRequest = this.registerForm.getRawValue();
 
     this.authService.register(request).subscribe({
-      next: res => {
+      next: () => {
         this.router.navigate(['/login'], {queryParams: {registered: true}});
       },
       error: err => this.errorMessage.set(err.error.detail || 'An error occurred during registration.')
