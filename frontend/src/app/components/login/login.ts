@@ -2,13 +2,13 @@ import {Component, inject, signal} from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LoginRequest } from '../../models/auth/login-request';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { IdentityProvider } from '../../models/user/identity-provider';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
