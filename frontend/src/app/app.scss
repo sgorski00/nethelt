@@ -12,7 +12,7 @@ header {
   align-items: center;
   padding: 12px 20px;
   background: #ffffff;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid #e5e7eb;
 
   .logo {
     font-size: 1.8rem;
@@ -31,20 +31,22 @@ nav {
   width: 100%;
 
   .nav-link {
-    font-size: .9rem;
+    font-size: 0.9rem;
     text-decoration: none;
     color: #374151;
     font-weight: 500;
     background: transparent;
     padding: 6px 10px;
-    border: 1px solid #E5E7EB;
+    border: 1px solid #e5e7eb;
     border-radius: 6px;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
     cursor: pointer;
   }
 
   .nav-link:hover {
-    background: #F3F4F6;
+    background: #f3f4f6;
     color: #111827;
   }
 }

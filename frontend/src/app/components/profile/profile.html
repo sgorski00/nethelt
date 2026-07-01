@@ -1,7 +1,7 @@
 @if (user(); as user) {
   <div>
     <h2>Welcome, {{ user.email }}!</h2>
-    <small>Account created at: {{ user.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
+    <small>Account created at: {{ user.createdAt | date: 'dd.MM.yyyy HH:mm' }}</small>
   </div>
   <div class="info-main-container">
     <div class="info-sub-container">
@@ -29,10 +29,14 @@
             <td>{{ profile.bio }}</td>
           </tr>
         </table>
-        <button class="align-right" type="button" (click)="openUpdateProfile()">Update Profile</button>
+        <button class="align-right" type="button" (click)="openUpdateProfile()">
+          Update Profile
+        </button>
       } @else {
         <p>No profile information available.</p>
-        <button class="align-right" type="button" (click)="openCreateProfile()">Create Profile</button>
+        <button class="align-right" type="button" (click)="openCreateProfile()">
+          Create Profile
+        </button>
       }
     </div>
     <div class="info-sub-container">
@@ -42,7 +46,9 @@
         @if (hasIdentity(user, IdentityProvider.GOOGLE)) {
           <span class="badge success">Linked</span>
         } @else {
-          <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">Link</button>
+          <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">
+            Link
+          </button>
         }
       </div>
       <div class="social-item">
@@ -50,7 +56,9 @@
         @if (hasIdentity(user, IdentityProvider.GITHUB)) {
           <span class="badge success">Linked</span>
         } @else {
-          <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">Link</button>
+          <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">
+            Link
+          </button>
         }
       </div>
     </div>

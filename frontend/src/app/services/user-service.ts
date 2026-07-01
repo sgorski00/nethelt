@@ -1,16 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {DetailedUser, UserProfile} from '../models/user/user-response';
-import {ProfileCreateRequest, ProfileUpdateRequest} from '../models/user/profile-request';
+import { Observable } from 'rxjs';
+import { DetailedUser, UserProfile } from '../models/user/user-response';
+import { ProfileCreateRequest, ProfileUpdateRequest } from '../models/user/profile-request';
 import { IdentityProvider } from '../models/user/identity-provider';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-
   private readonly apiUrl = environment.apiUrl;
   private readonly httpClient = inject(HttpClient);
 
@@ -28,8 +27,10 @@ export class UserService {
 
   public linkAccount(provider: IdentityProvider) {
     const providerStr = provider.toLocaleLowerCase();
-    this.httpClient.post(`${this.apiUrl}/profile/link/${providerStr}`, {}, {withCredentials: true}).subscribe({
-      next: () => window.location.href = `${this.apiUrl}/oauth2/authorization/${providerStr}`
-    });
+    this.httpClient
+      .post(`${this.apiUrl}/profile/link/${providerStr}`, {}, { withCredentials: true })
+      .subscribe({
+        next: () => (window.location.href = `${this.apiUrl}/oauth2/authorization/${providerStr}`),
+      });
   }
 }

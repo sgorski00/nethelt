@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth-service';
 @Component({
   selector: 'app-oauth2-callback',
   imports: [],
-  template: ''
+  template: '',
 })
 export class Oauth2Callback implements OnInit {
   private readonly router = inject(Router);
@@ -14,7 +14,7 @@ export class Oauth2Callback implements OnInit {
   ngOnInit(): void {
     this.authService.refresh().subscribe({
       next: () => this.router.navigateByUrl('/'),
-      error: () => this.router.navigateByUrl('/login')
-    })
+      error: () => this.router.navigateByUrl('/login'),
+    });
   }
 }
