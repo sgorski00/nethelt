@@ -25,4 +25,9 @@ psql:
 	docker exec -it nh-postgres psql -U postgres -d nh-db
 
 lint:
-	mvn spotless:apply
+	@echo "Running Java linter..."
+	@mvn spotless:apply
+	@echo "Running JS prettier..."
+	@cd frontend && npx prettier . --write
+	@echo "Running JS eslint..."
+	@cd frontend && ng lint --fix

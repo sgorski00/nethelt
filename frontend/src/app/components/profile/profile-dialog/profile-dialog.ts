@@ -1,11 +1,17 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
-import {ProfileCreateRequest, ProfileUpdateRequest} from '../../../models/user/profile-request';
-import {UserService} from '../../../services/user-service';
-import {UserProfile} from '../../../models/user/user-response';
-import {ProfileDialogData} from './profile-dialog-data';
-import {DatePipe} from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { ProfileCreateRequest, ProfileUpdateRequest } from '../../../models/user/profile-request';
+import { UserService } from '../../../services/user-service';
+import { UserProfile } from '../../../models/user/user-response';
+import { ProfileDialogData } from './profile-dialog-data';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-profile-dialog',
@@ -14,7 +20,6 @@ import {DatePipe} from '@angular/common';
   styleUrl: './profile-dialog.scss',
 })
 export class ProfileDialog implements OnInit {
-
   private readonly userService = inject(UserService);
   private readonly dialogRef = inject(DialogRef<UserProfile>);
   private readonly fb = inject(FormBuilder);
@@ -29,7 +34,7 @@ export class ProfileDialog implements OnInit {
     lastName: this.fb.control<string | null>(null),
     birthDate: this.fb.control<string | null>(null),
     bio: this.fb.control<string | null>(null),
-  })
+  });
 
   ngOnInit(): void {
     if (this.isEdit && this.data.profile) {
@@ -49,12 +54,12 @@ export class ProfileDialog implements OnInit {
   }
 
   public submit() {
-    if(this.profileForm.invalid) {
+    if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       return;
     }
 
-    if(this.isEdit) {
+    if (this.isEdit) {
       this.updateProfile();
     } else {
       this.createProfile();
@@ -68,20 +73,20 @@ export class ProfileDialog implements OnInit {
       return;
     }
     this.userService.updateProfile(profileData).subscribe({
-      next: updatedProfile => {
+      next: (updatedProfile) => {
         this.dialogRef.close(updatedProfile);
       },
-      error: err => this.errorMessage.set(err.error.detail || 'Nie udało się zaktualizować.'),
+      error: (err) => this.errorMessage.set(err.error.detail || 'Nie udało się zaktualizować.'),
     });
   }
 
   private createProfile() {
     const profileData: ProfileCreateRequest = this.profileForm.getRawValue();
     this.userService.createProfile(profileData).subscribe({
-      next: createdProfile => {
+      next: (createdProfile) => {
         this.dialogRef.close(createdProfile);
       },
-      error: err => this.errorMessage.set(err.error.detail || 'Nie udało się zapisać.'),
+      error: (err) => this.errorMessage.set(err.error.detail || 'Nie udało się zapisać.'),
     });
   }
 }

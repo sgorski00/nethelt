@@ -1,8 +1,8 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {RegisterRequest} from '../../models/auth/register-request';
-import {AuthService} from '../../services/auth-service';
-import {Router} from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RegisterRequest } from '../../models/auth/register-request';
+import { AuthService } from '../../services/auth-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +11,6 @@ import {Router} from '@angular/router';
   styleUrl: './register.scss',
 })
 export class Register {
-
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
@@ -21,7 +20,7 @@ export class Register {
     email: ['', [Validators.required, Validators.email]],
     newPassword: ['', [Validators.required, Validators.minLength(8)]],
     repeatNewPassword: ['', [Validators.required]],
-  })
+  });
 
   public register() {
     if (!this.registerForm.valid) {
@@ -33,9 +32,10 @@ export class Register {
 
     this.authService.register(request).subscribe({
       next: () => {
-        this.router.navigate(['/login'], {queryParams: {registered: true}});
+        this.router.navigate(['/login'], { queryParams: { registered: true } });
       },
-      error: err => this.errorMessage.set(err.error.detail || 'An error occurred during registration.')
-    })
+      error: (err) =>
+        this.errorMessage.set(err.error.detail || 'An error occurred during registration.'),
+    });
   }
 }

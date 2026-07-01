@@ -3,7 +3,7 @@
   <form [formGroup]="loginForm" (ngSubmit)="login()" class="auth-form">
     <div class="form-group">
       <label for="email">Email:</label>
-      <input type="email" id="email" formControlName="email">
+      <input type="email" id="email" formControlName="email" />
       @if (loginForm.controls.email.touched && loginForm.controls.email.hasError('required')) {
         <small class="error-message">Email is required.</small>
       }
@@ -13,8 +13,10 @@
     </div>
     <div class="form-group">
       <label for="password">Password:</label>
-      <input type="password" id="password" formControlName="password">
-      @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
+      <input type="password" id="password" formControlName="password" />
+      @if (
+        loginForm.controls.password.touched && loginForm.controls.password.hasError('required')
+      ) {
         <small class="error-message">Password is required.</small>
       }
     </div>
@@ -23,10 +25,10 @@
       <button type="submit">Log In</button>
     </div>
     @if (errorMessage()) {
-    <p class="error-message centered">{{ errorMessage() }}</p>
+      <p class="error-message centered">{{ errorMessage() }}</p>
     }
     @if (registered()) {
-    <p class="success-message centered">You have successfully registered. Please log in.</p>
+      <p class="success-message centered">You have successfully registered. Please log in.</p>
     }
   </form>
   <div class="additional-actions">

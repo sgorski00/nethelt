@@ -1,33 +1,33 @@
 import { Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { Profile } from './components/profile/profile';
-import {requireAuth, requireNoAuth} from './guards/auth-guard';
+import { requireAuth, requireNoAuth } from './guards/auth-guard';
 import { Oauth2Callback } from './components/oauth2-callback/oauth2-callback';
-import {Register} from './components/register/register';
+import { Register } from './components/register/register';
 
 export const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
-    },
-    {
-        path: 'login',
-        component: Login,
-        canActivate: [requireNoAuth('/profile')]
-    },
-    {
-        path: 'register',
-        component: Register,
-        canActivate: [requireNoAuth('/profile')]
-    },
-    {
-        path: 'profile',
-        component: Profile,
-        canActivate: [requireAuth]
-    },
-    {
-        path: 'oauth2/success',
-        component: Oauth2Callback,
-    }
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'login',
+    component: Login,
+    canActivate: [requireNoAuth('/profile')],
+  },
+  {
+    path: 'register',
+    component: Register,
+    canActivate: [requireNoAuth('/profile')],
+  },
+  {
+    path: 'profile',
+    component: Profile,
+    canActivate: [requireAuth],
+  },
+  {
+    path: 'oauth2/success',
+    component: Oauth2Callback,
+  },
 ];

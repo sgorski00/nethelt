@@ -1,33 +1,33 @@
-import { IdentityProvider } from "./identity-provider"
+import { IdentityProvider } from './identity-provider';
 
 export interface BasicUser {
-  email: string,
-  role: string
+  email: string;
+  role: string;
 }
 
 export interface DetailedUser {
-  id: number,
-  email: string,
-  role: string,
-  profile: UserProfile | null,
-  identities: UserIdentity[],
-  createdAt: string,
-  updatedAt: string,
-  deletedAt: string | null
+  id: number;
+  email: string;
+  role: string;
+  profile: UserProfile | null;
+  identities: UserIdentity[];
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface UserIdentity {
-  provider: IdentityProvider,
-  providerId: string
+  provider: IdentityProvider;
+  providerId: string;
 }
 
 export interface UserProfile {
-  id: number,
-  username: string,
-  firstName: string | null,
-  lastName: string | null,
-  birthDate: string | null,
-  bio: string | null,
-  createdAt: string,
-  updatedAt: string
+  id: number;
+  username: string;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate: string | null;
+  bio: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
