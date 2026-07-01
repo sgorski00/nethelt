@@ -6,6 +6,10 @@ on:
     paths:
       - 'frontend/**'
 
+defaults:
+  run:
+    working-directory: ./frontend
+
 jobs:
   ng-linter:
     runs-on: ubuntu-22.04
@@ -19,15 +23,13 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: './frontent/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./frontend
         run: npm ci
 
       - name: Run linter
-        working-directory: ./frontend
         run: npm run lint
 
       - name: Run prettier
-        working-directory: ./frontend
         run: npx prettier . --check
