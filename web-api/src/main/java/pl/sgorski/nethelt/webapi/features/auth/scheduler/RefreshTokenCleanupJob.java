@@ -11,16 +11,16 @@ import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
 @RequiredArgsConstructor
 public class RefreshTokenCleanupJob {
 
-    private final RefreshTokenService refreshTokenService;
+  private final RefreshTokenService refreshTokenService;
 
-    @Scheduled(cron = "0 0 */2 * * *")
-    public void cleanUpInvalidTokens() {
-        try {
-            log.debug("Starting cleanup of expired and revoked refresh tokens...");
-            refreshTokenService.deletedInvalidTokens();
-            log.info("Refresh token cleanup completed successfully");
-        } catch (Exception e) {
-            log.error("Error during refresh token cleanup", e);
-        }
+  @Scheduled(cron = "0 0 */2 * * *")
+  public void cleanUpInvalidTokens() {
+    try {
+      log.debug("Starting cleanup of expired and revoked refresh tokens...");
+      refreshTokenService.deletedInvalidTokens();
+      log.info("Refresh token cleanup completed successfully");
+    } catch (Exception e) {
+      log.error("Error during refresh token cleanup", e);
     }
+  }
 }

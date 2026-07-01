@@ -1,11 +1,7 @@
 package pl.sgorski.nethelt.agent.scheduler;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
-import pl.sgorski.nethelt.agent.webclient.WebClientService;
-import pl.sgorski.nethelt.agent.executor.ResultProvider;
-import pl.sgorski.nethelt.model.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,9 +9,11 @@ import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.agent.executor.ResultProvider;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.model.*;
 
 class WebScheduledTaskManagerTests {
 
@@ -39,7 +37,8 @@ class WebScheduledTaskManagerTests {
   @Test
   void start_ShouldInvokeUpdateTasks() {
     manager.start();
-    verify(scheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), any(TimeUnit.class));
+    verify(scheduler)
+        .scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), any(TimeUnit.class));
   }
 
   @Test
@@ -48,12 +47,15 @@ class WebScheduledTaskManagerTests {
     Device device = new Device();
 
     mockConfigAndDevices(cfg, device);
-    when(resultProvider.getPingResults(any())).thenReturn(Collections.singleton(mock(PingResult.class)));
-    when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any())).thenReturn((ScheduledFuture)scheduledFuture);
+    when(resultProvider.getPingResults(any()))
+        .thenReturn(Collections.singleton(mock(PingResult.class)));
+    when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any()))
+        .thenReturn((ScheduledFuture) scheduledFuture);
 
     invokeUpdateTasks();
 
-    verify(scheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(10L), eq(TimeUnit.SECONDS));
+    verify(scheduler)
+        .scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(10L), eq(TimeUnit.SECONDS));
   }
 
   @Test
@@ -97,12 +99,15 @@ class WebScheduledTaskManagerTests {
     device.setPort(22);
 
     mockConfigAndDevices(cfg, device);
-    when(resultProvider.getTelnetResults(any())).thenReturn(Collections.singleton(mock(TelnetResult.class)));
-    when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any())).thenReturn((ScheduledFuture) scheduledFuture);
+    when(resultProvider.getTelnetResults(any()))
+        .thenReturn(Collections.singleton(mock(TelnetResult.class)));
+    when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any()))
+        .thenReturn((ScheduledFuture) scheduledFuture);
 
     invokeUpdateTasks();
 
-    verify(scheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(5L), eq(TimeUnit.SECONDS));
+    verify(scheduler)
+        .scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(5L), eq(TimeUnit.SECONDS));
   }
 
   @Test
@@ -164,7 +169,8 @@ class WebScheduledTaskManagerTests {
     }
   }
 
-  private static void setPrivateField(Object target, String fieldName, Object value) throws Exception {
+  private static void setPrivateField(Object target, String fieldName, Object value)
+      throws Exception {
     Field f = target.getClass().getDeclaredField(fieldName);
     f.setAccessible(true);
     f.set(target, value);

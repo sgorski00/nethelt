@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +44,8 @@ public class DeviceSerializationServiceImplTests {
 
   @Test
   void toJson_SingleObject_ShouldThrow() throws Exception {
-    when(objectMapper.writeValueAsString(any(Device.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.writeValueAsString(any(Device.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toJson(new Device()));
   }
@@ -62,7 +62,8 @@ public class DeviceSerializationServiceImplTests {
 
   @Test
   void toJson_Iterable_ShouldThrow() throws Exception {
-    when(objectMapper.writeValueAsString(any(Iterable.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.writeValueAsString(any(Iterable.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toJson(new ArrayList<>()));
   }
@@ -80,7 +81,8 @@ public class DeviceSerializationServiceImplTests {
 
   @Test
   void toObject_ShouldThrow() throws Exception {
-    when(objectMapper.readValue(anyString(), eq(Device.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.readValue(anyString(), eq(Device.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toObject("[{}]"));
   }
@@ -89,7 +91,8 @@ public class DeviceSerializationServiceImplTests {
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
     Set<Device> expected = Set.of();
-    when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<Device>>>any())).thenReturn(expected);
+    when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<Device>>>any()))
+        .thenReturn(expected);
 
     Set<Device> result = service.toObjectSet(json);
     Assertions.assertIterableEquals(expected, result);
@@ -98,7 +101,7 @@ public class DeviceSerializationServiceImplTests {
   @Test
   void toObjectSet_ShouldThrow() throws Exception {
     when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<Device>>>any()))
-      .thenThrow(JsonProcessingException.class);
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toObjectSet("[{}]"));
   }

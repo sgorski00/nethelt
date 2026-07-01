@@ -9,9 +9,7 @@ import pl.sgorski.nethelt.agent.serialization.SerializationService;
 import pl.sgorski.nethelt.exception.SerializationException;
 import pl.sgorski.nethelt.model.Device;
 
-/**
- * Implemented service for serializing and deserializing Device objects to and from JSON.
- */
+/** Implemented service for serializing and deserializing Device objects to and from JSON. */
 public class DeviceSerializationServiceImpl implements SerializationService<Device> {
 
   private final ObjectMapper objectMapper;
@@ -21,8 +19,8 @@ public class DeviceSerializationServiceImpl implements SerializationService<Devi
   }
 
   /**
-   * Constructor for dependency injection, primarily for testing purposes.
-   * In production it is recommended to use the default constructor.
+   * Constructor for dependency injection, primarily for testing purposes. In production it is
+   * recommended to use the default constructor.
    */
   public DeviceSerializationServiceImpl(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;

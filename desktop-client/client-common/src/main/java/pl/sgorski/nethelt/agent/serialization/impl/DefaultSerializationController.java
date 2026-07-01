@@ -17,8 +17,9 @@ import pl.sgorski.nethelt.model.TelnetResult;
 import pl.sgorski.nethelt.utils.CollectionUtils;
 
 /**
- * Default implementation of SerializationController that manages different serializers for various object types.
- * It uses a map to associate classes with their respective SerializationService implementations.
+ * Default implementation of SerializationController that manages different serializers for various
+ * object types. It uses a map to associate classes with their respective SerializationService
+ * implementations.
  */
 public class DefaultSerializationController implements SerializationController {
 
@@ -36,8 +37,8 @@ public class DefaultSerializationController implements SerializationController {
   }
 
   /**
-   * Constructor for serializers injections, primarily for testing purposes.
-   * In production it is recommended to use the default constructor.
+   * Constructor for serializers injections, primarily for testing purposes. In production it is
+   * recommended to use the default constructor.
    */
   public DefaultSerializationController(Map<Class<?>, SerializationService<?>> serializers) {
     this.serializers.putAll(serializers);
@@ -46,12 +47,16 @@ public class DefaultSerializationController implements SerializationController {
   @Override
   @SuppressWarnings("unchecked")
   public <T> String serialize(Iterable<T> objects) {
-    if(CollectionUtils.isEmpty(objects)) throw new SerializationException("Cannot serialize empty collection");
+    if (CollectionUtils.isEmpty(objects))
+      throw new SerializationException("Cannot serialize empty collection");
     Iterator<T> it = objects.iterator();
     T first = it.next();
 
-    SerializationService<T> serializer = (SerializationService<T>) serializers.get(first.getClass());
-    if(Objects.isNull(serializer)) throw new SerializationException("No serializer found for class: " + first.getClass().getName());
+    SerializationService<T> serializer =
+        (SerializationService<T>) serializers.get(first.getClass());
+    if (Objects.isNull(serializer))
+      throw new SerializationException(
+          "No serializer found for class: " + first.getClass().getName());
     LOG.debug("Serializing Iterable<{}> to JSON", first.getClass().getSimpleName());
     return serializer.toJson(objects);
   }
@@ -59,9 +64,12 @@ public class DefaultSerializationController implements SerializationController {
   @Override
   @SuppressWarnings("unchecked")
   public <T> String serialize(T object) {
-    if(Objects.isNull(object)) throw new SerializationException("Cannot serialize null object");
-    SerializationService<T> serializer = (SerializationService<T>) serializers.get(object.getClass());
-    if(Objects.isNull(serializer)) throw new SerializationException("No serializer found for class: " + object.getClass().getName());
+    if (Objects.isNull(object)) throw new SerializationException("Cannot serialize null object");
+    SerializationService<T> serializer =
+        (SerializationService<T>) serializers.get(object.getClass());
+    if (Objects.isNull(serializer))
+      throw new SerializationException(
+          "No serializer found for class: " + object.getClass().getName());
     LOG.debug("Serializing {} to JSON", object.getClass().getSimpleName());
     return serializer.toJson(object);
   }
@@ -70,7 +78,8 @@ public class DefaultSerializationController implements SerializationController {
   @SuppressWarnings("unchecked")
   public <T> Set<T> deserializeToSet(String json, Class<T> type) {
     SerializationService<T> serializer = (SerializationService<T>) serializers.get(type);
-    if (Objects.isNull(serializer)) throw new SerializationException("No serializer found for class: " + type.getName());
+    if (Objects.isNull(serializer))
+      throw new SerializationException("No serializer found for class: " + type.getName());
 
     try {
       LOG.debug("Deserializing JSON to Set<{}>: {}", type.getSimpleName(), json);

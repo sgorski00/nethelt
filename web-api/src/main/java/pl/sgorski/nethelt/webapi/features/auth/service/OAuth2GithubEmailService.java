@@ -8,15 +8,16 @@ import pl.sgorski.nethelt.webapi.http.client.github.GithubClient;
 @RequiredArgsConstructor
 public class OAuth2GithubEmailService {
 
-    private final GithubClient githubClient;
+  private final GithubClient githubClient;
 
-    public String getGithubAccountEmail(String accessToken) {
-        var response = githubClient.fetchEmails("Bearer " + accessToken);
-        for (var emailEntry : response) {
-            if (emailEntry.isPrimary()) {
-                return emailEntry.email();
-            }
-        }
-        throw new IllegalStateException("Github account does not have pinned isPrimary email address. Could not create or link an account.");
+  public String getGithubAccountEmail(String accessToken) {
+    var response = githubClient.fetchEmails("Bearer " + accessToken);
+    for (var emailEntry : response) {
+      if (emailEntry.isPrimary()) {
+        return emailEntry.email();
+      }
     }
+    throw new IllegalStateException(
+        "Github account does not have pinned isPrimary email address. Could not create or link an account.");
+  }
 }

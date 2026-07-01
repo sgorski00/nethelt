@@ -32,7 +32,8 @@ public class DefaultSerializationControllerTests {
 
   @Test
   void serializeSingleObject_ShouldThrow_NullObject() {
-    SerializationException ex = assertThrows(SerializationException.class, () -> controller.serialize((Object) null));
+    SerializationException ex =
+        assertThrows(SerializationException.class, () -> controller.serialize((Object) null));
     assertTrue(ex.getMessage().contains("Cannot serialize null object"));
   }
 
@@ -40,7 +41,8 @@ public class DefaultSerializationControllerTests {
   void serializeSingleObject_ShouldThrow_SerializerNotFound() {
     NotSerializable notSerializable = new NotSerializable();
 
-    SerializationException ex = assertThrows(SerializationException.class, () -> controller.serialize(notSerializable));
+    SerializationException ex =
+        assertThrows(SerializationException.class, () -> controller.serialize(notSerializable));
     assertTrue(ex.getMessage().contains("No serializer found for class"));
   }
 
@@ -56,7 +58,8 @@ public class DefaultSerializationControllerTests {
 
   @Test
   void serializeIterable_ShouldThrow_EmptyCollection() {
-    SerializationException ex = assertThrows(SerializationException.class, () -> controller.serialize((Iterable<?>) null));
+    SerializationException ex =
+        assertThrows(SerializationException.class, () -> controller.serialize((Iterable<?>) null));
     assertTrue(ex.getMessage().contains("Cannot serialize empty collection"));
   }
 
@@ -65,7 +68,8 @@ public class DefaultSerializationControllerTests {
     NotSerializable notSerializable = new NotSerializable();
     List<NotSerializable> list = List.of(notSerializable);
 
-    SerializationException ex = assertThrows(SerializationException.class, () -> controller.serialize(list));
+    SerializationException ex =
+        assertThrows(SerializationException.class, () -> controller.serialize(list));
     assertTrue(ex.getMessage().contains("No serializer found for class"));
   }
 
@@ -93,7 +97,10 @@ public class DefaultSerializationControllerTests {
 
   @Test
   void deserializeToSet_ShouldThrow_SerializerNotFound() {
-    SerializationException ex = assertThrows(SerializationException.class, () -> controller.deserializeToSet("{}", NotSerializable.class));
+    SerializationException ex =
+        assertThrows(
+            SerializationException.class,
+            () -> controller.deserializeToSet("{}", NotSerializable.class));
 
     assertTrue(ex.getMessage().contains("No serializer found for class"));
   }
@@ -101,14 +108,17 @@ public class DefaultSerializationControllerTests {
   @Test
   void deserializeToSet_ShouldThrow_SerializationException() {
     String json = "[{\"name\":\"Device\"}]";
-    when(deviceSerializer.toObjectSet(anyString())).thenThrow(new SerializationException("Something went wrong"));
+    when(deviceSerializer.toObjectSet(anyString()))
+        .thenThrow(new SerializationException("Something went wrong"));
 
-    SerializationException ex = assertThrows(SerializationException.class, () -> controller.deserializeToSet(json, Device.class));
+    SerializationException ex =
+        assertThrows(
+            SerializationException.class, () -> controller.deserializeToSet(json, Device.class));
 
     assertTrue(ex.getMessage().contains("Failed to deserialize JSON"));
   }
 
   private static class NotSerializable {
-    public NotSerializable() { }
+    public NotSerializable() {}
   }
 }

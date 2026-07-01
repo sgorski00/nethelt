@@ -15,27 +15,30 @@ import pl.sgorski.nethelt.webapi.features.user.repository.ProfileRepository;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final ProfileRepository profileRepository;
-    private final ProfileMapper profileMapper;
-    private final UserService userService;
+  private final ProfileRepository profileRepository;
+  private final ProfileMapper profileMapper;
+  private final UserService userService;
 
-    @Transactional
-    public Profile createProfile(ProfileCreateCommand command) {
-        var user = userService.getUser(command.userId());
-        if(user.getProfile() != null) {
-            throw new ProfileAlreadyExistsException();
-        }
-        var profile = profileMapper.toProfile(command);
-        user.setProfile(profile);
-        userService.save(user);
-        return profile;
+  @Transactional
+  public Profile createProfile(ProfileCreateCommand command) {
+    var user = userService.getUser(command.userId());
+    if (user.getProfile() != null) {
+      throw new ProfileAlreadyExistsException();
     }
+    var profile = profileMapper.toProfile(command);
+    user.setProfile(profile);
+    userService.save(user);
+    return profile;
+  }
 
-    @Transactional
-    public Profile updateProfile(ProfileUpdateCommand command) {
-        var existingProfile = profileRepository.findWithUserByUserId(command.userId())
-                .orElseThrow(() -> new ProfileNotFoundException("Couldn't update the non-existing profile"));
-        profileMapper.update(existingProfile, command);
-        return existingProfile;
-    }
+  @Transactional
+  public Profile updateProfile(ProfileUpdateCommand command) {
+    var existingProfile =
+        profileRepository
+            .findWithUserByUserId(command.userId())
+            .orElseThrow(
+                () -> new ProfileNotFoundException("Couldn't update the non-existing profile"));
+    profileMapper.update(existingProfile, command);
+    return existingProfile;
+  }
 }

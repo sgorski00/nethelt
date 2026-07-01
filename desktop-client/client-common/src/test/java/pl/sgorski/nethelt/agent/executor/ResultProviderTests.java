@@ -7,10 +7,8 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.PingResult;
 import pl.sgorski.nethelt.model.TelnetResult;
@@ -50,9 +48,10 @@ public class ResultProviderTests {
     TelnetResult telnetResult = mock(TelnetResult.class);
 
     when(telnet.executeAsync(deviceWithPort))
-      .thenReturn(CompletableFuture.completedFuture(telnetResult));
+        .thenReturn(CompletableFuture.completedFuture(telnetResult));
 
-    Set<TelnetResult> results = resultProvider.getTelnetResults(Collections.singleton(deviceWithPort));
+    Set<TelnetResult> results =
+        resultProvider.getTelnetResults(Collections.singleton(deviceWithPort));
 
     assertEquals(1, results.size());
     assertEquals(telnetResult, results.iterator().next());
@@ -66,7 +65,8 @@ public class ResultProviderTests {
     Set<Device> devices = Set.of(deviceWithoutPort, deviceWithPort);
 
     TelnetResult telnetResult = mock(TelnetResult.class);
-    when(telnet.executeAsync(deviceWithPort)).thenReturn(CompletableFuture.completedFuture(telnetResult));
+    when(telnet.executeAsync(deviceWithPort))
+        .thenReturn(CompletableFuture.completedFuture(telnetResult));
 
     Set<TelnetResult> results = resultProvider.getTelnetResults(devices);
 

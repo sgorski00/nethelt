@@ -21,10 +21,11 @@ public interface NetworkOperation<I extends Device, O extends Result> {
   O execute(I device) throws NetworkException;
 
   /**
-   * Utility method to calculate elapsed time in milliseconds.
-   * Should be used after {@link #execute(Device)} method.
+   * Utility method to calculate elapsed time in milliseconds. Should be used after {@link
+   * #execute(Device)} method.
    *
-   * @param startTimeNs The start time in nanoseconds. Typically obtained from {@link System#nanoTime()} before the execution starts.
+   * @param startTimeNs The start time in nanoseconds. Typically obtained from {@link
+   *     System#nanoTime()} before the execution starts.
    * @return The elapsed time in milliseconds.
    */
   default long getElapsedTimeInMs(long startTimeNs) {

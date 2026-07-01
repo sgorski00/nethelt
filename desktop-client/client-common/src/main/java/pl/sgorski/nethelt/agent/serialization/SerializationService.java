@@ -9,10 +9,11 @@ import pl.sgorski.nethelt.exception.SerializationException;
  * @param <O> the type of object to be serialized/deserialized
  */
 public interface SerializationService<O> {
-    String toJson(O object) throws SerializationException;
+  String toJson(O object) throws SerializationException;
 
-    String toJson(Iterable<O> objects) throws SerializationException;
+  String toJson(Iterable<O> objects) throws SerializationException;
 
-    O toObject(String json) throws SerializationException;
-    Set<O> toObjectSet(String json) throws SerializationException;
+  O toObject(String json) throws SerializationException;
+
+  Set<O> toObjectSet(String json) throws SerializationException;
 }

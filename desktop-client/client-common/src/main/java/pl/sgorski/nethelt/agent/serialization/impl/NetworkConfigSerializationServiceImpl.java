@@ -10,7 +10,8 @@ import pl.sgorski.nethelt.exception.SerializationException;
 import pl.sgorski.nethelt.model.NetworkConfig;
 
 /**
- * Implemented service for serializing and deserializing {@link NetworkConfig} objects to and from JSON.
+ * Implemented service for serializing and deserializing {@link NetworkConfig} objects to and from
+ * JSON.
  */
 public class NetworkConfigSerializationServiceImpl implements SerializationService<NetworkConfig> {
 
@@ -21,8 +22,8 @@ public class NetworkConfigSerializationServiceImpl implements SerializationServi
   }
 
   /**
-   * Constructor for dependency injection, primarily for testing purposes.
-   * In production it is recommended to use the default constructor.
+   * Constructor for dependency injection, primarily for testing purposes. In production it is
+   * recommended to use the default constructor.
    */
   public NetworkConfigSerializationServiceImpl(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;

@@ -12,23 +12,22 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 @RequiredArgsConstructor
 public final class SecurityAuthenticatedUserResolver implements AuthenticatedUserResolver {
 
-    private final UserIdentityService identityService;
+  private final UserIdentityService identityService;
 
-    @Override
-    public Long requireUserId(Authentication authentication) {
-        var principal = authentication.getPrincipal();
+  @Override
+  public Long requireUserId(Authentication authentication) {
+    var principal = authentication.getPrincipal();
 
-        if (principal instanceof User user) {
-            return user.getId();
-        }
-        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
-            var providerId = oauthToken.getName();
-            var provider = AuthProvider.fromString(oauthToken.getAuthorizedClientRegistrationId());
-            var identity = identityService.findIdentity(provider, providerId);
-            return identity.getUser().getId();
-        }
-
-        throw new IllegalStateException("Unsupported authentication principal");
+    if (principal instanceof User user) {
+      return user.getId();
     }
-}
+    if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
+      var providerId = oauthToken.getName();
+      var provider = AuthProvider.fromString(oauthToken.getAuthorizedClientRegistrationId());
+      var identity = identityService.findIdentity(provider, providerId);
+      return identity.getUser().getId();
+    }
 
+    throw new IllegalStateException("Unsupported authentication principal");
+  }
+}

@@ -44,7 +44,8 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toJson_SingleObject_ShouldThrow() throws Exception {
-    when(objectMapper.writeValueAsString(any(NetworkConfig.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.writeValueAsString(any(NetworkConfig.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toJson(new NetworkConfig()));
   }
@@ -61,7 +62,8 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toJson_Iterable_ShouldThrow() throws Exception {
-    when(objectMapper.writeValueAsString(any(Iterable.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.writeValueAsString(any(Iterable.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toJson(new ArrayList<>()));
   }
@@ -79,7 +81,8 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toObject_ShouldThrow() throws Exception {
-    when(objectMapper.readValue(anyString(), eq(NetworkConfig.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.readValue(anyString(), eq(NetworkConfig.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toObject("[{}]"));
   }
@@ -88,7 +91,9 @@ public class NetworkConfigSerializationServiceImplTests {
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
     Set<NetworkConfig> expected = Set.of();
-    when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<NetworkConfig>>>any())).thenReturn(expected);
+    when(objectMapper.readValue(
+            anyString(), ArgumentMatchers.<TypeReference<Set<NetworkConfig>>>any()))
+        .thenReturn(expected);
 
     Set<NetworkConfig> result = service.toObjectSet(json);
     Assertions.assertIterableEquals(expected, result);
@@ -96,8 +101,9 @@ public class NetworkConfigSerializationServiceImplTests {
 
   @Test
   void toObjectSet_ShouldThrow() throws Exception {
-    when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<NetworkConfig>>>any()))
-      .thenThrow(JsonProcessingException.class);
+    when(objectMapper.readValue(
+            anyString(), ArgumentMatchers.<TypeReference<Set<NetworkConfig>>>any()))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toObjectSet("[{}]"));
   }

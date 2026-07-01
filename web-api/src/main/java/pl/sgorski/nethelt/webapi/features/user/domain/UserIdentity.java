@@ -8,29 +8,28 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 
 @Entity
 @Table(
-        name = "user_identities",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"provider", "provider_id"}),
-                @UniqueConstraint(columnNames = {"user_id", "provider"})
-        }
-)
+    name = "user_identities",
+    uniqueConstraints = {
+      @UniqueConstraint(columnNames = {"provider", "provider_id"}),
+      @UniqueConstraint(columnNames = {"user_id", "provider"})
+    })
 @Data
 @EqualsAndHashCode(exclude = "user")
 @NoArgsConstructor
 public class UserIdentity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private AuthProvider provider;
 
-    @Column(nullable = false)
-    private String providerId;
+  @Column(nullable = false)
+  private String providerId;
 }

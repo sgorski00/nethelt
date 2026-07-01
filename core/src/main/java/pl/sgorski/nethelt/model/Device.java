@@ -13,7 +13,7 @@ public class Device {
   private InetAddress address;
   private Integer port;
 
-  public Device() { } //empty constructor for deserializing - DO NOT REMOVE
+  public Device() {} // empty constructor for deserializing - DO NOT REMOVE
 
   public Device(String name, String ip, Integer port) {
     this.name = name;
@@ -24,10 +24,11 @@ public class Device {
       throw new NetworkException("Invalid IP address: " + ip, e);
     }
 
-    if(isValidPort(port)) {
+    if (isValidPort(port)) {
       this.port = port;
     } else {
-      throw new NetworkException("Invalid port number: " + port + ". Port must be between 1 and " + MAX_PORT + "." );
+      throw new NetworkException(
+          "Invalid port number: " + port + ". Port must be between 1 and " + MAX_PORT + ".");
     }
   }
 
@@ -71,7 +72,15 @@ public class Device {
 
   @Override
   public String toString() {
-    return "Device{" + "name='" + name + '\'' + ", ipv4Address=" + address.getHostAddress() + ", port=" + port + '}';
+    return "Device{"
+        + "name='"
+        + name
+        + '\''
+        + ", ipv4Address="
+        + address.getHostAddress()
+        + ", port="
+        + port
+        + '}';
   }
 
   @Override
@@ -79,9 +88,9 @@ public class Device {
     if (this == o) return true;
     if (!(o instanceof Device)) return false;
     Device device = (Device) o;
-    return Objects.equals(name, device.name) &&
-      Objects.equals(address, device.address) &&
-      Objects.equals(port, device.port);
+    return Objects.equals(name, device.name)
+        && Objects.equals(address, device.address)
+        && Objects.equals(port, device.port);
   }
 
   @Override
