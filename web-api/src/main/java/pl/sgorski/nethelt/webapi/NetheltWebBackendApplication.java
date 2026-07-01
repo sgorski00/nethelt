@@ -10,8 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class NetheltWebBackendApplication {
 
-	static void main(String[] args) {
-		SpringApplication.run(NetheltWebBackendApplication.class, args);
-	}
-
+  static void main(String[] args) {
+    SpringApplication.run(NetheltWebBackendApplication.class, args);
+  }
 }

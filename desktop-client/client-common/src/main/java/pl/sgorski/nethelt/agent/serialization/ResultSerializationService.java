@@ -7,5 +7,4 @@ import pl.sgorski.nethelt.model.Result;
  *
  * @param <R> the type of Result
  */
-public interface ResultSerializationService<R extends Result> extends SerializationService<R> {
-}
+public interface ResultSerializationService<R extends Result> extends SerializationService<R> {}

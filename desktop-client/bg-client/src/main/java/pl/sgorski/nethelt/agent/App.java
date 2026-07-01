@@ -1,16 +1,16 @@
 package pl.sgorski.nethelt.agent;
 
-import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
-import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.executor.ResultProvider;
 import pl.sgorski.nethelt.agent.scheduler.ScheduledTaskManager;
+import pl.sgorski.nethelt.agent.scheduler.WebScheduledTaskManager;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.agent.serialization.impl.DefaultSerializationController;
+import pl.sgorski.nethelt.agent.webclient.WebClientService;
 
 /**
- * Main application class for the Nethelt Background agent.
- * It starts in the bg-client as a scheduler and fetch data from the web service.
- * After executing operations it sends results back to the web service.
+ * Main application class for the Nethelt Background agent. It starts in the bg-client as a
+ * scheduler and fetch data from the web service. After executing operations it sends results back
+ * to the web service.
  */
 public class App {
 
@@ -18,7 +18,8 @@ public class App {
     SerializationController serializer = new DefaultSerializationController();
     WebClientService webClientService = new WebClientService(serializer);
     ResultProvider resultProvider = new ResultProvider();
-    ScheduledTaskManager taskManager = new WebScheduledTaskManager(webClientService, resultProvider);
+    ScheduledTaskManager taskManager =
+        new WebScheduledTaskManager(webClientService, resultProvider);
 
     taskManager.start();
 

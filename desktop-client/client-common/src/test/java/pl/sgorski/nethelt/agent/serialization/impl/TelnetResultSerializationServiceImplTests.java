@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +44,8 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toJson_SingleObject_ShouldThrow() throws Exception {
-    when(objectMapper.writeValueAsString(any(TelnetResult.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.writeValueAsString(any(TelnetResult.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toJson(new TelnetResult()));
   }
@@ -62,7 +62,8 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toJson_Iterable_ShouldThrow() throws Exception {
-    when(objectMapper.writeValueAsString(any(Iterable.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.writeValueAsString(any(Iterable.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toJson(new ArrayList<>()));
   }
@@ -80,7 +81,8 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toObject_ShouldThrow() throws Exception {
-    when(objectMapper.readValue(anyString(), eq(TelnetResult.class))).thenThrow(JsonProcessingException.class);
+    when(objectMapper.readValue(anyString(), eq(TelnetResult.class)))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toObject("[{}]"));
   }
@@ -89,7 +91,9 @@ public class TelnetResultSerializationServiceImplTests {
   void toObjectSet_ShouldReturnObjectSet() throws Exception {
     String json = "[{}]";
     Set<TelnetResult> expected = Set.of();
-    when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<TelnetResult>>>any())).thenReturn(expected);
+    when(objectMapper.readValue(
+            anyString(), ArgumentMatchers.<TypeReference<Set<TelnetResult>>>any()))
+        .thenReturn(expected);
 
     Set<TelnetResult> result = service.toObjectSet(json);
     Assertions.assertIterableEquals(expected, result);
@@ -97,8 +101,9 @@ public class TelnetResultSerializationServiceImplTests {
 
   @Test
   void toObjectSet_ShouldThrow() throws Exception {
-    when(objectMapper.readValue(anyString(), ArgumentMatchers.<TypeReference<Set<TelnetResult>>>any()))
-      .thenThrow(JsonProcessingException.class);
+    when(objectMapper.readValue(
+            anyString(), ArgumentMatchers.<TypeReference<Set<TelnetResult>>>any()))
+        .thenThrow(JsonProcessingException.class);
 
     assertThrows(SerializationException.class, () -> service.toObjectSet("[{}]"));
   }

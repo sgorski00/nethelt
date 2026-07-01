@@ -6,8 +6,8 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 
 @Configuration
 public class AuthProviderEnumConverter implements Converter<String, AuthProvider> {
-    @Override
-    public AuthProvider convert(String source) {
-        return AuthProvider.fromString(source);
-    }
+  @Override
+  public AuthProvider convert(String source) {
+    return AuthProvider.fromString(source);
+  }
 }

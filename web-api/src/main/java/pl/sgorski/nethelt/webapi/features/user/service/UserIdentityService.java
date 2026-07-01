@@ -11,14 +11,21 @@ import pl.sgorski.nethelt.webapi.features.user.repository.UserIdentityRepository
 @RequiredArgsConstructor
 public class UserIdentityService {
 
-    private final UserIdentityRepository userIdentityRepository;
+  private final UserIdentityRepository userIdentityRepository;
 
-    public boolean isUserIdentityPresent(String providerId, AuthProvider authProvider) {
-        return userIdentityRepository.existsByProviderAndProviderId(authProvider, providerId);
-    }
+  public boolean isUserIdentityPresent(String providerId, AuthProvider authProvider) {
+    return userIdentityRepository.existsByProviderAndProviderId(authProvider, providerId);
+  }
 
-    public UserIdentity findIdentity(AuthProvider provider, String providerId) {
-        return userIdentityRepository.findWithUserByProviderAndProviderId(provider, providerId)
-                .orElseThrow(() -> new IdentityNotFoundException("User identity not found for provider: " + provider.name() + ", providerId: " + providerId));
-    }
+  public UserIdentity findIdentity(AuthProvider provider, String providerId) {
+    return userIdentityRepository
+        .findWithUserByProviderAndProviderId(provider, providerId)
+        .orElseThrow(
+            () ->
+                new IdentityNotFoundException(
+                    "User identity not found for provider: "
+                        + provider.name()
+                        + ", providerId: "
+                        + providerId));
+  }
 }

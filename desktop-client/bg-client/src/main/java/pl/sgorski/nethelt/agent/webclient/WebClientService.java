@@ -19,9 +19,7 @@ import pl.sgorski.nethelt.model.NetworkConfig;
 import pl.sgorski.nethelt.model.Result;
 import pl.sgorski.nethelt.utils.CollectionUtils;
 
-/**
- * Service for communicating with the web server.
- */
+/** Service for communicating with the web server. */
 public class WebClientService {
 
   private static final String BASE_URL = "http://localhost:8080/api";
@@ -48,7 +46,10 @@ public class WebClientService {
    */
   public <T extends Result> void sendResult(Set<T> results, Class<T> clazz) {
     if (CollectionUtils.isEmpty(results)) return;
-    LOG.info("Attempting to send {} results of type {} to the server", results.size(), clazz.getSimpleName());
+    LOG.info(
+        "Attempting to send {} results of type {} to the server",
+        results.size(),
+        clazz.getSimpleName());
     String json = serializer.serialize(results);
     String endpoint = resolveEndpoint(clazz);
     LOG.debug("Resolved endpoint: {} for class: {}", endpoint, clazz.getSimpleName());
@@ -59,7 +60,9 @@ public class WebClientService {
     return switch (clazz.getSimpleName()) {
       case "PingResult" -> PING_ENDPOINT;
       case "TelnetResult" -> TELNET_ENDPOINT;
-      default -> throw new IllegalArgumentException("Cannot send results to the server! Unsupported result type: " + clazz.getName());
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot send results to the server! Unsupported result type: " + clazz.getName());
     };
   }
 
@@ -73,11 +76,12 @@ public class WebClientService {
   private void postJson(String url, String json) {
     LOG.debug("Posting JSON to URL: {}. Payload: {}", url, json);
     RequestBody body = RequestBody.create(json, MediaType.get(JSON_MEDIA_TYPE));
-    Request request = new Request.Builder()
-      .url(url)
-      .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
-      .post(body)
-      .build();
+    Request request =
+        new Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
+            .post(body)
+            .build();
 
     try {
       webServerClient.newCall(request).execute().close();
@@ -94,10 +98,12 @@ public class WebClientService {
    */
   public Set<NetworkConfig> fetchNetworkConfig() {
     LOG.debug("Fetching network configuration from the server");
-    Request request = new Request.Builder().url(BASE_URL + "/config/network")
-      .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
-      .get()
-      .build();
+    Request request =
+        new Request.Builder()
+            .url(BASE_URL + "/config/network")
+            .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
+            .get()
+            .build();
     return getSetOfObjects(request, NetworkConfig.class);
   }
 
@@ -108,11 +114,12 @@ public class WebClientService {
    */
   public Set<Device> fetchDevices() {
     LOG.debug("Fetching devices from the server");
-    Request request = new Request.Builder()
-      .url(DEVICES_ENDPOINT)
-      .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
-      .get()
-      .build();
+    Request request =
+        new Request.Builder()
+            .url(DEVICES_ENDPOINT)
+            .addHeader("Authorization", "Bearer some-token") // TODO: implement JWT Client
+            .get()
+            .build();
     return getSetOfObjects(request, Device.class);
   }
 
@@ -124,7 +131,8 @@ public class WebClientService {
       String json = response.body().string();
       return serializer.deserializeToSet(json, clazz);
     } catch (IOException e) {
-      throw new WebClientException("Error while fetching devices from server: " + e.getMessage(), e);
+      throw new WebClientException(
+          "Error while fetching devices from server: " + e.getMessage(), e);
     }
   }
 }

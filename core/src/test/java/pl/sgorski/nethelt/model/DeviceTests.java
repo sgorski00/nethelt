@@ -1,11 +1,10 @@
 package pl.sgorski.nethelt.model;
 
-import org.junit.jupiter.api.Test;
-import pl.sgorski.nethelt.exception.NetworkException;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.InetAddress;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.exception.NetworkException;
 
 class DeviceTests {
 

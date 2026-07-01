@@ -7,7 +7,5 @@ import pl.sgorski.nethelt.webapi.validator.password.ValidPassword;
 
 @ValidPassword
 public record RegisterUserRequest(
-        @NotBlank @Email String email,
-        @NotBlank String newPassword,
-        @NotBlank String repeatNewPassword
-) implements PasswordChange { }
+    @NotBlank @Email String email, @NotBlank String newPassword, @NotBlank String repeatNewPassword)
+    implements PasswordChange {}

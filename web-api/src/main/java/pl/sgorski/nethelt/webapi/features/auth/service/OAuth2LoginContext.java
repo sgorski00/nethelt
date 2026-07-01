@@ -6,11 +6,8 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.oauth.OAuthUserInfo;
 
 public record OAuth2LoginContext(
-        OAuth2User oauthUser,
-        AuthProvider provider,
-        OAuthUserInfo userInfo,
-        boolean linkMode,
-        @Nullable Long linkUserId
-) {
-}
-
+    OAuth2User oauthUser,
+    AuthProvider provider,
+    OAuthUserInfo userInfo,
+    boolean linkMode,
+    @Nullable Long linkUserId) {}

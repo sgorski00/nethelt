@@ -15,69 +15,66 @@ import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 @RequiredArgsConstructor
 public class TokenResponseEntityCreator {
 
-    private final JwtService jwtService;
-    private final RefreshTokenService refreshTokenService;
-    private final CookieResponseHelper cookieResponseHelper;
-    private final UserMapper userMapper;
+  private final JwtService jwtService;
+  private final RefreshTokenService refreshTokenService;
+  private final CookieResponseHelper cookieResponseHelper;
+  private final UserMapper userMapper;
 
-    private static final HttpStatus AUTH_SUCCESS_STATUS = HttpStatus.OK;
-    private static final HttpStatus REGISTRATION_STATUS = HttpStatus.CREATED;
+  private static final HttpStatus AUTH_SUCCESS_STATUS = HttpStatus.OK;
+  private static final HttpStatus REGISTRATION_STATUS = HttpStatus.CREATED;
 
-    /**
-     * Creates successful login/refresh response with JWT in body and refresh cookie.
-     *
-     * @param user the authenticated user
-     * @return ResponseEntity with JWT in body and refresh token cookie
-     */
-    public ResponseEntity<JwtResponse> createTokenResponse(User user) {
-        return buildResponse(user, AUTH_SUCCESS_STATUS, new JwtResponse(jwtService.generateAccessToken(user)));
-    }
+  /**
+   * Creates successful login/refresh response with JWT in body and refresh cookie.
+   *
+   * @param user the authenticated user
+   * @return ResponseEntity with JWT in body and refresh token cookie
+   */
+  public ResponseEntity<JwtResponse> createTokenResponse(User user) {
+    return buildResponse(
+        user, AUTH_SUCCESS_STATUS, new JwtResponse(jwtService.generateAccessToken(user)));
+  }
 
-    /**
-     * Creates registration response with user data in body and refresh token cookie.
-     *
-     * @param user the newly created user
-     * @return ResponseEntity with user details and refresh token cookie
-     */
-    public ResponseEntity<UserResponse> createRegistrationResponse(User user) {
-        return buildResponse(user, REGISTRATION_STATUS, userMapper.toResponse(user));
-    }
+  /**
+   * Creates registration response with user data in body and refresh token cookie.
+   *
+   * @param user the newly created user
+   * @return ResponseEntity with user details and refresh token cookie
+   */
+  public ResponseEntity<UserResponse> createRegistrationResponse(User user) {
+    return buildResponse(user, REGISTRATION_STATUS, userMapper.toResponse(user));
+  }
 
-    /**
-     * Creates OAuth2 login response with JWT and refresh token.
-     * Used for OAuth2 success handler callback.
-     *
-     * @param user the user from OAuth2 provider
-     * @return ResponseEntity with JWT and refresh token cookie
-     */
-    public ResponseEntity<JwtResponse> createOAuth2Response(User user) {
-        return createTokenResponse(user);
-    }
+  /**
+   * Creates OAuth2 login response with JWT and refresh token. Used for OAuth2 success handler
+   * callback.
+   *
+   * @param user the user from OAuth2 provider
+   * @return ResponseEntity with JWT and refresh token cookie
+   */
+  public ResponseEntity<JwtResponse> createOAuth2Response(User user) {
+    return createTokenResponse(user);
+  }
 
-    /**
-     * Creates logout response that clears the refresh token cookie.
-     *
-     * @return ResponseEntity with no content and cleared refresh token cookie
-     */
-    public ResponseEntity<Void> createLogoutResponse() {
-        var cookie = cookieResponseHelper.createClearRefreshTokenCookie();
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
-    }
+  /**
+   * Creates logout response that clears the refresh token cookie.
+   *
+   * @return ResponseEntity with no content and cleared refresh token cookie
+   */
+  public ResponseEntity<Void> createLogoutResponse() {
+    var cookie = cookieResponseHelper.createClearRefreshTokenCookie();
+    return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+  }
 
-    private <T> ResponseEntity<T> buildResponse(User user, HttpStatus status, T body) {
-        var cookie = createRefreshTokenCookie(user);
-        return ResponseEntity.status(status)
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(body);
-    }
+  private <T> ResponseEntity<T> buildResponse(User user, HttpStatus status, T body) {
+    var cookie = createRefreshTokenCookie(user);
+    return ResponseEntity.status(status)
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(body);
+  }
 
-    private org.springframework.http.ResponseCookie createRefreshTokenCookie(User user) {
-        var refreshToken = refreshTokenService.generateRefreshToken(user);
-        return cookieResponseHelper.createRefreshTokenCookie(
-                refreshToken.getToken(),
-                refreshTokenService.getExpirationSecond());
-    }
+  private org.springframework.http.ResponseCookie createRefreshTokenCookie(User user) {
+    var refreshToken = refreshTokenService.generateRefreshToken(user);
+    return cookieResponseHelper.createRefreshTokenCookie(
+        refreshToken.getToken(), refreshTokenService.getExpirationSecond());
+  }
 }
-

@@ -22,7 +22,7 @@ public class PingResultTests {
   @Test
   void construction_shouldCreateEmptyPingResult() {
     PingResult emptyResult = new PingResult();
-    assertNotNull(emptyResult,"Ping result should contain empty constructor for deserializing!");
+    assertNotNull(emptyResult, "Ping result should contain empty constructor for deserializing!");
     assertNotNull(emptyResult.getTimestamp());
   }
 

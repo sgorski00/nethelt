@@ -23,3 +23,6 @@ install-bg-client:
 
 psql:
 	docker exec -it nh-postgres psql -U postgres -d nh-db
+
+lint:
+	mvn spotless:apply

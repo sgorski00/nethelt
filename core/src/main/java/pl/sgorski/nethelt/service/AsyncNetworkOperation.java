@@ -11,7 +11,8 @@ import pl.sgorski.nethelt.model.Result;
  * @param <I> The type of the input device, must extend {@link Device}.
  * @param <O> The type of the output result, must extend {@link Result}.
  */
-public interface AsyncNetworkOperation<I extends Device, O extends Result> extends NetworkOperation<I, O> {
+public interface AsyncNetworkOperation<I extends Device, O extends Result>
+    extends NetworkOperation<I, O> {
 
   /**
    * Executes an asynchronous operation on the given device.

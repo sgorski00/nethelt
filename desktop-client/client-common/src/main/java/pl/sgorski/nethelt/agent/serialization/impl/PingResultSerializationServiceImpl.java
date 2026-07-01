@@ -9,9 +9,7 @@ import pl.sgorski.nethelt.agent.serialization.ResultSerializationService;
 import pl.sgorski.nethelt.exception.SerializationException;
 import pl.sgorski.nethelt.model.PingResult;
 
-/**
- * Service implementation for serializing and deserializing PingResult objects to and from JSON.
- */
+/** Service implementation for serializing and deserializing PingResult objects to and from JSON. */
 public class PingResultSerializationServiceImpl implements ResultSerializationService<PingResult> {
 
   private final ObjectMapper objectMapper;
@@ -21,8 +19,8 @@ public class PingResultSerializationServiceImpl implements ResultSerializationSe
   }
 
   /**
-   * Constructor for dependency injection, primarily for testing purposes.
-   * In production it is recommended to use the default constructor.
+   * Constructor for dependency injection, primarily for testing purposes. In production it is
+   * recommended to use the default constructor.
    */
   public PingResultSerializationServiceImpl(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;

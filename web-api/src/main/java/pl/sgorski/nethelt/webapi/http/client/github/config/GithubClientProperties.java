@@ -4,7 +4,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "github.client")
 public record GithubClientProperties(
-        String baseUrl,
-        Long readTimeoutMs,
-        Long connectionTimeoutMs
-) { }
+    String baseUrl, Long readTimeoutMs, Long connectionTimeoutMs) {}

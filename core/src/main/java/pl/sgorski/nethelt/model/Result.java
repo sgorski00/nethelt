@@ -3,8 +3,8 @@ package pl.sgorski.nethelt.model;
 import java.time.Instant;
 
 /**
- * Abstract base class representing the result of a network operation on a device.
- * Contains common fields such as device information, timestamp, success status, message, and response time.
+ * Abstract base class representing the result of a network operation on a device. Contains common
+ * fields such as device information, timestamp, success status, message, and response time.
  */
 public abstract class Result {
   private Device device;
@@ -20,7 +20,7 @@ public abstract class Result {
     this.responseTimeMs = responseTimeMs;
   }
 
-  public Result() { } //empty constructor for deserializing - DO NOT REMOVE
+  public Result() {} // empty constructor for deserializing - DO NOT REMOVE
 
   public Instant getTimestamp() {
     return timestamp;
@@ -60,7 +60,18 @@ public abstract class Result {
 
   @Override
   public String toString() {
-    return "Result{" + "device=" + device + ", timestamp=" + timestamp + ", success=" + success + ", message='"
-      + message + '\'' + ", responseTimeMs=" + responseTimeMs + '}';
+    return "Result{"
+        + "device="
+        + device
+        + ", timestamp="
+        + timestamp
+        + ", success="
+        + success
+        + ", message='"
+        + message
+        + '\''
+        + ", responseTimeMs="
+        + responseTimeMs
+        + '}';
   }
 }

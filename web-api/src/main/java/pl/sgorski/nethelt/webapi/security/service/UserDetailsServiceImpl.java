@@ -11,10 +11,10 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 @RequiredArgsConstructor
 public final class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userService.getUser(email);
-    }
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    return userService.getUser(email);
+  }
 }

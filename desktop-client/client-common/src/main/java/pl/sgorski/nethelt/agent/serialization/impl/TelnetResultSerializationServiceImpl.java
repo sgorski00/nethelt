@@ -12,7 +12,8 @@ import pl.sgorski.nethelt.model.TelnetResult;
 /**
  * Service implementation for serializing and deserializing TelnetResult objects to and from JSON.
  */
-public class TelnetResultSerializationServiceImpl implements ResultSerializationService<TelnetResult> {
+public class TelnetResultSerializationServiceImpl
+    implements ResultSerializationService<TelnetResult> {
 
   private final ObjectMapper objectMapper;
 
@@ -21,8 +22,8 @@ public class TelnetResultSerializationServiceImpl implements ResultSerialization
   }
 
   /**
-   * Constructor for dependency injection, primarily for testing purposes.
-   * In production it is recommended to use the default constructor.
+   * Constructor for dependency injection, primarily for testing purposes. In production it is
+   * recommended to use the default constructor.
    */
   public TelnetResultSerializationServiceImpl(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;

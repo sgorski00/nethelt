@@ -1,0 +1,25 @@
+name: Check code style
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  spotless:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: '0'
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Run spotless plugin
+        run: mvn spotless:check

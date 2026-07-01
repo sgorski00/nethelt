@@ -11,29 +11,32 @@ import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    @Transactional
-    public User save(User user) {
-        return userRepository.save(user);
-    }
+  @Transactional
+  public User save(User user) {
+    return userRepository.save(user);
+  }
 
-    public User getUser(String email) {
-        return userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
-    }
+  public User getUser(String email) {
+    return userRepository
+        .findByEmailAndDeletedAtIsNull(email)
+        .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
+  }
 
-    public User getUser(Long id) {
-        return userRepository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-    }
+  public User getUser(Long id) {
+    return userRepository
+        .findByIdAndDeletedAtIsNull(id)
+        .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+  }
 
-    public User getUserWithProfileAndIdentities(Long id) {
-        return userRepository.findWithIdentitiesAndProfileByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-    }
+  public User getUserWithProfileAndIdentities(Long id) {
+    return userRepository
+        .findWithIdentitiesAndProfileByIdAndDeletedAtIsNull(id)
+        .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+  }
 
-    public boolean isUserPresent(String email) {
-        return userRepository.existsByEmailAndDeletedAtIsNull(email);
-    }
+  public boolean isUserPresent(String email) {
+    return userRepository.existsByEmailAndDeletedAtIsNull(email);
+  }
 }

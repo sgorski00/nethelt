@@ -38,9 +38,10 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
     long startTime = System.nanoTime();
     boolean isPortOpen = checkIfPortIsOpen(device);
     long responseTime = getElapsedTimeInMs(startTime);
-    String message = isPortOpen ?
-      "Port " + device.getPort() + " is open in device " + device.getName() :
-      "Port " + device.getPort() + " is closed in device " + device.getName();
+    String message =
+        isPortOpen
+            ? "Port " + device.getPort() + " is open in device " + device.getName()
+            : "Port " + device.getPort() + " is closed in device " + device.getName();
     LOG.info("Telnet check for {} result: {}", device.getName(), message);
     return new TelnetResult(device, true, message, responseTime, isPortOpen);
   }
@@ -52,19 +53,24 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
    * @return true if the port is open, false otherwise
    */
   private boolean checkIfPortIsOpen(Device device) {
-    if(Objects.isNull(device.getPort())) {
-      throw new IllegalArgumentException("Port for device " + device.getName() + " is not specified. It is required for Telnet operation.");
+    if (Objects.isNull(device.getPort())) {
+      throw new IllegalArgumentException(
+          "Port for device "
+              + device.getName()
+              + " is not specified. It is required for Telnet operation.");
     }
 
     try (Socket socket = socketFactory.createSocket()) {
-      socket.connect(new InetSocketAddress(device.getAddress(), device.getPort()), TELNET_TIMEOUT_MS);
+      socket.connect(
+          new InetSocketAddress(device.getAddress(), device.getPort()), TELNET_TIMEOUT_MS);
       return true;
     } catch (ConnectException | SocketTimeoutException | IllegalBlockingModeException e) {
       return false;
     } catch (IOException e) {
       throw new NetworkException("Telnet connection failed for device " + device.getName(), e);
     } catch (IllegalArgumentException e) {
-      throw new NetworkException("Invalid port number for device " + device.getName() + ": " + device.getPort(), e);
+      throw new NetworkException(
+          "Invalid port number for device " + device.getName() + ": " + device.getPort(), e);
     }
   }
 

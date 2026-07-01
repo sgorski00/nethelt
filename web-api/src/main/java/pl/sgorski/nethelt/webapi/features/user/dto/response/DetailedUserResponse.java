@@ -4,13 +4,11 @@ import java.time.Instant;
 import java.util.List;
 
 public record DetailedUserResponse(
-        Long id,
-        String email,
-        String role,
-        ProfileResponse profile,
-        List<UserIdentityResponse> identities,
-        Instant createdAt,
-        Instant updatedAt,
-        Instant deletedAt
-) {
-}
+    Long id,
+    String email,
+    String role,
+    ProfileResponse profile,
+    List<UserIdentityResponse> identities,
+    Instant createdAt,
+    Instant updatedAt,
+    Instant deletedAt) {}

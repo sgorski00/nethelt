@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import pl.sgorski.nethelt.agent.config.WebClientSingleton;
-import pl.sgorski.nethelt.agent.webclient.WebClientService;
 import pl.sgorski.nethelt.agent.serialization.SerializationController;
 import pl.sgorski.nethelt.exception.SerializationException;
 import pl.sgorski.nethelt.exception.WebClientException;
@@ -51,7 +50,7 @@ public class WebClientServiceTests {
     when(webServerClient.newCall(any())).thenReturn(call);
     when(call.execute()).thenReturn(response);
     serializer = mock(SerializationController.class);
-    try(MockedStatic<?> webClient = mockStatic(WebClientSingleton.class)) {
+    try (MockedStatic<?> webClient = mockStatic(WebClientSingleton.class)) {
       webClient.when(WebClientSingleton::getInstance).thenReturn(webServerClient);
       webClientService = new WebClientService(serializer);
     }
@@ -95,9 +94,11 @@ public class WebClientServiceTests {
   @Test
   void sendResult_SerializationException_ShouldThrow() throws Exception {
     Set<PingResult> results = Set.of(new PingResult());
-    when(serializer.serialize(anySet())).thenThrow(new SerializationException("Serialization Exception"));
+    when(serializer.serialize(anySet()))
+        .thenThrow(new SerializationException("Serialization Exception"));
 
-    assertThrows(SerializationException.class, () -> webClientService.sendResult(results, PingResult.class));
+    assertThrows(
+        SerializationException.class, () -> webClientService.sendResult(results, PingResult.class));
 
     verify(webServerClient, never()).newCall(any());
     verify(call, never()).execute();
@@ -109,7 +110,9 @@ public class WebClientServiceTests {
     Set<NotConfiguredResult> results = Set.of(new NotConfiguredResult());
     when(serializer.serialize(anySet())).thenReturn("[{}]");
 
-    assertThrows(IllegalArgumentException.class, () -> webClientService.sendResult(results, NotConfiguredResult.class));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> webClientService.sendResult(results, NotConfiguredResult.class));
 
     verify(webServerClient, never()).newCall(any());
     verify(call, never()).execute();
@@ -122,7 +125,8 @@ public class WebClientServiceTests {
     when(serializer.serialize(anySet())).thenReturn("[{}]");
     when(call.execute()).thenThrow(new IOException("IO Exception"));
 
-    assertThrows(WebClientException.class, () -> webClientService.sendResult(results, PingResult.class));
+    assertThrows(
+        WebClientException.class, () -> webClientService.sendResult(results, PingResult.class));
 
     verify(webServerClient, times(1)).newCall(any());
     verify(call, times(1)).execute();
@@ -137,7 +141,8 @@ public class WebClientServiceTests {
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any())).thenReturn(Collections.singleton(expectedSet));
+    when(serializer.deserializeToSet(anyString(), any()))
+        .thenReturn(Collections.singleton(expectedSet));
 
     Set<?> result = webClientService.fetchNetworkConfig();
 
@@ -165,7 +170,8 @@ public class WebClientServiceTests {
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any())).thenThrow(new SerializationException("Deserialization Exception"));
+    when(serializer.deserializeToSet(anyString(), any()))
+        .thenThrow(new SerializationException("Deserialization Exception"));
 
     assertThrows(SerializationException.class, () -> webClientService.fetchNetworkConfig());
 
@@ -209,7 +215,8 @@ public class WebClientServiceTests {
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any())).thenReturn(Collections.singleton(expectedSet));
+    when(serializer.deserializeToSet(anyString(), any()))
+        .thenReturn(Collections.singleton(expectedSet));
 
     Set<?> result = webClientService.fetchDevices();
 
@@ -237,7 +244,8 @@ public class WebClientServiceTests {
     when(response.isSuccessful()).thenReturn(true);
     when(response.body()).thenReturn(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any())).thenThrow(new SerializationException("Deserialization Exception"));
+    when(serializer.deserializeToSet(anyString(), any()))
+        .thenThrow(new SerializationException("Deserialization Exception"));
 
     assertThrows(SerializationException.class, () -> webClientService.fetchDevices());
 
@@ -273,5 +281,5 @@ public class WebClientServiceTests {
     verify(serializer, never()).deserializeToSet(anyString(), any());
   }
 
-  private static class NotConfiguredResult extends Result { }
+  private static class NotConfiguredResult extends Result {}
 }
