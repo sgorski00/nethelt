@@ -1,9 +1,9 @@
 package pl.sgorski.nethelt.webapi.features.user.domain;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTests {
 

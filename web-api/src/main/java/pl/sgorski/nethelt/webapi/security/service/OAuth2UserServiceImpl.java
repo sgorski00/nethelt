@@ -2,7 +2,7 @@ package pl.sgorski.nethelt.webapi.security.service;
 
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -18,7 +18,7 @@ import pl.sgorski.nethelt.webapi.features.auth.service.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2Mode;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2PayloadResolver;
 
-@Log4j2
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {

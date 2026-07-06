@@ -1,14 +1,14 @@
 package pl.sgorski.nethelt.webapi.features.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 
-@Log4j2
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public final class OAuth2AccountLinkService {

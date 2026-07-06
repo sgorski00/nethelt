@@ -47,13 +47,9 @@ export class Profile implements OnInit {
     return true;
   }
 
-  public changePassword() {
+  public changePassword() {}
 
-  }
-
-  public setPassword() {
-
-  }
+  public setPassword() {}
 
   private updateProfileView(ref: DialogRef<UserProfile>) {
     ref.closed.subscribe((newProfile) => {
