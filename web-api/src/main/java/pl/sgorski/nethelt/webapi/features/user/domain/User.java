@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.sgorski.nethelt.webapi.exception.domain.ProfileOperationNotAllowedException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -82,11 +83,6 @@ public class User implements UserDetails {
   }
 
   @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
   public boolean isEnabled() {
     return deletedAt == null;
   }
@@ -107,11 +103,16 @@ public class User implements UserDetails {
     profile.setUser(this);
   }
 
-  public boolean hasPasswordSet() {
-    return passwordHash != null && !passwordHash.isBlank();
+  public void removeIdentityByProvider(AuthProvider authProvider) {
+    if (hasPasswordSet() || identities.size() > 1) {
+      identities.removeIf(identity -> identity.getProvider() == authProvider);
+    } else {
+      throw new ProfileOperationNotAllowedException(
+          "Cannot remove the last identity without a password set.");
+    }
   }
 
-  public void removeIdentityByProvider(AuthProvider authProvider) {
-    identities.removeIf(identity -> identity.getProvider() == authProvider);
+  public boolean hasPasswordSet() {
+    return passwordHash != null && !passwordHash.isBlank();
   }
 }
