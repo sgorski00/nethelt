@@ -105,4 +105,7 @@ public class User implements UserDetails {
     this.profile = profile;
     profile.setUser(this);
   }
+  public boolean hasPasswordSet() {
+    return passwordHash != null && !passwordHash.isBlank();
+  }
 }
