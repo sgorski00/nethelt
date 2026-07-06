@@ -59,8 +59,15 @@
   background: #fff;
 
   .social-label {
+    flex: 1;
     font-weight: 600;
     color: #111827;
+  }
+
+  .social-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
   }
 }
 

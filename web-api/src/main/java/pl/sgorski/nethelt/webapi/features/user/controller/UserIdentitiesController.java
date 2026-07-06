@@ -23,7 +23,7 @@ public final class UserIdentitiesController {
   private final OAuth2ContextService oAuth2ContextService;
   private final OAuth2ContextCookieService oAuth2ContextCookieService;
 
-  @PostMapping("/{provider}/link")
+  @PostMapping("/{provider}")
   public ResponseEntity<Void> prepareCookiesForOauthLinking(
       @PathVariable("provider") AuthProvider authProvider, Authentication authentication) {
     log.debug("Linking account with provider: {}", authProvider);
@@ -33,7 +33,7 @@ public final class UserIdentitiesController {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("/{provider}/unlink")
+  @DeleteMapping("/{provider}")
   public ResponseEntity<Void> unlinkOauth2Provider(
       @PathVariable("provider") AuthProvider authProvider, Authentication authentication) {
     log.debug("Unlinking provider: {}", authProvider);

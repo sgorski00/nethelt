@@ -22,10 +22,11 @@ export class Profile implements OnInit {
   protected readonly hasIdentity = hasIdentity;
 
   public message = signal('');
+  public error = signal('');
   public user = signal<DetailedUser | null>(null);
 
   ngOnInit() {
-    this.userService.getProfile().subscribe((res) => this.user.set(res));
+    this.reloadUser();
   }
 
   public openCreateProfile() {
@@ -44,13 +45,23 @@ export class Profile implements OnInit {
     this.userService.linkAccount(provider);
   }
 
+  public unlinkSocialMediaAccount(provider: IdentityProvider) {
+    this.userService.unlinkAccount(provider).subscribe({
+      next: () => {
+        this.reloadUser();
+        this.message.set(`Successfully unlinked ${provider} account`)
+      },
+      error: err => this.error.set(`Failed to unlink ${provider} account: ${err.error.detail}`),
+    });
+  }
+
   public openPasswordDialog() {
     const mode = this.user()?.hasPasswordSet ? 'change' : 'set';
     this.dialog
       .open<boolean>(PasswordDialog, { data: { mode: mode } })
       .closed.subscribe((isChanged) => {
         if (isChanged) {
-          this.userService.getProfile().subscribe((res) => this.user.set(res));
+          this.reloadUser();
           this.message.set('Password updated successfully');
         }
       });
@@ -68,5 +79,9 @@ export class Profile implements OnInit {
         };
       });
     });
+  }
+
+  private reloadUser() {
+    this.userService.getProfile().subscribe((res) => this.user.set(res));
   }
 }

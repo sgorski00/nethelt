@@ -8,9 +8,14 @@
       {{ user.hasPasswordSet ? 'Change Password' : 'Set Password' }}
     </button>
   </div>
-  @if (message(); as msg) {
+  @if (message() || error()) {
     <div class="message-box">
-      <h3 class="success-message centered">{{ msg }}</h3>
+      @if (message(); as msg) {
+        <h3 class="success-message centered">{{ msg }}</h3>
+      }
+      @if (error(); as err) {
+        <h3 class="error-message centered">{{ err }}</h3>
+      }
     </div>
   }
   <div class="info-main-container">
@@ -53,23 +58,29 @@
       <h3>Social media</h3>
       <div class="social-item">
         <div class="social-label">Google</div>
-        @if (hasIdentity(user, IdentityProvider.GOOGLE)) {
-          <span class="badge success">Linked</span>
-        } @else {
-          <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">
-            Link
-          </button>
-        }
+        <div class="social-actions">
+          @if (hasIdentity(user, IdentityProvider.GOOGLE)) {
+            <span class="badge success">Linked</span>
+            <button type="button" class="danger" (click)="unlinkSocialMediaAccount(IdentityProvider.GOOGLE)">Unlink
+            </button>
+          } @else {
+            <span class="badge danger">Not Linked</span>
+            <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">Link</button>
+          }
+        </div>
       </div>
       <div class="social-item">
         <div class="social-label">GitHub</div>
-        @if (hasIdentity(user, IdentityProvider.GITHUB)) {
-          <span class="badge success">Linked</span>
-        } @else {
-          <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">
-            Link
-          </button>
-        }
+        <div class="social-actions">
+          @if (hasIdentity(user, IdentityProvider.GITHUB)) {
+            <span class="badge success">Linked</span>
+            <button type="button" class="danger" (click)="unlinkSocialMediaAccount(IdentityProvider.GITHUB)">Unlink
+            </button>
+          } @else {
+            <span class="badge danger">Not Linked</span>
+            <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">Link</button>
+          }
+        </div>
       </div>
     </div>
   </div>

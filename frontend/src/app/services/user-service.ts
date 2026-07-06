@@ -29,10 +29,16 @@ export class UserService {
   public linkAccount(provider: IdentityProvider) {
     const providerStr = provider.toLocaleLowerCase();
     this.httpClient
-      .post(`${this.apiUrl}/identities/${providerStr}/link`, {}, { withCredentials: true })
+      .post(`${this.apiUrl}/identities/${providerStr}`, {}, { withCredentials: true })
       .subscribe({
         next: () => (window.location.href = `${this.apiUrl}/oauth2/authorization/${providerStr}`),
       });
+  }
+
+  public unlinkAccount(provider: IdentityProvider):Observable<void> {
+    const providerStr = provider.toLocaleLowerCase();
+    return this.httpClient
+      .delete<void>(`${this.apiUrl}/identities/${providerStr}`, { withCredentials: true })
   }
 
   public changePassword(request: PasswordChangeRequest): Observable<void> {
