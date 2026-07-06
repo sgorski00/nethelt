@@ -52,6 +52,6 @@ public final class AuthController {
     if (refreshTokenCookie != null && !refreshTokenCookie.isBlank()) {
       refreshTokenService.revokeToken(refreshTokenCookie);
     }
-    return tokenResponseCreator.createLogoutResponse();
+    return tokenResponseCreator.createClearResponse();
   }
 }

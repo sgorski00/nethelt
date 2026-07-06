@@ -56,11 +56,11 @@ public class TokenResponseEntityCreator {
   }
 
   /**
-   * Creates logout response that clears the refresh token cookie.
+   * Creates response that clears the refresh token cookie.
    *
    * @return ResponseEntity with no content and cleared refresh token cookie
    */
-  public ResponseEntity<Void> createLogoutResponse() {
+  public ResponseEntity<Void> createClearResponse() {
     var cookie = cookieResponseHelper.createClearRefreshTokenCookie();
     return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
   }

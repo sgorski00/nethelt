@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
 
 @Component({
-  selector: 'app-oauth2-callback',
+  selector: 'app-oauth2-success-callback',
   imports: [],
   template: '',
 })
-export class Oauth2Callback implements OnInit {
+export class OAuth2SuccessCallback implements OnInit {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
 

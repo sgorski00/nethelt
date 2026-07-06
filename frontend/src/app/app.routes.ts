@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { Profile } from './components/profile/profile';
 import { requireAuth, requireNoAuth } from './guards/auth-guard';
-import { Oauth2Callback } from './components/oauth2-callback/oauth2-callback';
+import { OAuth2SuccessCallback } from './components/oauth2-callback/oauth2-success-callback';
 import { Register } from './components/register/register';
 
 export const routes: Routes = [
@@ -28,6 +28,6 @@ export const routes: Routes = [
   },
   {
     path: 'oauth2/success',
-    component: Oauth2Callback,
+    component: OAuth2SuccessCallback,
   },
 ];
