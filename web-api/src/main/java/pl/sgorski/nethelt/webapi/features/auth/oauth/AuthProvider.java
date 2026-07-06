@@ -2,7 +2,7 @@ package pl.sgorski.nethelt.webapi.features.auth.oauth;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
-import pl.sgorski.nethelt.webapi.exception.application.ProviderNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.ProviderNotFoundException;
 
 public enum AuthProvider {
   GOOGLE,

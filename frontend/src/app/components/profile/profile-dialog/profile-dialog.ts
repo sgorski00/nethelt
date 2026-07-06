@@ -69,14 +69,14 @@ export class ProfileDialog implements OnInit {
   private updateProfile() {
     const profileData: ProfileUpdateRequest = this.profileForm.getRawValue();
     if (!this.data.profile) {
-      this.errorMessage.set('Nie można zaktualizować profilu, brak danych.');
+      this.errorMessage.set('Failed to update profile: no profile data provided.');
       return;
     }
     this.userService.updateProfile(profileData).subscribe({
       next: (updatedProfile) => {
         this.dialogRef.close(updatedProfile);
       },
-      error: (err) => this.errorMessage.set(err.error.detail || 'Nie udało się zaktualizować.'),
+      error: (err) => this.errorMessage.set(err.error.detail || 'Failed to save profile.'),
     });
   }
 
@@ -86,7 +86,7 @@ export class ProfileDialog implements OnInit {
       next: (createdProfile) => {
         this.dialogRef.close(createdProfile);
       },
-      error: (err) => this.errorMessage.set(err.error.detail || 'Nie udało się zapisać.'),
+      error: (err) => this.errorMessage.set(err.error.detail || 'Failed to create profile.'),
     });
   }
 }

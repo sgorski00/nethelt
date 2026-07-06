@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { DetailedUser, UserProfile } from '../models/user/user-response';
 import { ProfileCreateRequest, ProfileUpdateRequest } from '../models/user/profile-request';
 import { IdentityProvider } from '../models/user/identity-provider';
+import { PasswordChangeRequest, PasswordSetRequest } from '../models/user/password-request';
 
 @Injectable({
   providedIn: 'root',
@@ -28,9 +29,28 @@ export class UserService {
   public linkAccount(provider: IdentityProvider) {
     const providerStr = provider.toLocaleLowerCase();
     this.httpClient
-      .post(`${this.apiUrl}/profile/link/${providerStr}`, {}, { withCredentials: true })
+      .post(`${this.apiUrl}/identities/${providerStr}`, {}, { withCredentials: true })
       .subscribe({
         next: () => (window.location.href = `${this.apiUrl}/oauth2/authorization/${providerStr}`),
       });
+  }
+
+  public unlinkAccount(provider: IdentityProvider): Observable<void> {
+    const providerStr = provider.toLocaleLowerCase();
+    return this.httpClient.delete<void>(`${this.apiUrl}/identities/${providerStr}`, {
+      withCredentials: true,
+    });
+  }
+
+  public changePassword(request: PasswordChangeRequest): Observable<void> {
+    return this.httpClient.patch<void>(`${this.apiUrl}/profile/password`, request, {
+      withCredentials: true,
+    });
+  }
+
+  public setPassword(request: PasswordSetRequest): Observable<void> {
+    return this.httpClient.put<void>(`${this.apiUrl}/profile/password`, request, {
+      withCredentials: true,
+    });
   }
 }

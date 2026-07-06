@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: start;
   gap: 15px;
-  padding-left: 50px;
+  padding: 0 50px;
 }
 
 .info-main-container {
@@ -59,7 +59,34 @@
   background: #fff;
 
   .social-label {
+    flex: 1;
     font-weight: 600;
     color: #111827;
   }
+
+  .social-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+.profile-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.message-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #fef3c7;
+  color: #92400e;
 }

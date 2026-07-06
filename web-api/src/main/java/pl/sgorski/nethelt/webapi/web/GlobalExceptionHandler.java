@@ -7,6 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pl.sgorski.nethelt.webapi.exception.application.AlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.application.NotAllowedException;
 import pl.sgorski.nethelt.webapi.exception.application.NotFoundException;
 
 @RestControllerAdvice
@@ -40,6 +41,14 @@ public final class GlobalExceptionHandler {
   public ProblemDetail handleNotFoundException(NotFoundException ex) {
     var problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
     problem.setTitle("Not Found");
+    problem.setDetail(ex.getMessage());
+    return problem;
+  }
+
+  @ExceptionHandler(NotAllowedException.class)
+  public ProblemDetail handleNotAllowedException(NotAllowedException ex) {
+    var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+    problem.setTitle("Operation Not Allowed");
     problem.setDetail(ex.getMessage());
     return problem;
   }

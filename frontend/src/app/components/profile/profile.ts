@@ -7,6 +7,7 @@ import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { ProfileDialog } from './profile-dialog/profile-dialog';
 import { IdentityProvider } from '../../models/user/identity-provider';
 import { hasIdentity } from '../../models/user/user.utils';
+import { PasswordDialog } from './password-dialog/password-dialog';
 
 @Component({
   selector: 'app-profile',
@@ -20,10 +21,12 @@ export class Profile implements OnInit {
   protected readonly IdentityProvider = IdentityProvider;
   protected readonly hasIdentity = hasIdentity;
 
+  public message = signal('');
+  public error = signal('');
   public user = signal<DetailedUser | null>(null);
 
   ngOnInit() {
-    this.userService.getProfile().subscribe((res) => this.user.set(res));
+    this.reloadUser();
   }
 
   public openCreateProfile() {
@@ -42,6 +45,28 @@ export class Profile implements OnInit {
     this.userService.linkAccount(provider);
   }
 
+  public unlinkSocialMediaAccount(provider: IdentityProvider) {
+    this.userService.unlinkAccount(provider).subscribe({
+      next: () => {
+        this.reloadUser();
+        this.message.set(`Successfully unlinked ${provider} account`);
+      },
+      error: (err) => this.error.set(`Failed to unlink ${provider} account: ${err.error.detail}`),
+    });
+  }
+
+  public openPasswordDialog() {
+    const mode = this.user()?.hasPasswordSet ? 'change' : 'set';
+    this.dialog
+      .open<boolean>(PasswordDialog, { data: { mode: mode } })
+      .closed.subscribe((isChanged) => {
+        if (isChanged) {
+          this.reloadUser();
+          this.message.set('Password updated successfully');
+        }
+      });
+  }
+
   private updateProfileView(ref: DialogRef<UserProfile>) {
     ref.closed.subscribe((newProfile) => {
       if (!newProfile) return;
@@ -54,5 +79,9 @@ export class Profile implements OnInit {
         };
       });
     });
+  }
+
+  private reloadUser() {
+    this.userService.getProfile().subscribe((res) => this.user.set(res));
   }
 }
