@@ -7,6 +7,7 @@ import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { ProfileDialog } from './profile-dialog/profile-dialog';
 import { IdentityProvider } from '../../models/user/identity-provider';
 import { hasIdentity } from '../../models/user/user.utils';
+import { PasswordDialog } from './password-dialog/password-dialog';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +21,7 @@ export class Profile implements OnInit {
   protected readonly IdentityProvider = IdentityProvider;
   protected readonly hasIdentity = hasIdentity;
 
+  public message = signal('');
   public user = signal<DetailedUser | null>(null);
 
   ngOnInit() {
@@ -42,14 +44,17 @@ export class Profile implements OnInit {
     this.userService.linkAccount(provider);
   }
 
-  public hasLocalPassword(): boolean {
-    //TODO: implement
-    return true;
+  public openPasswordDialog() {
+    const mode = this.user()?.hasPasswordSet ? 'change' : 'set';
+    this.dialog
+      .open<boolean>(PasswordDialog, { data: { mode: mode } })
+      .closed.subscribe((isChanged) => {
+        if (isChanged) {
+          this.userService.getProfile().subscribe((res) => this.user.set(res));
+          this.message.set('Password updated successfully');
+        }
+      });
   }
-
-  public changePassword() {}
-
-  public setPassword() {}
 
   private updateProfileView(ref: DialogRef<UserProfile>) {
     ref.closed.subscribe((newProfile) => {

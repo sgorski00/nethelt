@@ -4,16 +4,19 @@
       <h2>Welcome, {{ user.email }}!</h2>
       <small>Account created at: {{ user.createdAt | date: 'dd.MM.yyyy HH:mm' }}</small>
     </div>
-    @if (hasLocalPassword()) {
-      <button type="button" (click)="changePassword()">Change Password</button>
-    } @else {
-      <button type="button" (click)="setPassword()">Set Password</button>
-    }
+    <button type="button" (click)="openPasswordDialog()">
+      {{ user.hasPasswordSet ? 'Change Password' : 'Set Password' }}
+    </button>
   </div>
+  @if (message(); as msg) {
+    <div class="message-box">
+      <h3 class="success-message centered">{{ msg }}</h3>
+    </div>
+  }
   <div class="info-main-container">
     <div class="info-sub-container">
+      <h3>Detailed info</h3>
       @if (user.profile; as profile) {
-        <h3>Detailed info</h3>
         <table class="profile-table">
           <tr>
             <th>Username</th>

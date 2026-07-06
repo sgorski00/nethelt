@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { DetailedUser, UserProfile } from '../models/user/user-response';
 import { ProfileCreateRequest, ProfileUpdateRequest } from '../models/user/profile-request';
 import { IdentityProvider } from '../models/user/identity-provider';
+import { PasswordChangeRequest, PasswordSetRequest } from '../models/user/password-request';
 
 @Injectable({
   providedIn: 'root',
@@ -32,5 +33,17 @@ export class UserService {
       .subscribe({
         next: () => (window.location.href = `${this.apiUrl}/oauth2/authorization/${providerStr}`),
       });
+  }
+
+  public changePassword(request: PasswordChangeRequest): Observable<void> {
+    return this.httpClient.patch<void>(`${this.apiUrl}/profile/password`, request, {
+      withCredentials: true,
+    });
+  }
+
+  public setPassword(request: PasswordSetRequest): Observable<void> {
+    return this.httpClient.put<void>(`${this.apiUrl}/profile/password`, request, {
+      withCredentials: true,
+    });
   }
 }
