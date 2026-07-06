@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Entity
@@ -108,5 +109,9 @@ public class User implements UserDetails {
 
   public boolean hasPasswordSet() {
     return passwordHash != null && !passwordHash.isBlank();
+  }
+
+  public void removeIdentityByProvider(AuthProvider authProvider) {
+    identities.removeIf(identity -> identity.getProvider() == authProvider);
   }
 }

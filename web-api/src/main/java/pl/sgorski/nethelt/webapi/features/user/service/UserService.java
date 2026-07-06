@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;
 
@@ -38,5 +39,11 @@ public class UserService {
 
   public boolean isUserPresent(String email) {
     return userRepository.existsByEmailAndDeletedAtIsNull(email);
+  }
+
+  @Transactional
+  public void removeOAuth2AccountLink(Long userId, AuthProvider authProvider) {
+    var user = getUser(userId);
+    user.removeIdentityByProvider(authProvider);
   }
 }

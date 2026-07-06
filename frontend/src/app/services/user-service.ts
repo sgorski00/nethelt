@@ -29,7 +29,7 @@ export class UserService {
   public linkAccount(provider: IdentityProvider) {
     const providerStr = provider.toLocaleLowerCase();
     this.httpClient
-      .post(`${this.apiUrl}/profile/link/${providerStr}`, {}, { withCredentials: true })
+      .post(`${this.apiUrl}/identities/${providerStr}/link`, {}, { withCredentials: true })
       .subscribe({
         next: () => (window.location.href = `${this.apiUrl}/oauth2/authorization/${providerStr}`),
       });
