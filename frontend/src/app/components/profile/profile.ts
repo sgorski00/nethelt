@@ -42,6 +42,19 @@ export class Profile implements OnInit {
     this.userService.linkAccount(provider);
   }
 
+  public hasLocalPassword(): boolean {
+    //TODO: implement
+    return true;
+  }
+
+  public changePassword() {
+
+  }
+
+  public setPassword() {
+
+  }
+
   private updateProfileView(ref: DialogRef<UserProfile>) {
     ref.closed.subscribe((newProfile) => {
       if (!newProfile) return;

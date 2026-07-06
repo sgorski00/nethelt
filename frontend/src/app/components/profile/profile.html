@@ -1,7 +1,14 @@
 @if (user(); as user) {
-  <div>
-    <h2>Welcome, {{ user.email }}!</h2>
-    <small>Account created at: {{ user.createdAt | date: 'dd.MM.yyyy HH:mm' }}</small>
+  <div class="profile-header">
+    <div>
+      <h2>Welcome, {{ user.email }}!</h2>
+      <small>Account created at: {{ user.createdAt | date: 'dd.MM.yyyy HH:mm' }}</small>
+    </div>
+    @if (hasLocalPassword()) {
+      <button type="button" (click)="changePassword()">Change Password</button>
+    } @else {
+      <button type="button" (click)="setPassword()">Set Password</button>
+    }
   </div>
   <div class="info-main-container">
     <div class="info-sub-container">
