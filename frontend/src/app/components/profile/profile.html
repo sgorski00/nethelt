@@ -61,11 +61,18 @@
         <div class="social-actions">
           @if (hasIdentity(user, IdentityProvider.GOOGLE)) {
             <span class="badge success">Linked</span>
-            <button type="button" class="danger" (click)="unlinkSocialMediaAccount(IdentityProvider.GOOGLE)">Unlink
+            <button
+              type="button"
+              class="danger"
+              (click)="unlinkSocialMediaAccount(IdentityProvider.GOOGLE)"
+            >
+              Unlink
             </button>
           } @else {
             <span class="badge danger">Not Linked</span>
-            <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">Link</button>
+            <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GOOGLE)">
+              Link
+            </button>
           }
         </div>
       </div>
@@ -74,11 +81,18 @@
         <div class="social-actions">
           @if (hasIdentity(user, IdentityProvider.GITHUB)) {
             <span class="badge success">Linked</span>
-            <button type="button" class="danger" (click)="unlinkSocialMediaAccount(IdentityProvider.GITHUB)">Unlink
+            <button
+              type="button"
+              class="danger"
+              (click)="unlinkSocialMediaAccount(IdentityProvider.GITHUB)"
+            >
+              Unlink
             </button>
           } @else {
             <span class="badge danger">Not Linked</span>
-            <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">Link</button>
+            <button type="button" (click)="linkSocialMediaAccount(IdentityProvider.GITHUB)">
+              Link
+            </button>
           }
         </div>
       </div>

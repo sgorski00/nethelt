@@ -49,9 +49,9 @@ export class Profile implements OnInit {
     this.userService.unlinkAccount(provider).subscribe({
       next: () => {
         this.reloadUser();
-        this.message.set(`Successfully unlinked ${provider} account`)
+        this.message.set(`Successfully unlinked ${provider} account`);
       },
-      error: err => this.error.set(`Failed to unlink ${provider} account: ${err.error.detail}`),
+      error: (err) => this.error.set(`Failed to unlink ${provider} account: ${err.error.detail}`),
     });
   }
 

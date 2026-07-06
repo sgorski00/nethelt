@@ -35,10 +35,11 @@ export class UserService {
       });
   }
 
-  public unlinkAccount(provider: IdentityProvider):Observable<void> {
+  public unlinkAccount(provider: IdentityProvider): Observable<void> {
     const providerStr = provider.toLocaleLowerCase();
-    return this.httpClient
-      .delete<void>(`${this.apiUrl}/identities/${providerStr}`, { withCredentials: true })
+    return this.httpClient.delete<void>(`${this.apiUrl}/identities/${providerStr}`, {
+      withCredentials: true,
+    });
   }
 
   public changePassword(request: PasswordChangeRequest): Observable<void> {
