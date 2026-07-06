@@ -1,6 +1,5 @@
 package pl.sgorski.nethelt.webapi.security.handler;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,10 +25,12 @@ public final class OAuth2FailureHandler implements AuthenticationFailureHandler 
   @Override
   public void onAuthenticationFailure(
       HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-      throws IOException, ServletException {
+      throws IOException {
+    // TODO: make it more parametrized (it should handl eboth - login and link mode errors and maybe
+    // more detailed
     var tokenResponse = tokenResponseEntityCreator.createClearResponse();
     setCookies(response, tokenResponse.getHeaders());
-    response.sendRedirect(frontendRedirectUrl);
+    response.sendRedirect(frontendRedirectUrl + "?error=oauth2-link-error");
   }
 
   private void setCookies(HttpServletResponse response, HttpHeaders responseHeaders) {

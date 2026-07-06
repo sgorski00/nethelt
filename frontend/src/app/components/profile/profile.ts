@@ -8,6 +8,8 @@ import { ProfileDialog } from './profile-dialog/profile-dialog';
 import { IdentityProvider } from '../../models/user/identity-provider';
 import { hasIdentity } from '../../models/user/user.utils';
 import { PasswordDialog } from './password-dialog/password-dialog';
+import { ActivatedRoute } from '@angular/router';
+import { OAUTH2_ERRORS } from '../oauth2-callback/oauth2-errors';
 
 @Component({
   selector: 'app-profile',
@@ -16,6 +18,7 @@ import { PasswordDialog } from './password-dialog/password-dialog';
   styleUrl: './profile.scss',
 })
 export class Profile implements OnInit {
+  private readonly route = inject(ActivatedRoute);
   private readonly userService = inject(UserService);
   private readonly dialog = inject(Dialog);
   protected readonly IdentityProvider = IdentityProvider;
@@ -27,6 +30,12 @@ export class Profile implements OnInit {
 
   ngOnInit() {
     this.reloadUser();
+    const errorCode = this.route.snapshot.queryParamMap.get('error');
+    switch (errorCode) {
+      case OAUTH2_ERRORS.OAUTH2_LINK_ERROR:
+        this.error.set('Failed to link social media account. Please try again.');
+        break;
+    }
   }
 
   public openCreateProfile() {
