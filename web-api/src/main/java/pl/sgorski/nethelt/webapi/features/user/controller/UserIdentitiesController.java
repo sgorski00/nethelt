@@ -16,7 +16,7 @@ import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2Mode;
 @RestController
 @RequestMapping(path = "/identities", version = "1")
 @RequiredArgsConstructor
-public class UserIdentitiesController {
+public final class UserIdentitiesController {
 
   private final AuthenticatedUserResolver authenticatedUserResolver;
   private final UserService userService;

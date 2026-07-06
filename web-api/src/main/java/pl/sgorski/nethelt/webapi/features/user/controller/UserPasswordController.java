@@ -14,7 +14,7 @@ import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolve
 @RestController
 @RequestMapping(path = "/profile/password", version = "1")
 @RequiredArgsConstructor
-public class UserPasswordController {
+public final class UserPasswordController {
 
   private final UserService userService;
   private final LocalAuthService localAuthService;
