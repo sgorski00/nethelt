@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OAuth2Error } from './oauth2-errors';
+import { OAUTH2_ERRORS, OAuth2Error } from './oauth2-errors';
 
 @Component({
   selector: 'app-oauth2-failure-callback',
@@ -17,7 +17,13 @@ export class OAuth2FailureCallback implements OnInit {
       this.router.navigate(['/profile']);
       return;
     }
-
-    this.router.navigate(['/profile'], { queryParams: { error } });
+    switch (error) {
+      case OAUTH2_ERRORS.ACCOUNT_LINK_REQUIRED:
+        this.router.navigate(['/login'], { queryParams: { error } });
+        break;
+      default:
+        this.router.navigate(['/profile'], { queryParams: { error } });
+        return;
+    }
   }
 }

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import pl.sgorski.nethelt.webapi.exception.oauth2.AccountAlreadyLinkedException;
+import pl.sgorski.nethelt.webapi.exception.oauth2.IncompleteOAuth2DataException;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
@@ -26,11 +28,11 @@ public final class OAuth2AccountLinkService {
     if (userIdentityService.isUserIdentityPresent(
         userInfo.getProviderId(), userInfo.getProvider())) {
       log.debug("Someone is using account: {} [{}] already.", userInfo.getEmail(), provider.name());
-      throw new IllegalStateException("Account is already linked to another user");
+      throw new AccountAlreadyLinkedException();
     }
     if (userId == null) {
       log.error("There is no OAuth2 link context! Cannot link an oauth2 account");
-      throw new IllegalStateException("OAuth2 link context is required to link an account");
+      throw new IncompleteOAuth2DataException();
     }
     var user = userService.getUserWithProfileAndIdentities(userId);
     log.debug("Linking new identity {} to existing user {}", provider.name(), user.getEmail());

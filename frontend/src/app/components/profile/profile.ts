@@ -35,6 +35,9 @@ export class Profile implements OnInit {
       case OAUTH2_ERRORS.OAUTH2_LINK_ERROR:
         this.error.set('Failed to link social media account. Please try again.');
         break;
+      case OAUTH2_ERRORS.OAUTH2_MISSING_DATA:
+        this.error.set('Something went wrong. PLease try again.');
+        break;
     }
   }
 

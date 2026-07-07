@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LoginRequest } from '../../models/auth/login-request';
@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { IdentityProvider } from '../../models/user/identity-provider';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
+import { OAUTH2_ERRORS, OAuth2Error } from '../oauth2-callback/oauth2-errors';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ import { map } from 'rxjs';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login {
+export class Login implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -31,6 +32,17 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
+
+  ngOnInit(): void {
+    const errorCode = this.route.snapshot.queryParamMap.get('error') as OAuth2Error | null;
+    switch (errorCode) {
+      case OAUTH2_ERRORS.ACCOUNT_LINK_REQUIRED:
+        this.errorMessage.set(
+          "Failed to link this account. Propably it's already linked to another user.",
+        );
+        break;
+    }
+  }
 
   public login() {
     if (this.loginForm.invalid) {

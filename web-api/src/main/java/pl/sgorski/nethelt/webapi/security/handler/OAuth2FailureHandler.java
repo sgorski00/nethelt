@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.features.auth.service.TokenResponseEntityCreator;
@@ -26,11 +27,12 @@ public final class OAuth2FailureHandler implements AuthenticationFailureHandler 
   public void onAuthenticationFailure(
       HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
       throws IOException {
-    // TODO: make it more parametrized (it should handl eboth - login and link mode errors and maybe
-    // more detailed
-    var tokenResponse = tokenResponseEntityCreator.createClearResponse();
-    setCookies(response, tokenResponse.getHeaders());
-    response.sendRedirect(frontendRedirectUrl + "?error=oauth2-link-error");
+    if (exception instanceof OAuth2AuthenticationException ex) {
+      var errorCode = ex.getError().getErrorCode();
+      var tokenResponse = tokenResponseEntityCreator.createClearResponse();
+      setCookies(response, tokenResponse.getHeaders());
+      response.sendRedirect(frontendRedirectUrl + "?error=" + errorCode);
+    }
   }
 
   private void setCookies(HttpServletResponse response, HttpHeaders responseHeaders) {

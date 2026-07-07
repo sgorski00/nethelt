@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.exception.domain;
+package pl.sgorski.nethelt.webapi.exception.oauth2;
 
 public final class AccountLinkRequiredException extends RuntimeException {
 
