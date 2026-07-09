@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
@@ -18,7 +18,6 @@ import pl.sgorski.nethelt.webapi.features.user.domain.Profile;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileCreateCommand;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileUpdateCommand;
-import pl.sgorski.nethelt.webapi.features.user.mapper.ProfileMapper;
 import pl.sgorski.nethelt.webapi.features.user.repository.ProfileRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,9 +27,7 @@ public class ProfileServiceTests {
 
   @Mock private UserService userService;
 
-  private ProfileService profileService;
-
-  private final ProfileMapper profileMapper = Mappers.getMapper(ProfileMapper.class);
+  @InjectMocks private ProfileService profileService;
 
   private final Long userId = 1L;
   private final String username = "test-user";
@@ -43,8 +40,7 @@ public class ProfileServiceTests {
 
   @BeforeEach
   void setUp() {
-    this.profileService = new ProfileService(profileRepository, profileMapper, userService);
-    this.profile = new Profile();
+    this.profile = new Profile(username, firstName, lastName, birthDate, bio);
     this.user = new User();
     user.setId(userId);
   }

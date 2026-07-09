@@ -8,7 +8,6 @@ import pl.sgorski.nethelt.webapi.exception.domain.ProfileNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.domain.Profile;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileCreateCommand;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileUpdateCommand;
-import pl.sgorski.nethelt.webapi.features.user.mapper.ProfileMapper;
 import pl.sgorski.nethelt.webapi.features.user.repository.ProfileRepository;
 
 @Service
@@ -16,7 +15,6 @@ import pl.sgorski.nethelt.webapi.features.user.repository.ProfileRepository;
 public class ProfileService {
 
   private final ProfileRepository profileRepository;
-  private final ProfileMapper profileMapper;
   private final UserService userService;
 
   @Transactional
@@ -25,7 +23,13 @@ public class ProfileService {
     if (user.getProfile() != null) {
       throw new ProfileAlreadyExistsException();
     }
-    var profile = profileMapper.toProfile(command);
+    var profile =
+        new Profile(
+            command.username(),
+            command.firstName(),
+            command.lastName(),
+            command.birthDate(),
+            command.bio());
     user.setProfile(profile);
     userService.save(user);
     return profile;
@@ -38,7 +42,8 @@ public class ProfileService {
             .findWithUserByUserId(command.userId())
             .orElseThrow(
                 () -> new ProfileNotFoundException("Couldn't update the non-existing profile"));
-    profileMapper.update(existingProfile, command);
+    existingProfile.updatePersonalInformation(
+        command.firstName(), command.lastName(), command.birthDate(), command.bio());
     return existingProfile;
   }
 }
