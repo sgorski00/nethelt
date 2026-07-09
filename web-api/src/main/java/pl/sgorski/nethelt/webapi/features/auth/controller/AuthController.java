@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
+import pl.sgorski.nethelt.webapi.features.auth.helper.CookieResponseHelper;
+import pl.sgorski.nethelt.webapi.features.auth.helper.TokenResponseEntityCreator;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
-import pl.sgorski.nethelt.webapi.features.auth.service.CookieResponseHelper;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
-import pl.sgorski.nethelt.webapi.features.auth.service.TokenResponseEntityCreator;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.UserResponse;
 
 @RestController

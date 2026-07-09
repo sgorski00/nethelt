@@ -16,7 +16,7 @@ public final class OAuth2PayloadResolver {
     try {
       return token.map(contextService::parse);
     } finally {
-      cookieService.clear();
+      cookieService.clearContext();
     }
   }
 }

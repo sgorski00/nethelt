@@ -6,7 +6,7 @@ import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.OAuthUserInfo;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.OAuthUserInfo;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.domain.UserIdentity;
 
@@ -25,6 +25,7 @@ public interface AuthMapper {
   @Mapping(target = "deletedAt", ignore = true)
   @Mapping(target = "identities", ignore = true)
   @Mapping(target = "authorities", ignore = true)
+  @Mapping(target = "profile", ignore = true)
   User toEntity(RegisterUserCommand command);
 
   @Mapping(target = "id", ignore = true)

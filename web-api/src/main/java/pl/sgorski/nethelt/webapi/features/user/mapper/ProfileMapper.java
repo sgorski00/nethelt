@@ -20,10 +20,14 @@ public interface ProfileMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "user", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
   Profile toProfile(ProfileCreateCommand command);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "user", ignore = true)
   @Mapping(target = "username", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
   void update(@MappingTarget Profile existingProfile, ProfileUpdateCommand command);
 }

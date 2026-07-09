@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextCookieService;

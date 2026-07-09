@@ -11,7 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-import pl.sgorski.nethelt.webapi.features.auth.service.TokenResponseEntityCreator;
+import pl.sgorski.nethelt.webapi.features.auth.helper.TokenResponseEntityCreator;
 
 @Slf4j
 @Component

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.auth.service;
+package pl.sgorski.nethelt.webapi.features.auth.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountLinkRequiredException;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;

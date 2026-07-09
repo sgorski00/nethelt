@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.auth.service;
+package pl.sgorski.nethelt.webapi.features.auth.helper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
+import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.UserResponse;
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;

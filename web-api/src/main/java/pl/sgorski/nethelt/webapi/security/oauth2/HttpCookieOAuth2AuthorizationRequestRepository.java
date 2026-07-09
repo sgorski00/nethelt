@@ -29,11 +29,6 @@ public final class HttpCookieOAuth2AuthorizationRequestRepository
   private static final boolean SECURE = true;
 
   @Override
-  public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-    return readCookie(request).map(this::deserialize).orElse(null);
-  }
-
-  @Override
   public void saveAuthorizationRequest(
       OAuth2AuthorizationRequest authorizationRequest,
       HttpServletRequest request,
@@ -54,17 +49,6 @@ public final class HttpCookieOAuth2AuthorizationRequestRepository
     var authorizationRequest = loadAuthorizationRequest(request);
     clearCookie(response);
     return authorizationRequest;
-  }
-
-  private Optional<String> readCookie(HttpServletRequest request) {
-    if (request.getCookies() == null) {
-      return Optional.empty();
-    }
-
-    return Arrays.stream(request.getCookies())
-        .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
-        .map(Cookie::getValue)
-        .findFirst();
   }
 
   private void clearCookie(HttpServletResponse response) {
@@ -90,6 +74,22 @@ public final class HttpCookieOAuth2AuthorizationRequestRepository
     } catch (IOException ex) {
       throw new IllegalStateException("Failed to serialize OAuth2 authorization request", ex);
     }
+  }
+
+  @Override
+  public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+    return readCookie(request).map(this::deserialize).orElse(null);
+  }
+
+  private Optional<String> readCookie(HttpServletRequest request) {
+    if (request.getCookies() == null) {
+      return Optional.empty();
+    }
+
+    return Arrays.stream(request.getCookies())
+        .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
+        .map(Cookie::getValue)
+        .findFirst();
   }
 
   private OAuth2AuthorizationRequest deserialize(String value) {

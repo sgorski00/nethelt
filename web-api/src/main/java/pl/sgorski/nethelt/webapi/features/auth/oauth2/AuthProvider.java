@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.auth.oauth;
+package pl.sgorski.nethelt.webapi.features.auth.oauth2;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
