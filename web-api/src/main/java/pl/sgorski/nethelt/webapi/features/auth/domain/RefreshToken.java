@@ -2,16 +2,14 @@ package pl.sgorski.nethelt.webapi.features.auth.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.util.UUID;
+import lombok.*;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
 @Entity
 @Table(name = "refresh_tokens")
-@Data
 @ToString(exclude = "user")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken {
 
   @Id
@@ -19,10 +17,12 @@ public class RefreshToken {
   private Long id;
 
   @Column(nullable = false, unique = true)
+  @Getter
   private String token;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
+  @Getter
   private User user;
 
   @Column(nullable = false)
@@ -31,9 +31,17 @@ public class RefreshToken {
   @Column(nullable = false)
   private Instant expiresAt;
 
-  public RefreshToken(String token, User user, Long expirationTimeInMs) {
-    this.token = token;
+  public RefreshToken(User user, Instant expiresAt) {
+    this.token = UUID.randomUUID().toString();
     this.user = user;
-    this.expiresAt = Instant.now().plusMillis(expirationTimeInMs);
+    this.expiresAt = expiresAt;
+  }
+
+  public boolean isValid() {
+    return !isRevoked && expiresAt.isAfter(Instant.now());
+  }
+
+  public void revoke() {
+    this.isRevoked = true;
   }
 }

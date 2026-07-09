@@ -17,7 +17,7 @@ public class RefreshTokenCleanupJob {
   public void cleanUpInvalidTokens() {
     try {
       log.debug("Starting cleanup of expired and revoked refresh tokens...");
-      refreshTokenService.deletedInvalidTokens();
+      refreshTokenService.deleteInvalidTokens();
       log.info("Refresh token cleanup completed successfully");
     } catch (Exception e) {
       log.error("Error during refresh token cleanup", e);
