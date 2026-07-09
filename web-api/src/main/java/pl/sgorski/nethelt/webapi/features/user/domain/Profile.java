@@ -28,21 +28,13 @@ public class Profile {
   @Column(nullable = false, unique = true)
   private String username;
 
-  @Nullable
-  @Column(nullable = false)
-  private String firstName;
+  @Nullable private String firstName;
 
-  @Nullable
-  @Column(nullable = false)
-  private String lastName;
+  @Nullable private String lastName;
 
-  @Nullable
-  @Column(nullable = false)
-  private LocalDate birthDate;
+  @Nullable private LocalDate birthDate;
 
-  @Nullable
-  @Column(nullable = false)
-  private String bio;
+  @Nullable private String bio;
 
   @CreationTimestamp private Instant createdAt;
 
@@ -57,17 +49,15 @@ public class Profile {
     this.updatePersonalInformation(firstName, lastName, birthDate, bio);
   }
 
-  public void updatePersonalInformation(String firstName, String lastName, LocalDate birthDate, String bio) {
+  public void updatePersonalInformation(
+      String firstName, String lastName, LocalDate birthDate, String bio) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.birthDate = birthDate;
     this.bio = bio;
   }
 
-  void setUser(User user) {
+  public void assignUser(User user) {
     this.user = user;
-    if (user.getProfile() != this) {
-      user.setProfile(this);
-    }
   }
 }

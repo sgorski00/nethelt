@@ -76,7 +76,7 @@ public class ProfileServiceTests {
   @Test
   void createProfile_shouldNotSave_whenUProfileAlreadyExists() {
     var command = new ProfileCreateCommand(userId, username, firstName, lastName, birthDate, bio);
-    user.setProfile(profile);
+    user.addProfile(profile);
     when(userService.getUser(userId)).thenReturn(user);
 
     assertThrows(ProfileAlreadyExistsException.class, () -> profileService.createProfile(command));
@@ -86,7 +86,7 @@ public class ProfileServiceTests {
   @Test
   void updateProfile_shouldMapToExistingProfile() {
     var command = new ProfileUpdateCommand(userId, firstName, lastName, birthDate, bio);
-    user.setProfile(profile);
+    user.addProfile(profile);
     when(profileRepository.findWithUserByUserId(userId)).thenReturn(Optional.ofNullable(profile));
 
     var result = profileService.updateProfile(command);

@@ -30,7 +30,7 @@ public class ProfileService {
             command.lastName(),
             command.birthDate(),
             command.bio());
-    user.setProfile(profile);
+    user.addProfile(profile);
     userService.save(user);
     return profile;
   }

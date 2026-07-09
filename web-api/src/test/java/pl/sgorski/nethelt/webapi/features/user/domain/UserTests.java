@@ -8,11 +8,11 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
 public class UserTests {
 
   @Test
-  void setProfile_shouldMapBidirectional() {
+  void addProfile_shouldMapBidirectional() {
     var user = new User();
     var profile = new Profile();
 
-    user.setProfile(profile);
+    user.addProfile(profile);
 
     assertSame(user, profile.getUser());
     assertSame(profile, user.getProfile());

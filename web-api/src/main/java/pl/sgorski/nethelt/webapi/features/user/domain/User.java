@@ -98,9 +98,12 @@ public class User implements UserDetails {
     identity.setUser(this);
   }
 
-  public void setProfile(Profile profile) {
+  public void addProfile(Profile profile) {
+    if (this.profile != null) {
+      throw new IllegalStateException("User already has a profile assigned.");
+    }
     this.profile = profile;
-    profile.setUser(this);
+    profile.assignUser(this);
   }
 
   public void removeIdentityByProvider(AuthProvider authProvider) {
