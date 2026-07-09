@@ -24,14 +24,14 @@ public final class OAuth2AccountLinkService {
     var userId = context.linkUserId();
 
     log.debug("Entering OAuth2 account link mode");
+    if (userId == null) {
+      log.error("There is no OAuth2 link context! Cannot link an oauth2 account");
+      throw new IncompleteOAuth2DataException();
+    }
     if (userIdentityService.isUserIdentityPresent(
         userInfo.getProviderId(), userInfo.getProvider())) {
       log.debug("Someone is using account: {} [{}] already.", userInfo.getEmail(), provider.name());
       throw new AccountAlreadyLinkedException();
-    }
-    if (userId == null) {
-      log.error("There is no OAuth2 link context! Cannot link an oauth2 account");
-      throw new IncompleteOAuth2DataException();
     }
     var user = userService.getUserWithProfileAndIdentities(userId);
     log.debug("Linking new identity {} to existing user {}", provider.name(), user.getEmail());

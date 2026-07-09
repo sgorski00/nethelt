@@ -15,7 +15,7 @@ import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceTests {
 
   @Mock private UserRepository userRepository;
 
