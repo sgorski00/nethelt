@@ -53,6 +53,7 @@ public class Profile {
     if (username.isBlank()) {
       throw new IllegalArgumentException("Username cannot be empty");
     }
+    this.username = username;
     this.updatePersonalInformation(firstName, lastName, birthDate, bio);
   }
 
