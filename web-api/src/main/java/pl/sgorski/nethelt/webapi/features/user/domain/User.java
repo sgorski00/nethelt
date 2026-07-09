@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileOperationNotAllowedException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
 
@@ -100,7 +101,7 @@ public class User implements UserDetails {
 
   public void addProfile(Profile profile) {
     if (this.profile != null) {
-      throw new IllegalStateException("User already has a profile assigned.");
+      throw new ProfileAlreadyExistsException();
     }
     this.profile = profile;
     profile.assignUser(this);

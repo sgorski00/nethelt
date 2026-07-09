@@ -3,7 +3,6 @@ package pl.sgorski.nethelt.webapi.features.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.domain.Profile;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileCreateCommand;
@@ -20,9 +19,6 @@ public class ProfileService {
   @Transactional
   public Profile createProfile(ProfileCreateCommand command) {
     var user = userService.getUser(command.userId());
-    if (user.getProfile() != null) {
-      throw new ProfileAlreadyExistsException();
-    }
     var profile =
         new Profile(
             command.username(),
@@ -31,7 +27,6 @@ public class ProfileService {
             command.birthDate(),
             command.bio());
     user.addProfile(profile);
-    userService.save(user);
     return profile;
   }
 

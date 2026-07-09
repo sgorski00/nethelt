@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.domain.Profile;
@@ -60,8 +59,6 @@ public class ProfileServiceTests {
 
     assertSame(user, result.getUser());
     assertSame(result, user.getProfile());
-
-    verify(userService).save(user);
   }
 
   @Test
@@ -70,17 +67,6 @@ public class ProfileServiceTests {
     when(userService.getUser(userId)).thenThrow(new UserNotFoundException(username));
 
     assertThrows(UserNotFoundException.class, () -> profileService.createProfile(command));
-    verify(userService, never()).save(any());
-  }
-
-  @Test
-  void createProfile_shouldNotSave_whenUProfileAlreadyExists() {
-    var command = new ProfileCreateCommand(userId, username, firstName, lastName, birthDate, bio);
-    user.addProfile(profile);
-    when(userService.getUser(userId)).thenReturn(user);
-
-    assertThrows(ProfileAlreadyExistsException.class, () -> profileService.createProfile(command));
-    verify(userService, never()).save(any());
   }
 
   @Test
