@@ -40,8 +40,7 @@ public class ProfileServiceTests {
   @BeforeEach
   void setUp() {
     this.profile = new Profile(username, firstName, lastName, birthDate, bio);
-    this.user = new User();
-    user.setId(userId);
+    this.user = new User("john.doe@example.com", "password123");
   }
 
   @Test

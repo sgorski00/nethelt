@@ -15,7 +15,7 @@ import pl.sgorski.nethelt.webapi.exception.domain.RefreshTokenNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.config.RefreshTokenProperties;
 import pl.sgorski.nethelt.webapi.features.auth.domain.RefreshToken;
 import pl.sgorski.nethelt.webapi.features.auth.repository.RefreshTokenRepository;
-import pl.sgorski.nethelt.webapi.features.user.domain.User;
+import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class RefreshTokenServiceTest {
@@ -28,7 +28,7 @@ public class RefreshTokenServiceTest {
 
   @Test
   void generateRefreshToken_shouldReturnValidToken() {
-    var user = getUser();
+    var user = TestUserFactory.createLocalUser();
     when(refreshTokenProperties.expirationTimeInMs()).thenReturn(60000L);
     when(refreshTokenRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
@@ -40,7 +40,7 @@ public class RefreshTokenServiceTest {
 
   @Test
   void validateAndGetUser_shouldReturnUserForValidToken() {
-    var user = getUser();
+    var user = TestUserFactory.createLocalUser();
     var expiresAt = getExpiresAt();
     var token = new RefreshToken(user, expiresAt);
     when(refreshTokenRepository.findWithUserByToken(token.getToken()))
@@ -54,7 +54,7 @@ public class RefreshTokenServiceTest {
   @Test
   void validateAndGetUser_shouldThrow_whenTokenNotFound() {
     var expiresAt = getExpiresAt();
-    var token = new RefreshToken(new User(), expiresAt);
+    var token = new RefreshToken(TestUserFactory.createLocalUser(), expiresAt);
     when(refreshTokenRepository.findWithUserByToken(token.getToken())).thenReturn(Optional.empty());
 
     assertThrows(
@@ -64,7 +64,7 @@ public class RefreshTokenServiceTest {
 
   @Test
   void validateAndGetUser_shouldThrow_whenTokenIsNotValid() {
-    var user = getUser();
+    var user = TestUserFactory.createLocalUser();
     var expiresAt = getExpiresAt();
     var token = new RefreshToken(user, expiresAt);
     token.revoke();
@@ -78,7 +78,7 @@ public class RefreshTokenServiceTest {
 
   @Test
   void revokeToken_shouldRevokeToken() {
-    var user = getUser();
+    var user = TestUserFactory.createLocalUser();
     var expiresAt = getExpiresAt();
     var token = new RefreshToken(user, expiresAt);
     when(refreshTokenRepository.findByToken(token.getToken())).thenReturn(Optional.of(token));
@@ -91,7 +91,7 @@ public class RefreshTokenServiceTest {
 
   @Test
   void revokeToken_shouldSkip_whenNotPresent() {
-    var user = getUser();
+    var user = TestUserFactory.createLocalUser();
     var expiresAt = getExpiresAt();
     var token = new RefreshToken(user, expiresAt);
     when(refreshTokenRepository.findByToken(token.getToken())).thenReturn(Optional.empty());
@@ -117,11 +117,5 @@ public class RefreshTokenServiceTest {
 
   private Instant getExpiresAt() {
     return Instant.now().plusMillis(60000L);
-  }
-
-  private User getUser() {
-    var user = new User();
-    user.setId(1L);
-    return user;
   }
 }

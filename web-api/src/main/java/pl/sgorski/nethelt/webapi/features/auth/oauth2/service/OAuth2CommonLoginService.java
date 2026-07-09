@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountLinkRequiredException;
-import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
@@ -16,7 +15,6 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 @RequiredArgsConstructor
 public final class OAuth2CommonLoginService {
 
-  private final AuthMapper authMapper;
   private final UserService userService;
   private final UserIdentityService userIdentityService;
 
@@ -40,11 +38,8 @@ public final class OAuth2CommonLoginService {
       throw new AccountLinkRequiredException();
     }
 
-    var user = new User();
-    user.setEmail(userInfo.getEmail());
-    log.debug("New user {} created. Linking identity {}...", user.getEmail(), provider.name());
-    var identity = authMapper.toIdentity(userInfo);
-    user.addIdentity(identity);
+    var user = new User(userInfo.getEmail(), userInfo.getProvider(), userInfo.getProviderId());
+    log.debug("New user {} created with linked identity {}...", user.getEmail(), provider.name());
     userService.save(user);
     return oauthUser;
   }

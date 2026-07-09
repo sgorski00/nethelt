@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountAlreadyLinkedException;
 import pl.sgorski.nethelt.webapi.exception.oauth2.IncompleteOAuth2DataException;
-import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
@@ -16,7 +15,6 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 @RequiredArgsConstructor
 public final class OAuth2AccountLinkService {
 
-  private final AuthMapper authMapper;
   private final UserService userService;
   private final UserIdentityService userIdentityService;
 
@@ -37,8 +35,7 @@ public final class OAuth2AccountLinkService {
     }
     var user = userService.getUserWithProfileAndIdentities(userId);
     log.debug("Linking new identity {} to existing user {}", provider.name(), user.getEmail());
-    var identity = authMapper.toIdentity(userInfo);
-    user.addIdentity(identity);
+    user.addIdentity(userInfo.getProvider(), userInfo.getProviderId());
     userService.save(user);
     return context.oauthUser();
   }
