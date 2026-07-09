@@ -1,9 +1,9 @@
-package pl.sgorski.nethelt.webapi.features.auth.oauth.provider;
+package pl.sgorski.nethelt.webapi.features.auth.oauth2.provider;
 
 import java.util.Map;
 import lombok.Getter;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.OAuthUserInfo;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.OAuthUserInfo;
 
 @Getter
 public final class GithubOAuth2UserInfo implements OAuthUserInfo {

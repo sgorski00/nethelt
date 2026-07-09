@@ -8,12 +8,12 @@
       {{ user.hasPasswordSet ? 'Change Password' : 'Set Password' }}
     </button>
   </div>
-  @if (message() || error()) {
+  @if (message() || errorMessage()) {
     <div class="message-box">
       @if (message(); as msg) {
         <h3 class="success-message centered">{{ msg }}</h3>
       }
-      @if (error(); as err) {
+      @if (errorMessage(); as err) {
         <h3 class="error-message centered">{{ err }}</h3>
       }
     </div>

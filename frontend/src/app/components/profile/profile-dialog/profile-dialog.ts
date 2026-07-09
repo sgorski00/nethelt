@@ -10,7 +10,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ProfileCreateRequest, ProfileUpdateRequest } from '../../../models/user/profile-request';
 import { UserService } from '../../../services/user-service';
 import { UserProfile } from '../../../models/user/user-response';
-import { ProfileDialogData } from './profile-dialog-data';
+import { PROFILE_DIALOG_MODE, ProfileDialogData } from './profile-dialog-data';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -25,7 +25,7 @@ export class ProfileDialog implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly data = inject<ProfileDialogData>(DIALOG_DATA);
 
-  public readonly isEdit = this.data.mode === 'update';
+  public readonly isEdit = this.data.mode === PROFILE_DIALOG_MODE.UPDATE;
   public readonly today = new Date();
   public readonly errorMessage = signal('');
   public readonly profileForm: FormGroup = this.fb.group({

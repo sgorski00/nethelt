@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.auth.service;
+package pl.sgorski.nethelt.webapi.features.auth.helper;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;

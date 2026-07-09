@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.features.auth.service;
+package pl.sgorski.nethelt.webapi.features.auth.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

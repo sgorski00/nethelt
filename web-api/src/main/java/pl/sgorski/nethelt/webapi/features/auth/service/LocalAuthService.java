@@ -35,33 +35,34 @@ public class LocalAuthService {
     return userService.save(user);
   }
 
-  /** Validate user's login request and returns user if credentials are correct */
   public User login(LoginUserCommand command) {
+    var user = getAuthenticatedUser(command);
+    return userService.getUser(user.getId());
+  }
+
+  private User getAuthenticatedUser(LoginUserCommand command) {
     var auth =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(command.email(), command.password()));
     var principal = Objects.requireNonNull(auth.getPrincipal(), "Authentication failed");
-    var user = (User) principal;
-    return userService.getUser(user.getId());
+    return (User) principal;
   }
 
-  /**
-   * Method that allows oauth2 users to create local password and login with email and password.
-   * Revokes all existing refresh tokens to force re-authentication.
-   */
   @Transactional
-  public void setLocalPassword(User user, String rawPassword) {
+  public void setLocalPassword(Long userId, String rawPassword) {
+    var user = userService.getUser(userId);
     if (user.getPasswordHash() != null) {
       throw new IllegalStateException(
           "User already has a password. If you want to change it, use change password then.");
     }
+
     user.setPasswordHash(hashPassword(rawPassword));
-    userService.save(user);
-    refreshTokenService.revokeAllUserTokens(user.getId());
+    saveAndRevokeTokens(user);
   }
 
   @Transactional
-  public void changePassword(User user, String oldPassword, String newPassword) {
+  public void changePassword(Long userId, String oldPassword, String newPassword) {
+    var user = userService.getUser(userId);
     if (user.getPasswordHash() == null) {
       throw new IllegalStateException("User doesn't have local password yet.");
     }
@@ -71,11 +72,15 @@ public class LocalAuthService {
     }
 
     user.setPasswordHash(hashPassword(newPassword));
-    userService.save(user);
-    refreshTokenService.revokeAllUserTokens(user.getId());
+    saveAndRevokeTokens(user);
   }
 
   private String hashPassword(String rawPassword) {
     return Objects.requireNonNull(passwordEncoder.encode(rawPassword), "Password encoding failed");
+  }
+
+  private void saveAndRevokeTokens(User user) {
+    userService.save(user);
+    refreshTokenService.revokeAllUserTokens(user.getId());
   }
 }

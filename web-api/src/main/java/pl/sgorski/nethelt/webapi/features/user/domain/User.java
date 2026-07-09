@@ -14,7 +14,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileOperationNotAllowedException;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
 
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Entity

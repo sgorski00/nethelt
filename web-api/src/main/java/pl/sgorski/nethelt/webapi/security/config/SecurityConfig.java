@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -40,6 +41,7 @@ public class SecurityConfig {
   private final AccessDeniedHandler accessDeniedHandler;
   private final AuthenticationEntryPoint authenticationEntryPoint;
   private final AuthenticationSuccessHandler oauth2SuccessHandler;
+  private final AuthenticationFailureHandler oauth2FailureHandler;
   private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
   private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
@@ -70,7 +72,8 @@ public class SecurityConfig {
                     .authorizationEndpoint(
                         auth -> auth.authorizationRequestRepository(authorizationRequestRepository))
                     .userInfoEndpoint(user -> user.userService(oauth2UserService))
-                    .successHandler(oauth2SuccessHandler))
+                    .successHandler(oauth2SuccessHandler)
+                    .failureHandler(oauth2FailureHandler))
         .userDetailsService(userDetailsService)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(

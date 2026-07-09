@@ -12,6 +12,13 @@ build:
 logs:
 	docker compose -f infrastructure/docker-compose.yml logs -f
 
+logs-backend:
+	docker compose -f infrastructure/docker-compose.yml logs nh-web-api -f
+
+restart-backend:
+	docker compose -f infrastructure/docker-compose.yml build nh-web-api
+	docker compose -f infrastructure/docker-compose.yml up nh-web-api -d
+
 test:
 	mvn clean verify -Dspring.profiles.active=test
 

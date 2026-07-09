@@ -1,11 +1,13 @@
-package pl.sgorski.nethelt.webapi.features.auth.service;
+package pl.sgorski.nethelt.webapi.features.auth.helper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.webapi.features.auth.config.RefreshTokenProperties;
 import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
+import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.UserResponse;
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;
@@ -16,6 +18,7 @@ import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 public class TokenResponseEntityCreator {
 
   private final JwtService jwtService;
+  private final RefreshTokenProperties refreshTokenProperties;
   private final RefreshTokenService refreshTokenService;
   private final CookieResponseHelper cookieResponseHelper;
   private final UserMapper userMapper;
@@ -56,11 +59,11 @@ public class TokenResponseEntityCreator {
   }
 
   /**
-   * Creates logout response that clears the refresh token cookie.
+   * Creates response that clears the refresh token cookie.
    *
    * @return ResponseEntity with no content and cleared refresh token cookie
    */
-  public ResponseEntity<Void> createLogoutResponse() {
+  public ResponseEntity<Void> createClearResponse() {
     var cookie = cookieResponseHelper.createClearRefreshTokenCookie();
     return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
   }
@@ -75,6 +78,6 @@ public class TokenResponseEntityCreator {
   private org.springframework.http.ResponseCookie createRefreshTokenCookie(User user) {
     var refreshToken = refreshTokenService.generateRefreshToken(user);
     return cookieResponseHelper.createRefreshTokenCookie(
-        refreshToken.getToken(), refreshTokenService.getExpirationSecond());
+        refreshToken.getToken(), refreshTokenProperties.expirationTimeInMs() / 1000);
   }
 }

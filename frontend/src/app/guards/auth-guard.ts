@@ -6,12 +6,9 @@ function createAuthGuard(requiresAuth: boolean, redirectUrl: string): CanActivat
   return () => {
     const authService = inject(AuthService);
     const router = inject(Router);
+    const authenticated = authService.isAuthenticated();
 
-    if (requiresAuth) {
-      return authService.isAuthenticated() ? true : router.createUrlTree([redirectUrl]);
-    }
-
-    return authService.isAuthenticated() ? router.createUrlTree([redirectUrl]) : true;
+    return requiresAuth === authenticated ? true : router.createUrlTree([redirectUrl]);
   };
 }
 

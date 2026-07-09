@@ -22,9 +22,29 @@ public final class OAuth2ContextCookieService {
   private static final boolean HTTP_ONLY = true;
   private static final boolean SECURE = true;
 
+  public void clearContext() {
+    var response = getCurrentResponse();
+    response.addHeader(HttpHeaders.SET_COOKIE, createCookie("", Duration.ZERO).toString());
+  }
+
   public void writeTokenToResponseSetCookieHeader(String token) {
     var response = getCurrentResponse();
     response.addHeader(HttpHeaders.SET_COOKIE, createCookie(token, COOKIE_EXPIRATION).toString());
+  }
+
+  private HttpServletResponse getCurrentResponse() {
+    return Objects.requireNonNull(
+        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse());
+  }
+
+  private ResponseCookie createCookie(String value, Duration expiration) {
+    return ResponseCookie.from(COOKIE_NAME, value)
+        .httpOnly(HTTP_ONLY)
+        .secure(SECURE)
+        .sameSite(SAME_SITE_POLICY)
+        .path("/")
+        .maxAge(expiration)
+        .build();
   }
 
   public Optional<String> readOauthContextFromCookies() {
@@ -39,28 +59,8 @@ public final class OAuth2ContextCookieService {
         .findFirst();
   }
 
-  public void clear() {
-    var response = getCurrentResponse();
-    response.addHeader(HttpHeaders.SET_COOKIE, createCookie("", Duration.ZERO).toString());
-  }
-
-  private ResponseCookie createCookie(String value, Duration expiration) {
-    return ResponseCookie.from(COOKIE_NAME, value)
-        .httpOnly(HTTP_ONLY)
-        .secure(SECURE)
-        .sameSite(SAME_SITE_POLICY)
-        .path("/")
-        .maxAge(expiration)
-        .build();
-  }
-
   private HttpServletRequest getCurrentRequest() {
     return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
         .getRequest();
-  }
-
-  private static HttpServletResponse getCurrentResponse() {
-    return Objects.requireNonNull(
-        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse());
   }
 }

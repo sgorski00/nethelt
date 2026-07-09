@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordChangeRequest;
 import pl.sgorski.nethelt.webapi.features.user.dto.request.PasswordSetRequest;
-import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
 
 @RestController
@@ -16,7 +15,6 @@ import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolve
 @RequiredArgsConstructor
 public final class UserPasswordController {
 
-  private final UserService userService;
   private final LocalAuthService localAuthService;
   private final AuthenticatedUserResolver authenticatedUserResolver;
 
@@ -24,8 +22,7 @@ public final class UserPasswordController {
   public ResponseEntity<Void> setLocalPassword(
       @RequestBody @Valid PasswordSetRequest request, Authentication authentication) {
     var userId = authenticatedUserResolver.requireUserId(authentication);
-    var user = userService.getUser(userId);
-    localAuthService.setLocalPassword(user, request.newPassword());
+    localAuthService.setLocalPassword(userId, request.newPassword());
     return ResponseEntity.noContent().build();
   }
 
@@ -33,8 +30,7 @@ public final class UserPasswordController {
   public ResponseEntity<Void> changePassword(
       @RequestBody @Valid PasswordChangeRequest request, Authentication authentication) {
     var userId = authenticatedUserResolver.requireUserId(authentication);
-    var user = userService.getUser(userId);
-    localAuthService.changePassword(user, request.oldPassword(), request.newPassword());
+    localAuthService.changePassword(userId, request.oldPassword(), request.newPassword());
     return ResponseEntity.noContent().build();
   }
 

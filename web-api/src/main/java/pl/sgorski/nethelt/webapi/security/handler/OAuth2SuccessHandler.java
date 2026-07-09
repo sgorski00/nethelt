@@ -14,9 +14,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.exception.domain.IdentityNotFoundException;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.AuthProvider;
-import pl.sgorski.nethelt.webapi.features.auth.oauth.factory.OAuth2UserInfoFactory;
-import pl.sgorski.nethelt.webapi.features.auth.service.TokenResponseEntityCreator;
+import pl.sgorski.nethelt.webapi.features.auth.helper.TokenResponseEntityCreator;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.factory.OAuth2UserInfoFactory;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 
 @Slf4j
