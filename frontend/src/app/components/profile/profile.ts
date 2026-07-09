@@ -9,7 +9,9 @@ import { IdentityProvider } from '../../models/user/identity-provider';
 import { hasIdentity } from '../../models/user/user.utils';
 import { PasswordDialog } from './password-dialog/password-dialog';
 import { ActivatedRoute } from '@angular/router';
-import { OAUTH2_ERRORS } from '../oauth2-callback/oauth2-errors';
+import { getOAuth2ErrorMessage } from '../oauth2-callback/oauth2-errors';
+import { PROFILE_DIALOG_MODE } from './profile-dialog/profile-dialog-data';
+import { PASSWORD_DIALOG_MODE } from './password-dialog/password-dialog-data';
 
 @Component({
   selector: 'app-profile',
@@ -25,58 +27,29 @@ export class Profile implements OnInit {
   protected readonly hasIdentity = hasIdentity;
 
   public message = signal('');
-  public error = signal('');
+  public errorMessage = signal('');
   public user = signal<DetailedUser | null>(null);
 
   ngOnInit() {
     this.reloadUser();
-    const errorCode = this.route.snapshot.queryParamMap.get('error');
-    switch (errorCode) {
-      case OAUTH2_ERRORS.OAUTH2_LINK_ERROR:
-        this.error.set('Failed to link social media account. Please try again.');
-        break;
-      case OAUTH2_ERRORS.OAUTH2_MISSING_DATA:
-        this.error.set('Something went wrong. PLease try again.');
-        break;
+    const error = this.route.snapshot.queryParamMap.get('error');
+    if (error) {
+      this.errorMessage.set(getOAuth2ErrorMessage(error));
     }
   }
 
   public openCreateProfile() {
-    const ref = this.dialog.open<UserProfile>(ProfileDialog, { data: { mode: 'create' } });
+    const ref = this.dialog.open<UserProfile>(ProfileDialog, {
+      data: { mode: PROFILE_DIALOG_MODE.CREATE },
+    });
     this.updateProfileView(ref);
   }
 
   public openUpdateProfile() {
     const ref = this.dialog.open<UserProfile>(ProfileDialog, {
-      data: { mode: 'update', profile: this.user()!.profile },
+      data: { mode: PROFILE_DIALOG_MODE.UPDATE, profile: this.user()!.profile },
     });
     this.updateProfileView(ref);
-  }
-
-  public linkSocialMediaAccount(provider: IdentityProvider) {
-    this.userService.linkAccount(provider);
-  }
-
-  public unlinkSocialMediaAccount(provider: IdentityProvider) {
-    this.userService.unlinkAccount(provider).subscribe({
-      next: () => {
-        this.reloadUser();
-        this.message.set(`Successfully unlinked ${provider} account`);
-      },
-      error: (err) => this.error.set(`Failed to unlink ${provider} account: ${err.error.detail}`),
-    });
-  }
-
-  public openPasswordDialog() {
-    const mode = this.user()?.hasPasswordSet ? 'change' : 'set';
-    this.dialog
-      .open<boolean>(PasswordDialog, { data: { mode: mode } })
-      .closed.subscribe((isChanged) => {
-        if (isChanged) {
-          this.reloadUser();
-          this.message.set('Password updated successfully');
-        }
-      });
   }
 
   private updateProfileView(ref: DialogRef<UserProfile>) {
@@ -91,6 +64,35 @@ export class Profile implements OnInit {
         };
       });
     });
+  }
+
+  public linkSocialMediaAccount(provider: IdentityProvider) {
+    this.userService.linkAccount(provider);
+  }
+
+  public unlinkSocialMediaAccount(provider: IdentityProvider) {
+    this.userService.unlinkAccount(provider).subscribe({
+      next: () => {
+        this.reloadUser();
+        this.message.set(`Successfully unlinked ${provider} account`);
+      },
+      error: (err) =>
+        this.errorMessage.set(`Failed to unlink ${provider} account: ${err.error.detail}`),
+    });
+  }
+
+  public openPasswordDialog() {
+    const mode = this.user()?.hasPasswordSet
+      ? PASSWORD_DIALOG_MODE.CHANGE
+      : PASSWORD_DIALOG_MODE.SET;
+    this.dialog
+      .open<boolean>(PasswordDialog, { data: { mode: mode } })
+      .closed.subscribe((isChanged) => {
+        if (isChanged) {
+          this.reloadUser();
+          this.message.set('Password updated successfully');
+        }
+      });
   }
 
   private reloadUser() {

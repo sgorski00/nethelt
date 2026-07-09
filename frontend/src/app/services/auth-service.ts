@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { LoginRequest } from '../models/auth/login-request';
-import { LoginRespone } from '../models/auth/login-response';
+import { LoginResponse } from '../models/auth/login-response';
 import { finalize, Observable, tap } from 'rxjs';
 import { RegisterRequest } from '../models/auth/register-request';
 import { BasicUser } from '../models/user/user-response';
@@ -19,19 +19,15 @@ export class AuthService {
     return this.httpClient.post<BasicUser>(`${this.apiUrl}/auth/register`, body);
   }
 
-  public login(body: LoginRequest): Observable<LoginRespone> {
+  public login(body: LoginRequest): Observable<LoginResponse> {
     return this.httpClient
-      .post<LoginRespone>(`${this.apiUrl}/auth/login`, body, { withCredentials: true })
-      .pipe(
-        tap((res) => {
-          localStorage.setItem(this.jwtTokenKey, res.token);
-        }),
-      );
+      .post<LoginResponse>(`${this.apiUrl}/auth/login`, body, { withCredentials: true })
+      .pipe(tap((res) => localStorage.setItem(this.jwtTokenKey, res.token)));
   }
 
-  public refresh(): Observable<LoginRespone> {
+  public refresh(): Observable<LoginResponse> {
     return this.httpClient
-      .post<LoginRespone>(`${this.apiUrl}/auth/refresh`, {}, { withCredentials: true })
+      .post<LoginResponse>(`${this.apiUrl}/auth/refresh`, {}, { withCredentials: true })
       .pipe(tap((res) => localStorage.setItem(this.jwtTokenKey, res.token)));
   }
 

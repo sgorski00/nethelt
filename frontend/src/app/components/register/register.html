@@ -23,6 +23,11 @@
       ) {
         <small class="error-message">Password is required.</small>
       }
+      @if (
+        registerForm.hasError('passwordMismatch') && registerForm.controls.repeatNewPassword.touched
+      ) {
+        <small class="error-message">Passwords do not match</small>
+      }
     </div>
 
     <div class="form-group">

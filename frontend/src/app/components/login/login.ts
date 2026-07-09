@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 import { IdentityProvider } from '../../models/user/identity-provider';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { OAUTH2_ERRORS, OAuth2Error } from '../oauth2-callback/oauth2-errors';
+import { getOAuth2ErrorMessage, OAuth2Error } from '../oauth2-callback/oauth2-errors';
 
 @Component({
   selector: 'app-login',
@@ -34,13 +34,9 @@ export class Login implements OnInit {
   });
 
   ngOnInit(): void {
-    const errorCode = this.route.snapshot.queryParamMap.get('error') as OAuth2Error | null;
-    switch (errorCode) {
-      case OAUTH2_ERRORS.ACCOUNT_LINK_REQUIRED:
-        this.errorMessage.set(
-          "Failed to link this account. Propably it's already linked to another user.",
-        );
-        break;
+    const error = this.route.snapshot.queryParamMap.get('error') as OAuth2Error | null;
+    if (error) {
+      this.errorMessage.set(getOAuth2ErrorMessage(error));
     }
   }
 

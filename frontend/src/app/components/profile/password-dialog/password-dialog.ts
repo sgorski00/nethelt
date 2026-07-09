@@ -1,9 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../../services/user-service';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { PasswordDialogData } from './password-dialog-data';
+import { PASSWORD_DIALOG_MODE, PasswordDialogData } from './password-dialog-data';
 import { PasswordChangeRequest, PasswordSetRequest } from '../../../models/user/password-request';
+import { Observable } from 'rxjs';
+import { passwordMatchValidator } from '../../../shared/validators/password-match.validator';
 
 @Component({
   selector: 'app-password-dialog',
@@ -11,25 +13,24 @@ import { PasswordChangeRequest, PasswordSetRequest } from '../../../models/user/
   templateUrl: './password-dialog.html',
   styleUrl: './password-dialog.scss',
 })
-export class PasswordDialog implements OnInit {
+export class PasswordDialog {
   private readonly userService = inject(UserService);
   private readonly dialogRef = inject(DialogRef<boolean>);
   private readonly fb = inject(FormBuilder);
   private readonly data = inject<PasswordDialogData>(DIALOG_DATA);
 
   public errorMessage = signal('');
-  public readonly isSetPasswordMode = this.data.mode === 'set';
-  public readonly passwordForm = this.fb.group({
-    oldPassword: this.fb.nonNullable.control('', [Validators.required]),
-    newPassword: this.fb.nonNullable.control('', [Validators.required]),
-    repeatNewPassword: this.fb.nonNullable.control('', [Validators.required]),
-  });
-
-  ngOnInit(): void {
-    if (this.isSetPasswordMode) {
-      this.passwordForm.controls.oldPassword.disable();
-    }
-  }
+  public readonly isSetPasswordMode = this.data.mode === PASSWORD_DIALOG_MODE.SET;
+  public readonly passwordForm = this.fb.group(
+    {
+      oldPassword: this.fb.nonNullable.control({ value: '', disabled: this.isSetPasswordMode }, [
+        Validators.required,
+      ]),
+      newPassword: this.fb.nonNullable.control('', [Validators.required]),
+      repeatNewPassword: this.fb.nonNullable.control('', [Validators.required]),
+    },
+    { validators: passwordMatchValidator },
+  );
 
   public closeDialog() {
     this.dialogRef.close(false);
@@ -42,25 +43,26 @@ export class PasswordDialog implements OnInit {
     }
 
     if (this.isSetPasswordMode) {
-      const passwordRequest: PasswordSetRequest = this.passwordForm.getRawValue();
-      this.userService.setPassword(passwordRequest).subscribe({
-        next: () => {
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          this.errorMessage.set(err.error.detail || 'Failed to set password');
-        },
-      });
+      this.handleSetPassword();
     } else {
-      const passwordRequest: PasswordChangeRequest = this.passwordForm.getRawValue();
-      this.userService.changePassword(passwordRequest).subscribe({
-        next: () => {
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          this.errorMessage.set(err.error.detail || 'Failed to change password');
-        },
-      });
+      this.handleChangePassword();
     }
+  }
+
+  private handleSetPassword() {
+    const request: PasswordSetRequest = this.passwordForm.getRawValue();
+    this.handlePasswordRequest(this.userService.setPassword(request));
+  }
+
+  private handleChangePassword() {
+    const request: PasswordChangeRequest = this.passwordForm.getRawValue();
+    this.handlePasswordRequest(this.userService.changePassword(request));
+  }
+
+  private handlePasswordRequest(request: Observable<void>) {
+    request.subscribe({
+      next: () => this.dialogRef.close(true),
+      error: (err) => this.errorMessage.set(err.error.detail || 'Failed to set/change password'),
+    });
   }
 }
