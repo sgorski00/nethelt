@@ -27,7 +27,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pl.sgorski.nethelt.webapi.security.filter.JwtAuthenticationFilter;
-import pl.sgorski.nethelt.webapi.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2AuthorizationRequestRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class SecurityConfig {
   private final AuthenticationSuccessHandler oauth2SuccessHandler;
   private final AuthenticationFailureHandler oauth2FailureHandler;
   private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
-  private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+  private final OAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) {

@@ -12,7 +12,7 @@ public final class OAuth2PayloadResolver {
   private final OAuth2ContextService contextService;
 
   public Optional<OAuth2ContextPayload> consume() {
-    var token = cookieService.readOauthContextFromCookies();
+    var token = cookieService.readContext();
     try {
       return token.map(contextService::parse);
     } finally {

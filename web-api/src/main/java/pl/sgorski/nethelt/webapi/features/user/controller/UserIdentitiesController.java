@@ -29,7 +29,7 @@ public final class UserIdentitiesController {
     log.debug("Linking account with provider: {}", authProvider);
     var userId = authenticatedUserResolver.requireUserId(authentication);
     var token = oAuth2ContextService.generateAccessToken(userId, OAuth2Mode.LINK);
-    oAuth2ContextCookieService.writeTokenToResponseSetCookieHeader(token);
+    oAuth2ContextCookieService.saveContext(token);
     return ResponseEntity.noContent().build();
   }
 
