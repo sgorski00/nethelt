@@ -78,12 +78,20 @@ public class User implements UserDetails {
   }
 
   public void removeIdentityByProvider(AuthProvider authProvider) {
-    if (hasPasswordSet() || identities.size() > 1) {
+    if (isLocal() || identities.size() > 1) {
       identities.removeIf(identity -> identity.getProvider() == authProvider);
     } else {
       throw new ProfileOperationNotAllowedException(
           "Cannot remove the last identity without a password set.");
     }
+  }
+
+  public boolean isLocal() {
+    return passwordHash != null && !passwordHash.isBlank();
+  }
+
+  public void setPassword(String hashedPassword) {
+    this.passwordHash = hashedPassword;
   }
 
   public void addProfile(Profile profile) {
@@ -92,14 +100,6 @@ public class User implements UserDetails {
     }
     this.profile = profile;
     profile.assignUser(this);
-  }
-
-  public void setPassword(String hashedPassword) {
-    this.passwordHash = hashedPassword;
-  }
-
-  public boolean hasPasswordSet() {
-    return passwordHash != null && !passwordHash.isBlank();
   }
 
   public void delete() {

@@ -32,29 +32,29 @@ public class UserTests {
   }
 
   @Test
-  void hasPasswordSet_shouldReturnTrue_whenPasswordHashIsNotNull() {
+  void isLocal_shouldReturnTrue_whenPasswordHashIsNotNull() {
     var user = TestUserFactory.createLocalUser();
 
-    var result = user.hasPasswordSet();
+    var result = user.isLocal();
 
     assertTrue(result);
   }
 
   @Test
-  void hasPasswordSet_shouldReturnFalse_whenPasswordHashIsNull() {
+  void isLocal_shouldReturnFalse_whenPasswordHashIsNull() {
     var user = new User();
 
-    var result = user.hasPasswordSet();
+    var result = user.isLocal();
 
     assertFalse(result);
   }
 
   @Test
-  void hasPasswordSet_shouldReturnFalse_whenPasswordHashIsBlank() {
+  void isLocal_shouldReturnFalse_whenPasswordHashIsBlank() {
     var user = TestUserFactory.createLocalUser();
     user.setPassword("  ");
 
-    var result = user.hasPasswordSet();
+    var result = user.isLocal();
 
     assertFalse(result);
   }
