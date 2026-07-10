@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
-import pl.sgorski.nethelt.webapi.features.auth.helper.CookieResponseHelper;
 import pl.sgorski.nethelt.webapi.features.auth.helper.TokenResponseEntityCreator;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
@@ -39,7 +38,7 @@ public final class AuthController {
 
   @PostMapping("/refresh")
   public ResponseEntity<JwtResponse> refreshToken(
-      @CookieValue(CookieResponseHelper.REFRESH_TOKEN_COOKIE_KEY) String refreshTokenCookie) {
+      @CookieValue(TokenResponseEntityCreator.REFRESH_TOKEN_COOKIE_KEY) String refreshTokenCookie) {
     var user = refreshTokenService.validateAndGetUser(refreshTokenCookie);
     refreshTokenService.revokeToken(refreshTokenCookie);
     return tokenResponseCreator.createTokenResponse(user);
@@ -47,8 +46,7 @@ public final class AuthController {
 
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(
-      @CookieValue(value = CookieResponseHelper.REFRESH_TOKEN_COOKIE_KEY, required = false)
-          @Nullable String refreshTokenCookie) {
+      @CookieValue(value = TokenResponseEntityCreator.REFRESH_TOKEN_COOKIE_KEY, required = false) @Nullable String refreshTokenCookie) {
     if (refreshTokenCookie != null && !refreshTokenCookie.isBlank()) {
       refreshTokenService.revokeToken(refreshTokenCookie);
     }

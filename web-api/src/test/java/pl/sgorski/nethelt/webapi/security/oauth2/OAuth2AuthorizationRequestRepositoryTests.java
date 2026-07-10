@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +30,8 @@ public class OAuth2AuthorizationRequestRepositoryTests {
   }
 
   @Test
-  void saveAuthorizationRequest_shouldSaveSerializedAuthorizationRequest_whenAuthorizationRequestIsNotNull() {
+  void
+      saveAuthorizationRequest_shouldSaveSerializedAuthorizationRequest_whenAuthorizationRequestIsNotNull() {
     var auth = createTestAuthorizationRequest();
 
     repository.saveAuthorizationRequest(auth, null, null);
@@ -68,7 +68,8 @@ public class OAuth2AuthorizationRequestRepositoryTests {
   }
 
   @Test
-  void removeAuthorizationRequest_shouldReturnNullAndClearCookie_whenAuthorizationRequestDoesNotExist() {
+  void
+      removeAuthorizationRequest_shouldReturnNullAndClearCookie_whenAuthorizationRequestDoesNotExist() {
     when(cookieService.find(OAUTH2_AUTH_REQUEST_KEY)).thenReturn(Optional.empty());
 
     var result = repository.removeAuthorizationRequest(null, null);
@@ -78,7 +79,8 @@ public class OAuth2AuthorizationRequestRepositoryTests {
   }
 
   @Test
-  void removeAuthorizationRequest_shouldReturnAuthorizationRequestAndClearCookie_whenAuthorizationRequestExists() {
+  void
+      removeAuthorizationRequest_shouldReturnAuthorizationRequestAndClearCookie_whenAuthorizationRequestExists() {
     var auth = createTestAuthorizationRequest();
     var serializedValue = captureSerializedValue(auth);
 
@@ -102,11 +104,11 @@ public class OAuth2AuthorizationRequestRepositoryTests {
 
   private OAuth2AuthorizationRequest createTestAuthorizationRequest() {
     return OAuth2AuthorizationRequest.authorizationCode()
-            .authorizationUri("https://example.com/oauth2/authorize")
-            .clientId("test-client-id")
-            .redirectUri("https://example.com/oauth2/callback")
-            .scopes(Set.of("email"))
-            .state("test-state")
-            .build();
+        .authorizationUri("https://example.com/oauth2/authorize")
+        .clientId("test-client-id")
+        .redirectUri("https://example.com/oauth2/callback")
+        .scopes(Set.of("email"))
+        .state("test-state")
+        .build();
   }
 }
