@@ -51,6 +51,11 @@ public final class HttpCookieOAuth2AuthorizationRequestRepository
     return authorizationRequest;
   }
 
+  @Override
+  public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+    return readCookie(request).map(this::deserialize).orElse(null);
+  }
+
   private void clearCookie(HttpServletResponse response) {
     response.addHeader(HttpHeaders.SET_COOKIE, createCookie("", Duration.ZERO).toString());
   }
@@ -65,6 +70,18 @@ public final class HttpCookieOAuth2AuthorizationRequestRepository
         .build();
   }
 
+  private Optional<String> readCookie(HttpServletRequest request) {
+    var cookies = request.getCookies();
+    if (cookies == null) {
+      return Optional.empty();
+    }
+
+    return Arrays.stream(cookies)
+        .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
+        .map(Cookie::getValue)
+        .findFirst();
+  }
+
   private String serialize(OAuth2AuthorizationRequest authorizationRequest) {
     try (var outputStream = new ByteArrayOutputStream();
         var objectOutputStream = new ObjectOutputStream(outputStream)) {
@@ -76,28 +93,14 @@ public final class HttpCookieOAuth2AuthorizationRequestRepository
     }
   }
 
-  @Override
-  public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-    return readCookie(request).map(this::deserialize).orElse(null);
-  }
-
-  private Optional<String> readCookie(HttpServletRequest request) {
-    if (request.getCookies() == null) {
-      return Optional.empty();
-    }
-
-    return Arrays.stream(request.getCookies())
-        .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
-        .map(Cookie::getValue)
-        .findFirst();
-  }
-
   private OAuth2AuthorizationRequest deserialize(String value) {
-    var decoded = Base64.getUrlDecoder().decode(value);
-    try (var inputStream = new ByteArrayInputStream(decoded);
-        var objectInputStream = new ObjectInputStream(inputStream)) {
-      return (OAuth2AuthorizationRequest) objectInputStream.readObject();
-    } catch (IOException | ClassNotFoundException ex) {
+    try {
+      var decoded = Base64.getUrlDecoder().decode(value);
+      try (var inputStream = new ByteArrayInputStream(decoded);
+          var objectInputStream = new ObjectInputStream(inputStream)) {
+        return (OAuth2AuthorizationRequest) objectInputStream.readObject();
+      }
+    } catch (IOException | IllegalArgumentException | ClassNotFoundException ex) {
       throw new IllegalStateException("Failed to deserialize OAuth2 authorization request", ex);
     }
   }
