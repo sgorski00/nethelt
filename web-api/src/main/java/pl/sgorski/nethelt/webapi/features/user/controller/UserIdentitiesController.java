@@ -33,7 +33,7 @@ public final class UserIdentitiesController {
     var userId = authenticatedUserResolver.requireUserId(authentication);
     var oAuth2CtxCookieExpiration = authProperties.oauth2ContextExpiration();
     var token =
-        oAuth2ContextService.generateAccessToken(
+        oAuth2ContextService.generateContextToken(
             userId, OAuth2Mode.LINK, oAuth2CtxCookieExpiration);
     cookieService.save(CookieNames.OAUTH_CONTEXT, token, oAuth2CtxCookieExpiration);
     return ResponseEntity.noContent().build();

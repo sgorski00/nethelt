@@ -12,16 +12,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
+import pl.sgorski.nethelt.webapi.features.auth.service.AccessTokenService;
 
 @Component
 @RequiredArgsConstructor
-public final class JwtAuthenticationFilter extends OncePerRequestFilter {
+public final class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER_PREFIX = "Bearer ";
 
-  private final JwtService jwtService;
+  private final AccessTokenService accessTokenService;
   private final UserDetailsService userDetailsService;
 
   @Override
@@ -35,12 +35,12 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     var token = header.substring(BEARER_PREFIX.length());
-    if (!jwtService.isTokenValid(token)) {
+    if (!accessTokenService.isValid(token)) {
       filterChain.doFilter(request, response);
       return;
     }
 
-    var email = jwtService.getEmailFromToken(token);
+    var email = accessTokenService.getEmailFromToken(token);
     var securityContext = SecurityContextHolder.getContext();
     if (securityContext.getAuthentication() == null) {
       var userDetails = userDetailsService.loadUserByUsername(email);

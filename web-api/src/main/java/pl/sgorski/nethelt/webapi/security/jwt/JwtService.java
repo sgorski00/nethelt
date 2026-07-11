@@ -6,35 +6,26 @@ import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
-import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
 @Service
 @RequiredArgsConstructor
-// TODO: refactor. change it to AccessTokenService and move jwt logic to the JwtService.
-// OAuth2ContextSerivce should user JwtService too.
-public final class JwtService {
+public class JwtService {
 
-  private final AuthProperties authProperties;
   private final SecretKey secretKey;
 
-  public String generateAccessToken(User user) {
+  public String generate(JwtPayload payload) {
     var now = Instant.now();
-    var expirationTime = now.plus(authProperties.jwtTokenExpiration());
-    var authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
     return Jwts.builder()
-        .subject(String.valueOf(user.getId()))
-        .claim("email", user.getEmail())
-        .claim("roles", authorities)
+        .subject(payload.subject())
+        .claims(payload.claims())
         .issuedAt(Date.from(now))
-        .expiration(Date.from(expirationTime))
+        .expiration(Date.from(now.plus(payload.expiration())))
         .signWith(this.secretKey)
         .compact();
   }
 
-  public boolean isTokenValid(String token) {
+  public boolean isValid(String token) {
     try {
       var claims = getClaimsFromToken(token);
       return claims.getExpiration().after(new Date());
@@ -43,8 +34,14 @@ public final class JwtService {
     }
   }
 
-  public String getEmailFromToken(String token) {
-    return getClaimsFromToken(token).get("email", String.class);
+  public String getSubject(String token) {
+    var claims = getClaimsFromToken(token);
+    return claims.getSubject();
+  }
+
+  public <T> T getClaim(String token, String claim, Class<T> type) {
+    var claims = getClaimsFromToken(token);
+    return claims.get(claim, type);
   }
 
   private Claims getClaimsFromToken(String token) {

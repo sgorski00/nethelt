@@ -11,12 +11,12 @@ import pl.sgorski.nethelt.webapi.features.auth.dto.request.LoginRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.request.RegisterUserRequest;
 import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
 import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
+import pl.sgorski.nethelt.webapi.features.auth.service.AccessTokenService;
 import pl.sgorski.nethelt.webapi.features.auth.service.LocalAuthService;
 import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.dto.response.UserResponse;
 import pl.sgorski.nethelt.webapi.features.user.mapper.UserMapper;
-import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
@@ -30,12 +30,12 @@ public final class AuthController {
   private final RefreshTokenService refreshTokenService;
   private final CookieService cookieService;
   private final AuthProperties authProperties;
-  private final JwtService jwtService;
+  private final AccessTokenService accessTokenService;
 
   @PostMapping("/login")
   public ResponseEntity<JwtResponse> login(@RequestBody @Valid LoginRequest request) {
     var user = localAuthService.login(authMapper.toCommand(request));
-    var body = new JwtResponse(jwtService.generateAccessToken(user));
+    var body = new JwtResponse(accessTokenService.generateAccessToken(user));
     return buildResponseWithRefreshToken(user, HttpStatus.OK, body);
   }
 
@@ -51,7 +51,7 @@ public final class AuthController {
       @CookieValue(CookieNames.REFRESH_TOKEN) String refreshTokenCookie) {
     var user = refreshTokenService.validateAndGetUser(refreshTokenCookie);
     refreshTokenService.revokeToken(refreshTokenCookie);
-    var body = new JwtResponse(jwtService.generateAccessToken(user));
+    var body = new JwtResponse(accessTokenService.generateAccessToken(user));
     return buildResponseWithRefreshToken(user, HttpStatus.OK, body);
   }
 

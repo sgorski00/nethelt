@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import pl.sgorski.nethelt.webapi.security.filter.JwtAuthenticationFilter;
+import pl.sgorski.nethelt.webapi.security.filter.AccessTokenAuthenticationFilter;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2AuthorizationRequestRepository;
 
 @Configuration
@@ -36,7 +36,7 @@ public class SecurityConfig {
   @Value("${cors.allowed-origins}")
   private List<String> allowedOrigins;
 
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final AccessTokenAuthenticationFilter accessTokenAuthenticationFilter;
   private final UserDetailsService userDetailsService;
   private final AccessDeniedHandler accessDeniedHandler;
   private final AuthenticationEntryPoint authenticationEntryPoint;
@@ -75,7 +75,7 @@ public class SecurityConfig {
                     .successHandler(oauth2SuccessHandler)
                     .failureHandler(oauth2FailureHandler))
         .userDetailsService(userDetailsService)
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(accessTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(
             ex ->
                 ex.accessDeniedHandler(accessDeniedHandler)
