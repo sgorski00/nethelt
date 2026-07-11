@@ -13,14 +13,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public final class OAuth2ContextService {
 
-  private static final Duration OAUTH2_CONTEXT_EXPIRATION = Duration.ofMinutes(5);
   private static final String MODE_CLAIM_KEY = "mode";
 
   private final SecretKey secretKey;
 
-  public String generateAccessToken(Long userId, OAuth2Mode mode) {
+  public String generateAccessToken(Long userId, OAuth2Mode mode, Duration expiration) {
     var now = Instant.now();
-    var expirationTime = now.plus(OAUTH2_CONTEXT_EXPIRATION);
+    var expirationTime = now.plus(expiration);
     return Jwts.builder()
         .subject(String.valueOf(userId))
         .claim(MODE_CLAIM_KEY, mode.name())

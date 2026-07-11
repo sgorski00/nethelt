@@ -7,12 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.time.Duration;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
+import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
 @Component
@@ -20,10 +21,8 @@ import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 public final class OAuth2AuthorizationRequestRepository
     implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
-  private static final String COOKIE_NAME = "oauth2_auth_request";
-  private static final Duration COOKIE_EXPIRATION = Duration.ofMinutes(5);
-
   private final CookieService cookieService;
+  private final AuthProperties authProperties;
 
   @Override
   public void saveAuthorizationRequest(
@@ -31,24 +30,26 @@ public final class OAuth2AuthorizationRequestRepository
       HttpServletRequest request,
       HttpServletResponse response) {
     if (authorizationRequest == null) {
-      cookieService.delete(COOKIE_NAME);
+      cookieService.delete(CookieNames.OAUTH_AUTH_REQUEST);
       return;
     }
 
-    cookieService.save(COOKIE_NAME, serialize(authorizationRequest), COOKIE_EXPIRATION);
+    cookieService.save(
+        CookieNames.OAUTH_AUTH_REQUEST,
+        serialize(authorizationRequest),
+        authProperties.oauth2AuthorizationRequestExpiration());
   }
 
   @Override
   public OAuth2AuthorizationRequest removeAuthorizationRequest(
       HttpServletRequest request, HttpServletResponse response) {
-    var authorizationRequest = loadAuthorizationRequest(request);
-    cookieService.delete(COOKIE_NAME);
-    return authorizationRequest;
+    cookieService.delete(CookieNames.OAUTH_AUTH_REQUEST);
+    return loadAuthorizationRequest(request);
   }
 
   @Override
   public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-    return cookieService.find(COOKIE_NAME).map(this::deserialize).orElse(null);
+    return cookieService.find(CookieNames.OAUTH_AUTH_REQUEST).map(this::deserialize).orElse(null);
   }
 
   private String serialize(OAuth2AuthorizationRequest authorizationRequest) {

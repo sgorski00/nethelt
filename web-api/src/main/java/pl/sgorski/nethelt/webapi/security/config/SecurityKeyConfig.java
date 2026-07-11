@@ -6,16 +6,16 @@ import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.sgorski.nethelt.webapi.security.jwt.JwtProperties;
+import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityKeyConfig {
 
-  private final JwtProperties jwtProperties;
+  private final AuthProperties authProperties;
 
   @Bean
   public SecretKey secretKey() {
-    return Keys.hmacShaKeyFor(jwtProperties.secretKey().getBytes(StandardCharsets.UTF_8));
+    return Keys.hmacShaKeyFor(authProperties.jwtSecretKey().getBytes(StandardCharsets.UTF_8));
   }
 }

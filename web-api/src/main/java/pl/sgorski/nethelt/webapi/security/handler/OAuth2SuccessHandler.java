@@ -7,25 +7,29 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import pl.sgorski.nethelt.webapi.exception.domain.IdentityNotFoundException;
-import pl.sgorski.nethelt.webapi.features.auth.helper.TokenResponseEntityCreator;
+import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.factory.OAuth2UserInfoFactory;
+import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
+import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
+import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
+import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
+  private final CookieService cookieService;
+  private final AuthProperties authProperties;
+  private final RefreshTokenService refreshTokenService;
   private final UserIdentityService identityService;
-  private final TokenResponseEntityCreator tokenResponseEntityCreator;
 
   @Value("${nh.frontend.oauth-success-url}")
   private String frontendRedirectUrl;
@@ -40,25 +44,22 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
         (OAuth2User) Objects.requireNonNull(authentication.getPrincipal(), "Authentication failed");
     var userInfo = OAuth2UserInfoFactory.create(provider, principal.getAttributes());
 
-    try {
-      var identity = identityService.findIdentity(userInfo.getProvider(), userInfo.getProviderId());
-      var user = identity.getUser();
-
-      var tokenResponse = tokenResponseEntityCreator.createOAuth2Response(user);
-      setCookies(response, tokenResponse.getHeaders());
-      response.sendRedirect(frontendRedirectUrl);
-
-      log.debug("OAuth2 authentication successful for user: {}", user.getEmail());
-    } catch (IdentityNotFoundException ex) {
+    var identity = identityService.findIdentity(userInfo.getProvider(), userInfo.getProviderId());
+    var user = identity.getUser();
+    if (user == null) {
       log.warn("OAuth2 login blocked: local user with email already exists");
       response.sendError(
           HttpServletResponse.SC_FORBIDDEN, "Local users are not allowed to login with OAuth");
+    } else {
+      redirectWithGenerateToken(response, user);
     }
   }
 
-  private void setCookies(HttpServletResponse response, HttpHeaders responseHeaders) {
-    responseHeaders
-        .getValuesAsList(HttpHeaders.SET_COOKIE)
-        .forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+  private void redirectWithGenerateToken(HttpServletResponse response, User user)
+      throws IOException {
+    var token = refreshTokenService.generateRefreshToken(user).getToken();
+    cookieService.save(CookieNames.REFRESH_TOKEN, token, authProperties.refreshTokenExpiration());
+    response.sendRedirect(frontendRedirectUrl);
+    log.debug("OAuth2 authentication successful for user: {}", user.getEmail());
   }
 }
