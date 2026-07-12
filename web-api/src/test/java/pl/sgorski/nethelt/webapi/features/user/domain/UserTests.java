@@ -168,4 +168,22 @@ public class UserTests {
 
     assertNotNull(user.getDeletedAt());
   }
+
+  @Test
+  void hasIdentity_shouldReturnTrue_whenHasIdentity() {
+    var user = TestUserFactory.createOAuth2User(AuthProvider.GITHUB);
+
+    var result = user.hasIdentity(AuthProvider.GITHUB);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void hasIdentity_shouldReturnFalse_whenIdentityNotFound() {
+    var user = TestUserFactory.createLocalUser();
+
+    var result = user.hasIdentity(AuthProvider.GITHUB);
+
+    assertFalse(result);
+  }
 }

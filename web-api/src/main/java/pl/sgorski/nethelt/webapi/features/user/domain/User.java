@@ -68,6 +68,10 @@ public class User implements UserDetails {
     this.addIdentity(provider, providerId);
   }
 
+  public boolean hasIdentity(AuthProvider provider) {
+    return this.identities.stream().anyMatch(identity -> identity.getProvider() == provider);
+  }
+
   public void addIdentity(AuthProvider provider, String providerId) {
     var isProviderPresent = identities.stream().anyMatch(i -> i.getProvider().equals(provider));
     if (isProviderPresent) {
