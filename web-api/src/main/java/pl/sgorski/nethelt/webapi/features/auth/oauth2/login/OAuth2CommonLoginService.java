@@ -17,6 +17,7 @@ public final class OAuth2CommonLoginService {
   private final UserService userService;
   private final UserIdentityService userIdentityService;
 
+  // todo: implement new interface with: shouldHandle i handle methods
   public OAuth2User handle(OAuth2LoginContext context) {
     var userInfo = context.userInfo();
     var provider = context.provider();

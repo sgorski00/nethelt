@@ -30,6 +30,8 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.factory.OAuth2Use
 @RequiredArgsConstructor
 public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
+  // TODO: after implement interface on botH service use List<OAuth2XxxServie> and refactor
+  // HandleRequest method
   private final OAuth2CommonLoginService oAuth2CommonLoginService;
   private final OAuth2AccountLinkService oAuth2AccountLinkService;
   private final OAuth2PayloadResolver oAuth2PayloadResolver;
@@ -38,7 +40,7 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     log.debug("Loading user from OAuth2 provider");
-    var oauthUser = super.loadUser(userRequest);
+    var oauthUser = loadOAuth2User(userRequest);
     var providerStr = userRequest.getClientRegistration().getRegistrationId();
     var provider = AuthProvider.fromString(providerStr);
     if (provider.equals(AuthProvider.GITHUB)) {
@@ -68,6 +70,10 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
       var error = new OAuth2Error("oauth2-incomplete-data", ex.getMessage(), null);
       throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
     }
+  }
+
+  OAuth2User loadOAuth2User(OAuth2UserRequest userRequest) {
+    return super.loadUser(userRequest);
   }
 
   private OAuth2User overrideWithGithubUser(OAuth2UserRequest userRequest, OAuth2User oauthUser) {
