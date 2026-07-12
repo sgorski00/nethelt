@@ -3,7 +3,7 @@ package pl.sgorski.nethelt.webapi.features.user.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.jspecify.annotations.Nullable;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 
 @Entity
 @Table(

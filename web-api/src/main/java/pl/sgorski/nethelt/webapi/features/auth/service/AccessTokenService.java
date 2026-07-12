@@ -6,8 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
-import pl.sgorski.nethelt.webapi.security.jwt.JwtPayload;
-import pl.sgorski.nethelt.webapi.security.jwt.JwtService;
+import pl.sgorski.nethelt.webapi.security.token.JwtPayload;
+import pl.sgorski.nethelt.webapi.security.token.JwtService;
 
 @Service
 @RequiredArgsConstructor

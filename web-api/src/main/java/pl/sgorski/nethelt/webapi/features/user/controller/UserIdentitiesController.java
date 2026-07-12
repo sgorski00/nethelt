@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2ContextService;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2Mode;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
-import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextService;
-import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2Mode;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 

@@ -3,7 +3,7 @@ package pl.sgorski.nethelt.webapi.features.user.repository;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.domain.UserIdentity;
 
 public interface UserIdentityRepository extends JpaRepository<UserIdentity, Long> {
