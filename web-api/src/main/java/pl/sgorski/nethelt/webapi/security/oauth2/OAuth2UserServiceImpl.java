@@ -1,10 +1,9 @@
 package pl.sgorski.nethelt.webapi.security.oauth2;
 
 import java.util.HashMap;
-import java.util.Optional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -15,13 +14,12 @@ import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountAlreadyLinkedException;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountLinkRequiredException;
 import pl.sgorski.nethelt.webapi.exception.oauth2.IncompleteOAuth2DataException;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.addon.OAuth2GithubEmailService;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.connect.OAuth2ConnectService;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2ContextPayload;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2Mode;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2PayloadResolver;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.login.OAuth2AccountLinkService;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.login.OAuth2CommonLoginService;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.login.OAuth2GithubEmailService;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.login.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.factory.OAuth2UserInfoFactory;
 
@@ -30,10 +28,7 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.factory.OAuth2Use
 @RequiredArgsConstructor
 public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
-  // TODO: after implement interface on botH service use List<OAuth2XxxServie> and refactor
-  // HandleRequest method
-  private final OAuth2CommonLoginService oAuth2CommonLoginService;
-  private final OAuth2AccountLinkService oAuth2AccountLinkService;
+  private final List<OAuth2ConnectService> oAuth2ConnectServices;
   private final OAuth2PayloadResolver oAuth2PayloadResolver;
   private final OAuth2GithubEmailService oAuth2GithubEmailService;
 
@@ -47,26 +42,25 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
       oauthUser = overrideWithGithubUser(userRequest, oauthUser);
     }
 
-    var payload = oAuth2PayloadResolver.consume().orElse(null);
+    var payload = oAuth2PayloadResolver.consume().orElse(OAuth2ContextPayload.withDefaults());
     var context =
         new OAuth2LoginContext(
             oauthUser,
             provider,
             OAuth2UserInfoFactory.create(provider, oauthUser.getAttributes()),
-            isLinkMode(payload),
-            getUserId(payload).orElse(null));
+            payload.userId());
 
     log.debug(
         "Processing user {} from OAuth2 provider: {}", context.userInfo().getEmail(), providerStr);
     try {
-      return handleRequest(context);
+      return handleRequest(payload.mode(), context);
     } catch (AccountLinkRequiredException ex) {
       var error = new OAuth2Error("account-link-required", ex.getMessage(), null);
       throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
     } catch (AccountAlreadyLinkedException ex) {
       var error = new OAuth2Error("account-already-linked", ex.getMessage(), null);
       throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
-    } catch (IncompleteOAuth2DataException ex) {
+    } catch (IncompleteOAuth2DataException | IllegalStateException ex) {
       var error = new OAuth2Error("oauth2-incomplete-data", ex.getMessage(), null);
       throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
     }
@@ -85,19 +79,12 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     return oauthUser;
   }
 
-  private Optional<Long> getUserId(@Nullable OAuth2ContextPayload payload) {
-    return Optional.ofNullable(payload).map(OAuth2ContextPayload::userId);
-  }
-
-  private boolean isLinkMode(@Nullable OAuth2ContextPayload payload) {
-    return payload != null && payload.mode() == OAuth2Mode.LINK;
-  }
-
-  private OAuth2User handleRequest(OAuth2LoginContext context) {
-    if (context.linkMode()) {
-      return oAuth2AccountLinkService.handle(context);
-    } else {
-      return oAuth2CommonLoginService.handle(context);
+  private OAuth2User handleRequest(OAuth2Mode mode, OAuth2LoginContext context) {
+    for (var service : oAuth2ConnectServices) {
+      if (service.supports(mode)) {
+        return service.handle(context);
+      }
     }
+    throw new IllegalStateException("No suitable OAuth2ConnectService found for the given context");
   }
 }
