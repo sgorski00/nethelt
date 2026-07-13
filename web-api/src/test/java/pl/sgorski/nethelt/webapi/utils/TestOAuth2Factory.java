@@ -19,6 +19,10 @@ public class TestOAuth2Factory {
     return new DefaultOAuth2User(null, Map.of("sub", "test-id", "email", email), "sub");
   }
 
+  public static OAuth2User createGoogleOAuth2User(String id, String email) {
+    return new DefaultOAuth2User(null, Map.of("sub", id, "email", email), "sub");
+  }
+
   public static OAuth2User createGithubOAuth2User(String email) {
     return new DefaultOAuth2User(null, Map.of("id", "test-id", "email", email), "id");
   }
