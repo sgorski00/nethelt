@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.features.auth.oauth2.addon;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.sgorski.nethelt.webapi.exception.oauth2.InvalidOAuth2UserInfoException;
 import pl.sgorski.nethelt.webapi.http.client.github.GithubClient;
 
 @Service
@@ -17,7 +18,6 @@ public class OAuth2GithubEmailService {
         return emailEntry.email();
       }
     }
-    throw new IllegalStateException(
-        "Github account does not have pinned isPrimary email address. Could not create or link an account.");
+    throw new InvalidOAuth2UserInfoException("github primary email");
   }
 }

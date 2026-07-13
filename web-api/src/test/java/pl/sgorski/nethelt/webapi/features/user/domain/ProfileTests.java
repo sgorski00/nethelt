@@ -24,4 +24,14 @@ public class ProfileTests {
         IllegalArgumentException.class,
         () -> new Profile(" ", "firstName", "lastName", LocalDate.of(1990, 1, 1), "bio"));
   }
+
+  @Test
+  void assignUser_shouldAssign() {
+    var user = new User();
+    var profile = new Profile();
+
+    profile.assignUser(user);
+
+    assertSame(user, profile.getUser());
+  }
 }
