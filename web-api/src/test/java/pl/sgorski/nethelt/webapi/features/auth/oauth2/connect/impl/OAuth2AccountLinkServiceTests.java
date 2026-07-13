@@ -21,9 +21,9 @@ import pl.sgorski.nethelt.webapi.exception.oauth2.IncompleteOAuth2DataException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2Mode;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.impl.GoogleOAuth2UserInfo;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
+import pl.sgorski.nethelt.webapi.utils.TestOAuth2Factory;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,9 +90,8 @@ public class OAuth2AccountLinkServiceTests {
   }
 
   private OAuth2LoginContext createContext(@Nullable Long userId) {
-    var userInfo =
-        new GoogleOAuth2UserInfo(
-            Map.of("sub", "test-provider-id", "email", "john.doe@example.com"));
-    return new OAuth2LoginContext(oAuthUser, AuthProvider.GOOGLE, userInfo, userId);
+    var userInfo = TestOAuth2Factory.createGoogleOAuth2UserInfo("john.doe@example.com");
+    return TestOAuth2Factory.createOAuth2LoginContext(
+        oAuthUser, AuthProvider.GOOGLE, userInfo, userId);
   }
 }

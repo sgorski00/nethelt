@@ -18,9 +18,9 @@ import pl.sgorski.nethelt.webapi.exception.oauth2.AccountLinkRequiredException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2LoginContext;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2Mode;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.impl.GoogleOAuth2UserInfo;
 import pl.sgorski.nethelt.webapi.features.user.service.UserIdentityService;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
+import pl.sgorski.nethelt.webapi.utils.TestOAuth2Factory;
 
 @ExtendWith(MockitoExtension.class)
 public class OAuth2CommonLoginServiceTests {
@@ -36,8 +36,9 @@ public class OAuth2CommonLoginServiceTests {
   void setUp() {
     var email = "john.doe@example.com";
     this.oAuthUser = new DefaultOAuth2User(null, Map.of("email", email), "email");
-    var userInfo = new GoogleOAuth2UserInfo(Map.of("sub", "test-provider-id", "email", email));
-    this.ctx = new OAuth2LoginContext(oAuthUser, AuthProvider.GOOGLE, userInfo, null);
+    var userInfo = TestOAuth2Factory.createGoogleOAuth2UserInfo(email);
+    this.ctx =
+        TestOAuth2Factory.createOAuth2LoginContext(oAuthUser, AuthProvider.GOOGLE, userInfo, null);
   }
 
   @Test

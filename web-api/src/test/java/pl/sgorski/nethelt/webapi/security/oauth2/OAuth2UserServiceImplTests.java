@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +27,7 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth2.connect.OAuth2ConnectServi
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2ContextPayload;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2Mode;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2PayloadResolver;
+import pl.sgorski.nethelt.webapi.utils.TestOAuth2Factory;
 
 @ExtendWith(MockitoExtension.class)
 public class OAuth2UserServiceImplTests {
@@ -165,16 +165,13 @@ public class OAuth2UserServiceImplTests {
   }
 
   private OAuth2User mockGithubUser() {
-    var user =
-        new DefaultOAuth2User(null, Map.of("id", "test-id", "email", "john.doe@example.com"), "id");
+    var user = TestOAuth2Factory.createGithubOAuth2User("john.doe@example.com");
     doReturn(user).when(userService).loadOAuth2User(any());
     return user;
   }
 
   private OAuth2User mockGoogleUser() {
-    var user =
-        new DefaultOAuth2User(
-            null, Map.of("sub", "test-id", "email", "john.doe@example.com"), "sub");
+    var user = TestOAuth2Factory.createGoogleOAuth2User("john.doe@example.com");
     doReturn(user).when(userService).loadOAuth2User(any());
     return user;
   }
