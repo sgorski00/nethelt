@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountAlreadyLinkedException;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountLinkRequiredException;
 import pl.sgorski.nethelt.webapi.exception.oauth2.IncompleteOAuth2DataException;
+import pl.sgorski.nethelt.webapi.exception.oauth2.InvalidOAuth2UserInfoException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.addon.OAuth2GithubEmailService;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.connect.OAuth2ConnectService;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2ContextPayload;
@@ -34,31 +35,24 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-    log.debug("Loading user from OAuth2 provider");
-    var oauthUser = loadOAuth2User(userRequest);
-    var providerStr = userRequest.getClientRegistration().getRegistrationId();
-    var provider = AuthProvider.fromString(providerStr);
-    if (provider.equals(AuthProvider.GITHUB)) {
-      oauthUser = overrideWithGithubUser(userRequest, oauthUser);
-    }
-
-    var payload = oAuth2PayloadResolver.consume().orElse(OAuth2ContextPayload.withDefaults());
-    var context =
-        new OAuth2LoginContext(
-            oauthUser,
-            provider,
-            OAuth2UserInfoFactory.create(provider, oauthUser.getAttributes()),
-            payload.userId());
-
-    log.debug(
-        "Processing user {} from OAuth2 provider: {}", context.userInfo().getEmail(), providerStr);
     try {
+      log.debug("Loading user from OAuth2 provider");
+      var oauthUser = loadOAuth2User(userRequest);
+      var payload = oAuth2PayloadResolver.consume().orElse(OAuth2ContextPayload.withDefaults());
+      var provider = getProvider(userRequest);
+      if (provider.equals(AuthProvider.GITHUB)) {
+        oauthUser = overrideWithGithubUser(userRequest, oauthUser);
+      }
+      var context = createContext(oauthUser, provider, payload);
       return handleRequest(payload.mode(), context);
     } catch (AccountLinkRequiredException ex) {
       var error = new OAuth2Error("account-link-required", ex.getMessage(), null);
       throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
     } catch (AccountAlreadyLinkedException ex) {
       var error = new OAuth2Error("account-already-linked", ex.getMessage(), null);
+      throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
+    } catch (InvalidOAuth2UserInfoException ex) {
+      var error = new OAuth2Error("invalid-oauth2-user-info", ex.getMessage(), null);
       throw new OAuth2AuthenticationException(error, ex.getMessage(), ex);
     } catch (IncompleteOAuth2DataException | IllegalStateException ex) {
       var error = new OAuth2Error("oauth2-incomplete-data", ex.getMessage(), null);
@@ -70,6 +64,11 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     return super.loadUser(userRequest);
   }
 
+  private AuthProvider getProvider(OAuth2UserRequest userRequest) {
+    var providerStr = userRequest.getClientRegistration().getRegistrationId();
+    return AuthProvider.fromString(providerStr);
+  }
+
   private OAuth2User overrideWithGithubUser(OAuth2UserRequest userRequest, OAuth2User oauthUser) {
     var accessToken = userRequest.getAccessToken().getTokenValue();
     var githubEmail = oAuth2GithubEmailService.getGithubAccountEmail(accessToken);
@@ -77,6 +76,15 @@ public final class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     modifiedAttributes.put("email", githubEmail);
     oauthUser = new DefaultOAuth2User(oauthUser.getAuthorities(), modifiedAttributes, "id");
     return oauthUser;
+  }
+
+  private OAuth2LoginContext createContext(
+      OAuth2User oauthUser, AuthProvider provider, OAuth2ContextPayload payload) {
+    return new OAuth2LoginContext(
+        oauthUser,
+        provider,
+        OAuth2UserInfoFactory.create(provider, oauthUser.getAttributes()),
+        payload.userId());
   }
 
   private OAuth2User handleRequest(OAuth2Mode mode, OAuth2LoginContext context) {

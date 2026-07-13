@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountAlreadyLinkedException;
 import pl.sgorski.nethelt.webapi.exception.oauth2.AccountLinkRequiredException;
@@ -33,29 +35,26 @@ public class OAuth2UserServiceImplTests {
   @Mock private OAuth2ConnectService connectService;
   @Mock private OAuth2PayloadResolver payloadResolver;
   @Mock private OAuth2GithubEmailService githubEmailService;
-  @Mock private OAuth2User user;
   @Mock private OAuth2UserRequest userRequest;
 
   private OAuth2UserServiceImpl userService;
 
   @BeforeEach
   void setUp() {
-    userService =
+    this.userService =
         spy(
             new OAuth2UserServiceImpl(
                 List.of(connectService), payloadResolver, githubEmailService));
-
-    doReturn(user).when(userService).loadOAuth2User(any());
   }
 
   @Test
   void loadUser_shouldOverrideWithGithubUser_whenProviderIsGithub() {
     mockClientRegistration("github");
+    var user = mockGithubUser();
     var tokenValue = "token";
     var at = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, tokenValue, null, null);
     when(userRequest.getAccessToken()).thenReturn(at);
     when(githubEmailService.getGithubAccountEmail(tokenValue)).thenReturn("john.doe@example.com");
-    when(user.getAttributes()).thenReturn(Map.of("id", "test-id"));
     when(payloadResolver.consume()).thenReturn(Optional.empty());
     when(connectService.supports(any())).thenReturn(true);
     when(connectService.handle(any())).thenReturn(user);
@@ -69,8 +68,8 @@ public class OAuth2UserServiceImplTests {
   @Test
   void loadUser_shouldUseCommonLoginService_whenLoginModeIsEnabled() {
     mockClientRegistration("google");
-    var ctxPayload = new OAuth2ContextPayload(1L, OAuth2Mode.LOGIN);
-    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+    var user = mockGoogleUser();
+    mockContextPayload(OAuth2Mode.LOGIN);
     when(connectService.handle(any())).thenReturn(user);
     when(connectService.supports(OAuth2Mode.LOGIN)).thenReturn(true);
 
@@ -81,8 +80,8 @@ public class OAuth2UserServiceImplTests {
   @Test
   void loadUser_shouldUseAccountLinkService_whenLinkModeIsEnabled() {
     mockClientRegistration("google");
-    var ctxPayload = new OAuth2ContextPayload(1L, OAuth2Mode.LINK);
-    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+    var user = mockGoogleUser();
+    mockContextPayload(OAuth2Mode.LINK);
     when(connectService.supports(OAuth2Mode.LINK)).thenReturn(true);
     when(connectService.handle(any())).thenReturn(user);
 
@@ -93,8 +92,8 @@ public class OAuth2UserServiceImplTests {
   @Test
   void loadUser_shouldThrowOAuth2Exception_whenAccountLinkIsRequired() {
     mockClientRegistration("google");
-    var ctxPayload = new OAuth2ContextPayload(1L, OAuth2Mode.LOGIN);
-    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+    mockGoogleUser();
+    mockContextPayload(OAuth2Mode.LOGIN);
     when(connectService.supports(any())).thenReturn(true);
     when(connectService.handle(any())).thenThrow(new AccountLinkRequiredException());
 
@@ -106,8 +105,8 @@ public class OAuth2UserServiceImplTests {
   @Test
   void loadUser_shouldThrowOAuth2Exception_whenAccountIsAlreadyLinked() {
     mockClientRegistration("google");
-    var ctxPayload = new OAuth2ContextPayload(1L, OAuth2Mode.LINK);
-    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+    mockGoogleUser();
+    mockContextPayload(OAuth2Mode.LINK);
     when(connectService.supports(any())).thenReturn(true);
     when(connectService.handle(any())).thenThrow(new AccountAlreadyLinkedException());
 
@@ -119,8 +118,8 @@ public class OAuth2UserServiceImplTests {
   @Test
   void loadUser_shouldThrowOAuth2Exception_whenOAuthDataIsIncomplete() {
     mockClientRegistration("google");
-    var ctxPayload = new OAuth2ContextPayload(1L, OAuth2Mode.LOGIN);
-    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+    mockGoogleUser();
+    mockContextPayload(OAuth2Mode.LOGIN);
     when(connectService.supports(any())).thenReturn(true);
     when(connectService.handle(any())).thenThrow(new IncompleteOAuth2DataException());
 
@@ -132,13 +131,24 @@ public class OAuth2UserServiceImplTests {
   @Test
   void loadUser_shouldThrowOAuth2Exception_whenNoSuitableServiceFound() {
     mockClientRegistration("google");
-    var ctxPayload = new OAuth2ContextPayload(1L, OAuth2Mode.LOGIN);
-    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+    mockGoogleUser();
+    mockContextPayload(OAuth2Mode.LOGIN);
     when(connectService.supports(any())).thenReturn(false);
 
     var thrown =
         assertThrows(OAuth2AuthenticationException.class, () -> userService.loadUser(userRequest));
     assertEquals("oauth2-incomplete-data", thrown.getError().getErrorCode());
+  }
+
+  @Test
+  void loadUser_shouldThrowOAuth2Exception_whenInvalidOAuth2UserInfoPassed() {
+    mockClientRegistration("google");
+    mockInvalidUser();
+    mockContextPayload(OAuth2Mode.LOGIN);
+
+    var thrown =
+        assertThrows(OAuth2AuthenticationException.class, () -> userService.loadUser(userRequest));
+    assertEquals("invalid-oauth2-user-info", thrown.getError().getErrorCode());
   }
 
   private void mockClientRegistration(String provider) {
@@ -147,5 +157,39 @@ public class OAuth2UserServiceImplTests {
             .authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
             .build();
     when(userRequest.getClientRegistration()).thenReturn(cr);
+  }
+
+  private void mockContextPayload(OAuth2Mode login) {
+    var ctxPayload = new OAuth2ContextPayload(1L, login);
+    when(payloadResolver.consume()).thenReturn(Optional.of(ctxPayload));
+  }
+
+  private OAuth2User mockGithubUser() {
+    var user =
+        new DefaultOAuth2User(null, Map.of("id", "test-id", "email", "john.doe@example.com"), "id");
+    doReturn(user).when(userService).loadOAuth2User(any());
+    return user;
+  }
+
+  private OAuth2User mockGoogleUser() {
+    var user =
+        new DefaultOAuth2User(
+            null, Map.of("sub", "test-id", "email", "john.doe@example.com"), "sub");
+    doReturn(user).when(userService).loadOAuth2User(any());
+    return user;
+  }
+
+  private void mockInvalidUser() {
+    var user =
+        new DefaultOAuth2User(
+            null,
+            new HashMap<>() {
+              {
+                put("sub", "test-id");
+                put("email", null);
+              }
+            },
+            "sub");
+    doReturn(user).when(userService).loadOAuth2User(any());
   }
 }

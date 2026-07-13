@@ -34,8 +34,9 @@ public class OAuth2CommonLoginServiceTests {
 
   @BeforeEach
   void setUp() {
-    this.oAuthUser = new DefaultOAuth2User(null, Map.of("email", "john.doe@example.com"), "email");
-    var userInfo = new GoogleOAuth2UserInfo(Map.of());
+    var email = "john.doe@example.com";
+    this.oAuthUser = new DefaultOAuth2User(null, Map.of("email", email), "email");
+    var userInfo = new GoogleOAuth2UserInfo(Map.of("sub", "test-provider-id", "email", email));
     this.ctx = new OAuth2LoginContext(oAuthUser, AuthProvider.GOOGLE, userInfo, null);
   }
 
