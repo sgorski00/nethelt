@@ -82,7 +82,7 @@ export class Profile implements OnInit {
   }
 
   public openPasswordDialog() {
-    const mode = this.user()?.hasPasswordSet
+    const mode = this.user()?.isLocal
       ? PASSWORD_DIALOG_MODE.CHANGE
       : PASSWORD_DIALOG_MODE.SET;
     this.dialog
