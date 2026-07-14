@@ -40,9 +40,9 @@ public final class AccessTokenAuthenticationFilter extends OncePerRequestFilter 
       return;
     }
 
-    var email = accessTokenService.getEmailFromToken(token);
     var securityContext = SecurityContextHolder.getContext();
     if (securityContext.getAuthentication() == null) {
+      var email = accessTokenService.getEmailFromToken(token);
       var userDetails = userDetailsService.loadUserByUsername(email);
       var auth =
           new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
