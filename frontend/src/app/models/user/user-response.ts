@@ -11,7 +11,7 @@ export interface DetailedUser {
   role: string;
   profile: UserProfile | null;
   identities: UserIdentity[];
-  hasPasswordSet: boolean;
+  isLocal: boolean;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

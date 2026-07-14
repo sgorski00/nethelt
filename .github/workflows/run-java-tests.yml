@@ -1,0 +1,38 @@
+name: Run Java tests
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'core/**'
+      - 'desktop-client/**'
+      - 'web-api/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: '0'
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Run tests
+        run: mvn clean verify -Dspring.profiles.active=test
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: sgorski00/nethelt
+          files: ./coverage-aggregator/target/site/jacoco/jacoco.xml
+          fail_ci_if_error: true

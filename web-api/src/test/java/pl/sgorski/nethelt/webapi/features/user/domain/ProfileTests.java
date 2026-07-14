@@ -1,32 +1,37 @@
 package pl.sgorski.nethelt.webapi.features.user.domain;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 public class ProfileTests {
 
   @Test
-  void setUser_shouldMapBidirectional_whenUserProfileIsNull() {
-    var profile = new Profile();
-    var user = new User();
+  void constructor_shouldAssignCorrectValues() {
+    var result = new Profile("username", "firstName", "lastName", LocalDate.of(1990, 1, 1), "bio");
 
-    profile.setUser(user);
-
-    assertSame(user, profile.getUser());
-    assertSame(profile, user.getProfile());
+    assertEquals("username", result.getUsername());
+    assertEquals("firstName", result.getFirstName());
+    assertEquals("lastName", result.getLastName());
+    assertEquals(LocalDate.of(1990, 1, 1), result.getBirthDate());
+    assertEquals("bio", result.getBio());
   }
 
   @Test
-  void setUser_shouldMapBidirectional_whenUserProfileIsNotSame() {
-    var oldProfile = new Profile();
-    var newProfile = new Profile();
+  void constructor_shouldThrow_whenUsernameIsBlank() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Profile(" ", "firstName", "lastName", LocalDate.of(1990, 1, 1), "bio"));
+  }
+
+  @Test
+  void assignUser_shouldAssign() {
     var user = new User();
-    user.setProfile(oldProfile);
+    var profile = new Profile();
 
-    newProfile.setUser(user);
+    profile.assignUser(user);
 
-    assertSame(user, newProfile.getUser());
-    assertSame(newProfile, user.getProfile());
+    assertSame(user, profile.getUser());
   }
 }

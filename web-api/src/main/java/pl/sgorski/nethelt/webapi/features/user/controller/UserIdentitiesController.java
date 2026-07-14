@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import pl.sgorski.nethelt.webapi.features.auth.oauth2.AuthProvider;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.config.OAuth2Properties;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2ContextService;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.context.OAuth2Mode;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
-import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextCookieService;
-import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2ContextService;
-import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2Mode;
+import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
+import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
 @Slf4j
 @RestController
@@ -21,15 +23,19 @@ public final class UserIdentitiesController {
   private final AuthenticatedUserResolver authenticatedUserResolver;
   private final UserService userService;
   private final OAuth2ContextService oAuth2ContextService;
-  private final OAuth2ContextCookieService oAuth2ContextCookieService;
+  private final CookieService cookieService;
+  private final OAuth2Properties oAuth2Properties;
 
   @PostMapping("/{provider}")
   public ResponseEntity<Void> prepareCookiesForOauthLinking(
       @PathVariable("provider") AuthProvider authProvider, Authentication authentication) {
     log.debug("Linking account with provider: {}", authProvider);
     var userId = authenticatedUserResolver.requireUserId(authentication);
-    var token = oAuth2ContextService.generateAccessToken(userId, OAuth2Mode.LINK);
-    oAuth2ContextCookieService.writeTokenToResponseSetCookieHeader(token);
+    var oAuth2CtxCookieExpiration = oAuth2Properties.contextExpiration();
+    var token =
+        oAuth2ContextService.generateContextToken(
+            userId, OAuth2Mode.LINK, oAuth2CtxCookieExpiration);
+    cookieService.save(CookieNames.OAUTH_CONTEXT, token, oAuth2CtxCookieExpiration);
     return ResponseEntity.noContent().build();
   }
 

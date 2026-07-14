@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/sgorski00/nethelt/graph/badge.svg?token=Q49QZKE7OD)](https://codecov.io/gh/sgorski00/nethelt)
+
 # nethelt
 
 Network health checker with web app and desktop client.

@@ -8,17 +8,15 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.ProfileNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.domain.Profile;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileCreateCommand;
 import pl.sgorski.nethelt.webapi.features.user.dto.command.ProfileUpdateCommand;
-import pl.sgorski.nethelt.webapi.features.user.mapper.ProfileMapper;
 import pl.sgorski.nethelt.webapi.features.user.repository.ProfileRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,9 +26,7 @@ public class ProfileServiceTests {
 
   @Mock private UserService userService;
 
-  private ProfileService profileService;
-
-  private final ProfileMapper profileMapper = Mappers.getMapper(ProfileMapper.class);
+  @InjectMocks private ProfileService profileService;
 
   private final Long userId = 1L;
   private final String username = "test-user";
@@ -43,10 +39,8 @@ public class ProfileServiceTests {
 
   @BeforeEach
   void setUp() {
-    this.profileService = new ProfileService(profileRepository, profileMapper, userService);
-    this.profile = new Profile();
-    this.user = new User();
-    user.setId(userId);
+    this.profile = new Profile(username, firstName, lastName, birthDate, bio);
+    this.user = new User("john.doe@example.com", "password123");
   }
 
   @Test
@@ -64,8 +58,6 @@ public class ProfileServiceTests {
 
     assertSame(user, result.getUser());
     assertSame(result, user.getProfile());
-
-    verify(userService).save(user);
   }
 
   @Test
@@ -74,23 +66,12 @@ public class ProfileServiceTests {
     when(userService.getUser(userId)).thenThrow(new UserNotFoundException(username));
 
     assertThrows(UserNotFoundException.class, () -> profileService.createProfile(command));
-    verify(userService, never()).save(any());
-  }
-
-  @Test
-  void createProfile_shouldNotSave_whenUProfileAlreadyExists() {
-    var command = new ProfileCreateCommand(userId, username, firstName, lastName, birthDate, bio);
-    user.setProfile(profile);
-    when(userService.getUser(userId)).thenReturn(user);
-
-    assertThrows(ProfileAlreadyExistsException.class, () -> profileService.createProfile(command));
-    verify(userService, never()).save(any());
   }
 
   @Test
   void updateProfile_shouldMapToExistingProfile() {
     var command = new ProfileUpdateCommand(userId, firstName, lastName, birthDate, bio);
-    user.setProfile(profile);
+    user.addProfile(profile);
     when(profileRepository.findWithUserByUserId(userId)).thenReturn(Optional.ofNullable(profile));
 
     var result = profileService.updateProfile(command);

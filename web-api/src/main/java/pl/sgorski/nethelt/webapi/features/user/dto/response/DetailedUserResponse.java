@@ -9,7 +9,7 @@ public record DetailedUserResponse(
     String role,
     ProfileResponse profile,
     List<UserIdentityResponse> identities,
-    boolean hasPasswordSet,
+    boolean isLocal,
     Instant createdAt,
     Instant updatedAt,
     Instant deletedAt) {}

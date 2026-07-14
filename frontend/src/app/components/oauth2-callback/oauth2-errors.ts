@@ -2,6 +2,7 @@ export const OAUTH2_ERRORS = {
   OAUTH2_LINK_ERROR: 'account-already-linked',
   OAUTH2_MISSING_DATA: 'oauth2-incomplete-data',
   ACCOUNT_LINK_REQUIRED: 'account-link-required',
+  OAUTH2_INVALID_USER_INFO: 'invalid-oauth2-user-info',
 };
 
 export type OAuth2Error = (typeof OAUTH2_ERRORS)[keyof typeof OAUTH2_ERRORS];
@@ -14,6 +15,8 @@ export function getOAuth2ErrorMessage(error: OAuth2Error): string {
       return 'Some data is missing. Please try again.';
     case OAUTH2_ERRORS.ACCOUNT_LINK_REQUIRED:
       return "Failed to link this account. Probably it's already linked to another user.";
+    case OAUTH2_ERRORS.OAUTH2_INVALID_USER_INFO:
+      return "Couldn't retrieve user information from the social media account. Please try again.";
     default:
       return 'Something went wrong. Please try again.';
   }

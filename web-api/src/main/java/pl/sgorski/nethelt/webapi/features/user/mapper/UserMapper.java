@@ -14,7 +14,7 @@ public interface UserMapper {
   UserResponse toResponse(User user);
 
   @Mapping(target = "role", expression = "java(user.getRole().getDisplayName())")
-  @Mapping(target = "hasPasswordSet", expression = "java(user.hasPasswordSet())")
+  @Mapping(target = "isLocal", expression = "java(user.isLocal())")
   DetailedUserResponse toDetailedResponse(User user);
 
   @Mapping(target = "provider", expression = "java(identity.getProvider().name())")

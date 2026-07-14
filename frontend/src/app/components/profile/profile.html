@@ -5,7 +5,7 @@
       <small>Account created at: {{ user.createdAt | date: 'dd.MM.yyyy HH:mm' }}</small>
     </div>
     <button type="button" (click)="openPasswordDialog()">
-      {{ user.hasPasswordSet ? 'Change Password' : 'Set Password' }}
+      {{ user.isLocal ? 'Change Password' : 'Set Password' }}
     </button>
   </div>
   @if (message() || errorMessage()) {

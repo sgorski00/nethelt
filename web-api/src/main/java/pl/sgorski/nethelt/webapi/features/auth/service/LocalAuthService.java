@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.UserAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
-import pl.sgorski.nethelt.webapi.features.auth.mapper.AuthMapper;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 
@@ -18,7 +17,6 @@ import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 @RequiredArgsConstructor
 public class LocalAuthService {
 
-  private final AuthMapper authMapper;
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
@@ -30,8 +28,8 @@ public class LocalAuthService {
       throw new UserAlreadyExistsException();
     }
 
-    var user = authMapper.toEntity(command);
-    user.setPasswordHash(hashPassword(command.newPassword()));
+    var hashedPassword = hashPassword(command.newPassword());
+    var user = new User(command.email(), hashedPassword);
     return userService.save(user);
   }
 
@@ -51,36 +49,35 @@ public class LocalAuthService {
   @Transactional
   public void setLocalPassword(Long userId, String rawPassword) {
     var user = userService.getUser(userId);
-    if (user.getPasswordHash() != null) {
+    if (user.getPassword() != null) {
       throw new IllegalStateException(
           "User already has a password. If you want to change it, use change password then.");
     }
 
-    user.setPasswordHash(hashPassword(rawPassword));
-    saveAndRevokeTokens(user);
+    setPasswordAndRevokeTokens(user, rawPassword);
   }
 
   @Transactional
   public void changePassword(Long userId, String oldPassword, String newPassword) {
     var user = userService.getUser(userId);
-    if (user.getPasswordHash() == null) {
+    if (user.getPassword() == null) {
       throw new IllegalStateException("User doesn't have local password yet.");
     }
 
-    if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
+    if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
       throw new IllegalArgumentException("Invalid current password.");
     }
 
-    user.setPasswordHash(hashPassword(newPassword));
-    saveAndRevokeTokens(user);
+    setPasswordAndRevokeTokens(user, newPassword);
+  }
+
+  private void setPasswordAndRevokeTokens(User user, String rawPassword) {
+    var hashedPassword = hashPassword(rawPassword);
+    user.setPassword(hashedPassword);
+    refreshTokenService.revokeAllUserTokens(user.getId());
   }
 
   private String hashPassword(String rawPassword) {
     return Objects.requireNonNull(passwordEncoder.encode(rawPassword), "Password encoding failed");
-  }
-
-  private void saveAndRevokeTokens(User user) {
-    userService.save(user);
-    refreshTokenService.revokeAllUserTokens(user.getId());
   }
 }

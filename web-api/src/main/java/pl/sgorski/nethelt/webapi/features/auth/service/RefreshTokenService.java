@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.RefreshTokenNotFoundException;
-import pl.sgorski.nethelt.webapi.features.auth.config.RefreshTokenProperties;
+import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 import pl.sgorski.nethelt.webapi.features.auth.domain.RefreshToken;
 import pl.sgorski.nethelt.webapi.features.auth.repository.RefreshTokenRepository;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
@@ -14,13 +14,13 @@ import pl.sgorski.nethelt.webapi.features.user.domain.User;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-  private final RefreshTokenProperties refreshTokenProperties;
+  private final AuthProperties authProperties;
   private final RefreshTokenRepository refreshTokenRepository;
 
   @Transactional
   public RefreshToken generateRefreshToken(User user) {
-    var expirationTimeInMs = refreshTokenProperties.expirationTimeInMs();
-    var token = new RefreshToken(user, Instant.now().plusMillis(expirationTimeInMs));
+    var expiration = authProperties.refreshTokenExpiration();
+    var token = new RefreshToken(user, Instant.now().plus(expiration));
     return refreshTokenRepository.save(token);
   }
 
