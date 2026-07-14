@@ -9,10 +9,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
-import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.config.OAuth2Properties;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
@@ -22,11 +23,11 @@ public final class OAuth2AuthorizationRequestRepository
     implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
   private final CookieService cookieService;
-  private final AuthProperties authProperties;
+  private final OAuth2Properties oAuth2Properties;
 
   @Override
   public void saveAuthorizationRequest(
-      OAuth2AuthorizationRequest authorizationRequest,
+      @Nullable OAuth2AuthorizationRequest authorizationRequest,
       HttpServletRequest request,
       HttpServletResponse response) {
     if (authorizationRequest == null) {
@@ -37,18 +38,18 @@ public final class OAuth2AuthorizationRequestRepository
     cookieService.save(
         CookieNames.OAUTH_AUTH_REQUEST,
         serialize(authorizationRequest),
-        authProperties.oauth2AuthorizationRequestExpiration());
+        oAuth2Properties.authorizationRequestExpiration());
   }
 
   @Override
-  public OAuth2AuthorizationRequest removeAuthorizationRequest(
+  public @Nullable OAuth2AuthorizationRequest removeAuthorizationRequest(
       HttpServletRequest request, HttpServletResponse response) {
     cookieService.delete(CookieNames.OAUTH_AUTH_REQUEST);
     return loadAuthorizationRequest(request);
   }
 
   @Override
-  public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+  public @Nullable OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
     return cookieService.find(CookieNames.OAUTH_AUTH_REQUEST).map(this::deserialize).orElse(null);
   }
 

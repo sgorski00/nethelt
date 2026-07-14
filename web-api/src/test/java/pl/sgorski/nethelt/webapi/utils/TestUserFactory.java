@@ -9,6 +9,10 @@ public final class TestUserFactory {
     return new User("john.doe@example.com", provider, "provider-id");
   }
 
+  public static User createOAuth2User(AuthProvider provider, String providerId) {
+    return new User("john.doe@example.com", provider, providerId);
+  }
+
   public static User createLocalUser() {
     return createLocalUser("john.doe@example.com");
   }

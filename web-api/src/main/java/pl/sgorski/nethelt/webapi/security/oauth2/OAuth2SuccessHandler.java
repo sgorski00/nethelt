@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.config.OAuth2Properties;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.factory.OAuth2UserInfoFactory;
 import pl.sgorski.nethelt.webapi.features.auth.service.RefreshTokenService;
@@ -28,11 +28,9 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
   private final CookieService cookieService;
   private final AuthProperties authProperties;
+  private final OAuth2Properties oAuth2Properties;
   private final RefreshTokenService refreshTokenService;
   private final UserIdentityService identityService;
-
-  @Value("${nh.frontend.oauth-success-url}")
-  private String frontendRedirectUrl;
 
   @Override
   public void onAuthenticationSuccess(
@@ -59,7 +57,7 @@ public final class OAuth2SuccessHandler implements AuthenticationSuccessHandler 
       throws IOException {
     var token = refreshTokenService.generateRefreshToken(user).getToken();
     cookieService.save(CookieNames.REFRESH_TOKEN, token, authProperties.refreshTokenExpiration());
-    response.sendRedirect(frontendRedirectUrl);
+    response.sendRedirect(oAuth2Properties.successUrl());
     log.debug("OAuth2 authentication successful for user: {}", user.getEmail());
   }
 }

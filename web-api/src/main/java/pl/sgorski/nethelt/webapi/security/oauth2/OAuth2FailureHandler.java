@@ -5,11 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.config.OAuth2Properties;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieNames;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
@@ -19,9 +19,7 @@ import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 public final class OAuth2FailureHandler implements AuthenticationFailureHandler {
 
   private final CookieService cookieService;
-
-  @Value("${nh.frontend.oauth-failure-url}")
-  private String frontendRedirectUrl;
+  private final OAuth2Properties oAuth2Properties;
 
   @Override
   public void onAuthenticationFailure(
@@ -30,7 +28,7 @@ public final class OAuth2FailureHandler implements AuthenticationFailureHandler 
     if (exception instanceof OAuth2AuthenticationException ex) {
       cookieService.delete(CookieNames.REFRESH_TOKEN);
       var errorCode = ex.getError().getErrorCode();
-      response.sendRedirect(frontendRedirectUrl + "?error=" + errorCode);
+      response.sendRedirect(oAuth2Properties.failureUrl() + "?error=" + errorCode);
     }
   }
 }

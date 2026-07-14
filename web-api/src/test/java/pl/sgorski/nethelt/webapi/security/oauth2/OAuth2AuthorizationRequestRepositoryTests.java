@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
-import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
+import pl.sgorski.nethelt.webapi.features.auth.oauth2.config.OAuth2Properties;
 import pl.sgorski.nethelt.webapi.web.cookie.CookieService;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,7 +22,7 @@ public class OAuth2AuthorizationRequestRepositoryTests {
 
   public static final String OAUTH2_AUTH_REQUEST_KEY = "oauth2_auth_request";
   @Mock private CookieService cookieService;
-  @Mock private AuthProperties authProperties;
+  @Mock private OAuth2Properties oAuth2Properties;
   @InjectMocks private OAuth2AuthorizationRequestRepository repository;
 
   @Test
@@ -35,7 +35,7 @@ public class OAuth2AuthorizationRequestRepositoryTests {
   @Test
   void
       saveAuthorizationRequest_shouldSaveSerializedAuthorizationRequest_whenAuthorizationRequestIsNotNull() {
-    when(authProperties.oauth2AuthorizationRequestExpiration()).thenReturn(Duration.ofMinutes(5));
+    when(oAuth2Properties.authorizationRequestExpiration()).thenReturn(Duration.ofMinutes(5));
     var auth = createTestAuthorizationRequest();
 
     repository.saveAuthorizationRequest(auth, null, null);
@@ -54,7 +54,7 @@ public class OAuth2AuthorizationRequestRepositoryTests {
 
   @Test
   void loadAuthorizationRequest_shouldReturnAuthorizationRequest_whenCookieExists() {
-    when(authProperties.oauth2AuthorizationRequestExpiration()).thenReturn(Duration.ofMinutes(5));
+    when(oAuth2Properties.authorizationRequestExpiration()).thenReturn(Duration.ofMinutes(5));
     var auth = createTestAuthorizationRequest();
     var serializedValue = captureSerializedValue(auth);
 
@@ -86,7 +86,7 @@ public class OAuth2AuthorizationRequestRepositoryTests {
   @Test
   void
       removeAuthorizationRequest_shouldReturnAuthorizationRequestAndClearCookie_whenAuthorizationRequestExists() {
-    when(authProperties.oauth2AuthorizationRequestExpiration()).thenReturn(Duration.ofMinutes(5));
+    when(oAuth2Properties.authorizationRequestExpiration()).thenReturn(Duration.ofMinutes(5));
     var auth = createTestAuthorizationRequest();
     var serializedValue = captureSerializedValue(auth);
 

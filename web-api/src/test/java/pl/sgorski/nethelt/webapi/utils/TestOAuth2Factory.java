@@ -27,6 +27,10 @@ public class TestOAuth2Factory {
     return new DefaultOAuth2User(null, Map.of("id", "test-id", "email", email), "id");
   }
 
+  public static OAuth2User createGithubOAuth2User(String id, String email) {
+    return new DefaultOAuth2User(null, Map.of("id", id, "email", email), "id");
+  }
+
   public static OAuth2LoginContext createOAuth2LoginContext(
       OAuth2User user, AuthProvider authProvider, OAuthUserInfo userInfo, @Nullable Long userId) {
     return new OAuth2LoginContext(user, authProvider, userInfo, userId);
