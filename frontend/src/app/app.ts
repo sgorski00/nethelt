@@ -16,7 +16,6 @@ export class App {
   public readonly currentYear = new Date().getFullYear();
 
   public logout() {
-    localStorage.removeItem('token');
     this.authService.logout().subscribe({
       next: () => this.router.navigateByUrl('/login'),
     });
