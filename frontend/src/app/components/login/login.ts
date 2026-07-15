@@ -50,10 +50,7 @@ export class Login implements OnInit {
 
     this.authService.login(request).subscribe({
       next: () => this.router.navigateByUrl('/profile'),
-      error: (err) => {
-        this.errorMessage.set(err.error.detail || 'An error occurred during login.');
-        console.log(err.error);
-      },
+      error: (err) => this.errorMessage.set(err.error.detail || 'An error occurred during login.'),
     });
   }
 

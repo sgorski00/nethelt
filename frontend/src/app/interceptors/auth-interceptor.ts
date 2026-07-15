@@ -1,9 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-
-const LS_TOKEN_KEY = 'token';
+import { inject } from '@angular/core';
+import { AuthService } from '../services/auth-service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem(LS_TOKEN_KEY);
+  const authService = inject(AuthService);
+  const token = authService.accessToken;
   if (!token) {
     return next(req);
   }
