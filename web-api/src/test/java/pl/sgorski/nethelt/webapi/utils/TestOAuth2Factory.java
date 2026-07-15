@@ -9,7 +9,7 @@ import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.OAuthUserInfo;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.impl.GoogleOAuth2UserInfo;
 
-public class TestOAuth2Factory {
+public final class TestOAuth2Factory {
 
   public static OAuthUserInfo createGoogleOAuth2UserInfo(String email) {
     return new GoogleOAuth2UserInfo(Map.of("sub", "test-provider-id", "email", email));

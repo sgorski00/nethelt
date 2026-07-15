@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
+import pl.sgorski.nethelt.webapi.utils.TestNotificationFactory;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 
 public class NotificationTests {
@@ -12,7 +13,7 @@ public class NotificationTests {
   void constructor_shouldCreateNotificationWithRequiredData() {
     var user = TestUserFactory.createLocalUser();
 
-    var result = createNotification(user);
+    var result = TestNotificationFactory.createNotification(user, "Test Title", "Test Content");
 
     assertSame(user, result.getUser());
     assertEquals("Test Title", result.getTitle());
@@ -22,8 +23,7 @@ public class NotificationTests {
 
   @Test
   void markAsRead_shouldSetReadAtToCurrentTime() {
-    var user = TestUserFactory.createLocalUser();
-    var notification = createNotification(user);
+    var notification = TestNotificationFactory.createNotification();
 
     notification.markAsRead();
 
@@ -32,8 +32,7 @@ public class NotificationTests {
 
   @Test
   void markAsRead_shouldDoNothing_whenAlreadyRead() {
-    var user = TestUserFactory.createLocalUser();
-    var notification = createNotification(user);
+    var notification = TestNotificationFactory.createNotification();
     notification.markAsRead();
 
     notification.markAsRead();
@@ -43,8 +42,7 @@ public class NotificationTests {
 
   @Test
   void isRead_shouldReturnTrue_whenReadAtIsNotNull() {
-    var user = TestUserFactory.createLocalUser();
-    var notification = createNotification(user);
+    var notification = TestNotificationFactory.createNotification();
 
     notification.markAsRead();
 
@@ -53,9 +51,7 @@ public class NotificationTests {
 
   @Test
   void isRead_shouldReturnFalse_whenReadAtIsNull() {
-    var user = TestUserFactory.createLocalUser();
-
-    var notification = createNotification(user);
+    var notification = TestNotificationFactory.createNotification();
 
     assertFalse(notification.isRead());
   }
