@@ -59,7 +59,7 @@ public class SecurityConfig {
                     .requestMatchers("/auth/**")
                     .not()
                     .authenticated()
-                    .requestMatchers("/profile/**", "/identities/**")
+                    .requestMatchers("/profile/**", "/identities/**", "/notifications/**")
                     .authenticated()
                     .anyRequest()
                     .denyAll())

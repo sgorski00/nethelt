@@ -1,0 +1,9 @@
+<div class="notification-container">
+  <button class="neutral" type="button" (click)="toggle()">Notifications</button>
+  @if (open()) {
+    <div class="dropdown">
+      <p>No notifications</p>
+      <a routerLink="/notifications/preferences">Preferences</a>
+    </div>
+  }
+</div>
