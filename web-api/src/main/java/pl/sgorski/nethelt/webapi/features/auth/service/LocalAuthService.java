@@ -30,7 +30,7 @@ public class LocalAuthService {
 
     var hashedPassword = hashPassword(command.newPassword());
     var user = new User(command.email(), hashedPassword);
-    return userService.save(user);
+    return userService.register(user);
   }
 
   public User login(LoginUserCommand command) {

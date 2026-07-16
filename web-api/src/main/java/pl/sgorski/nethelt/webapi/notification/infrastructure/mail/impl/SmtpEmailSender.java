@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.webapi.exception.notification.EmailSendingException;
 import pl.sgorski.nethelt.webapi.notification.infrastructure.mail.EmailSender;
 
 @Slf4j
@@ -18,7 +19,7 @@ public class SmtpEmailSender implements EmailSender {
   private final JavaMailSender sender;
 
   @Override
-  public void send(String to, String subject, String body) {
+  public void send(String to, String subject, String body) throws EmailSendingException {
     try {
       var message = sender.createMimeMessage();
       message.addRecipients(Message.RecipientType.TO, to);
@@ -27,6 +28,7 @@ public class SmtpEmailSender implements EmailSender {
       sender.send(message);
     } catch (MessagingException e) {
       log.error("Failed to send email to {} with subject {}: {}", to, subject, e.getMessage(), e);
+      throw new EmailSendingException(e);
     }
   }
 }

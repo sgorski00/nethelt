@@ -6,5 +6,5 @@ CREATE TABLE notification_preferences (
 CREATE TABLE notification_enabled_channels (
     preference_id bigint NOT NULL references notification_preferences(id) ON DELETE CASCADE,
     channel varchar(255) not null,
-    CONSTRAINT pk_notification_enabled_channels PRIMARY KEY (user_id, channel)
+    CONSTRAINT pk_notification_enabled_channels PRIMARY KEY (preference_id, channel)
 );

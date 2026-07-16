@@ -46,10 +46,11 @@ public class LocalAuthServiceTest {
     var hashedPassword = "hashed-password";
     when(passwordEncoder.encode(PASSWORD)).thenReturn(hashedPassword);
     when(userService.isUserPresent(EMAIL)).thenReturn(false);
+    when(userService.register(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     localAuthService.registerUser(command);
     verify(passwordEncoder).encode(PASSWORD);
-    verify(userService).save(userCaptor.capture());
+    verify(userService).register(userCaptor.capture());
     var saved = userCaptor.getValue();
 
     assertEquals(EMAIL, saved.getEmail());
@@ -63,7 +64,7 @@ public class LocalAuthServiceTest {
     when(userService.isUserPresent(EMAIL)).thenReturn(true);
 
     assertThrows(UserAlreadyExistsException.class, () -> localAuthService.registerUser(command));
-    verify(userService, never()).save(any());
+    verify(userService, never()).register(any());
     verify(passwordEncoder, never()).encode(any());
   }
 

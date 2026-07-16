@@ -1,37 +1,34 @@
 package pl.sgorski.nethelt.webapi.notification.service;
 
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.notification.NotificationNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.notification.domain.Notification;
-import pl.sgorski.nethelt.webapi.notification.domain.NotificationChannel;
 import pl.sgorski.nethelt.webapi.notification.dto.command.NotificationCommand;
 import pl.sgorski.nethelt.webapi.notification.repository.NotificationRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
-  private final List<NotificationSender> senders;
   private final NotificationRepository notificationRepository;
   private final UserService userService;
 
-  public void send(Notification notification, Set<NotificationChannel> channels) {
-    channels.forEach(
-        channel ->
-            senders.stream()
-                .filter(sender -> sender.supports(channel))
-                .forEach(sender -> sender.send(notification)));
-  }
-
   @Transactional
   public Notification create(NotificationCommand command) {
+    log.info(
+        "Creating notification for user with ID {}: {} - {}",
+        command.userId(),
+        command.title(),
+        command.content());
     var user = userService.getUser(command.userId());
     var notification = new Notification(user, command.title(), command.content());
+    log.info(
+        "Notification created with ID {} for user with ID {}", notification.getId(), user.getId());
     return notificationRepository.save(notification);
   }
 

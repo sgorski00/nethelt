@@ -2,8 +2,7 @@ package pl.sgorski.nethelt.webapi.features.auth.oauth2.connect.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,10 +82,11 @@ public class OAuth2CommonLoginServiceTests {
     when(userIdentityService.isUserIdentityPresent(nullable(String.class), any(AuthProvider.class)))
         .thenReturn(false);
     when(userService.isUserPresent(nullable(String.class))).thenReturn(false);
+    when(userService.register(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     var result = connectService.handle(ctx);
 
-    verify(userService).save(argThat(user -> user.hasIdentity(ctx.provider())));
+    verify(userService).register(argThat(user -> user.hasIdentity(ctx.provider())));
     assertSame(oAuthUser, result);
   }
 }

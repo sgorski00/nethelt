@@ -6,6 +6,7 @@ import java.util.Set;
 import lombok.*;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
+@Getter
 @Entity
 @Table(name = "notification_preferences")
 @ToString(exclude = "user")
@@ -14,21 +15,19 @@ import pl.sgorski.nethelt.webapi.features.user.domain.User;
 public class NotificationPreferences {
 
   @Id
-  @Getter
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Getter
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false, unique = true)
   private User user;
 
-  @Column(name = "channel")
+  @Column(name = "channel", nullable = false)
   @Enumerated(EnumType.STRING)
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(
       name = "notification_enabled_channels",
-      joinColumns = @JoinColumn(name = "preference_id"))
+      joinColumns = @JoinColumn(name = "preference_id", nullable = false))
   private final Set<NotificationChannel> enabledChannels = EnumSet.allOf(NotificationChannel.class);
 
   public NotificationPreferences(User user) {

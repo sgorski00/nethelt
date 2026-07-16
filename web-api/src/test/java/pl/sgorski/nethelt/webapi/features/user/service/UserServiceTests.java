@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.features.auth.dto.event.AccountCreatedEvent;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
@@ -18,16 +20,19 @@ import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 public class UserServiceTests {
 
   @Mock private UserRepository userRepository;
+  @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private UserService userService;
 
   @Test
-  void save_shouldSaveUser() {
+  void register_shouldSaveUserAndPublishEvent() {
     var user = TestUserFactory.createLocalUser();
+    when(userRepository.save(any())).then(invocation -> invocation.getArgument(0));
 
-    userService.save(user);
+    userService.register(user);
 
     verify(userRepository, times(1)).save(user);
+    verify(eventPublisher, times(1)).publishEvent(any(AccountCreatedEvent.class));
   }
 
   @Test
@@ -88,6 +93,28 @@ public class UserServiceTests {
 
     assertThrows(
         UserNotFoundException.class, () -> userService.getUserWithProfileAndIdentities(id));
+  }
+
+  @Test
+  void getUserWithNotificationPreferences_shouldFindUser() {
+    var user = TestUserFactory.createLocalUser();
+    var id = 1L;
+    when(userRepository.findWithNotificationPreferencesByIdAndDeletedAtIsNull(id))
+        .thenReturn(Optional.of(user));
+
+    var result = userService.getUserWithNotificationPreferences(id);
+
+    assertSame(user, result);
+  }
+
+  @Test
+  void getUserWithNotificationPreferences_shouldThrow_whenUserNotFoundById() {
+    var id = 1L;
+    when(userRepository.findWithNotificationPreferencesByIdAndDeletedAtIsNull(id))
+        .thenReturn(Optional.empty());
+
+    assertThrows(
+        UserNotFoundException.class, () -> userService.getUserWithNotificationPreferences(id));
   }
 
   @Test

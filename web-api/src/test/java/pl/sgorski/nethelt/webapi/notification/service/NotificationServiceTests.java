@@ -3,18 +3,15 @@ package pl.sgorski.nethelt.webapi.notification.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.notification.NotificationNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
-import pl.sgorski.nethelt.webapi.notification.domain.NotificationChannel;
 import pl.sgorski.nethelt.webapi.notification.dto.command.NotificationCommand;
 import pl.sgorski.nethelt.webapi.notification.repository.NotificationRepository;
 import pl.sgorski.nethelt.webapi.utils.TestNotificationFactory;
@@ -23,36 +20,9 @@ import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTests {
 
-  @Mock private NotificationSender notificationSender;
   @Mock private NotificationRepository notificationRepository;
   @Mock private UserService userService;
-  private NotificationService notificationService;
-
-  @BeforeEach
-  void setUp() {
-    this.notificationService =
-        new NotificationService(List.of(notificationSender), notificationRepository, userService);
-  }
-
-  @Test
-  void send_shouldCallSendersForSupportedChannels_whenChannelIsSupported() {
-    var notification = TestNotificationFactory.createNotification();
-    when(notificationSender.supports(NotificationChannel.EMAIL)).thenReturn(true);
-
-    notificationService.send(notification, Set.of(NotificationChannel.EMAIL));
-
-    verify(notificationSender).send(notification);
-  }
-
-  @Test
-  void send_shouldNotCallSenders_whenChannelIsNotSupported() {
-    var notification = TestNotificationFactory.createNotification();
-    when(notificationSender.supports(NotificationChannel.EMAIL)).thenReturn(false);
-
-    notificationService.send(notification, Set.of(NotificationChannel.EMAIL));
-
-    verify(notificationSender, never()).send(notification);
-  }
+  @InjectMocks private NotificationService notificationService;
 
   @Test
   void create_shouldCreateAndSaveNotificationWithCorrectValues_whenUserPresent() {
