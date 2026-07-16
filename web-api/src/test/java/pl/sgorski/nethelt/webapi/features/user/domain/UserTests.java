@@ -117,6 +117,7 @@ public class UserTests {
     assertEquals("john.doe@example.com", user.getEmail());
     assertEquals("hashed-password", user.getPassword());
     assertEquals(Role.USER, user.getRole());
+    assertNotNull(user.getNotificationPreferences());
   }
 
   @Test
@@ -126,6 +127,7 @@ public class UserTests {
     assertEquals("john.doe@example.com", user.getEmail());
     assertNull(user.getPassword());
     assertEquals(Role.USER, user.getRole());
+    assertNotNull(user.getNotificationPreferences());
     assertEquals(1, user.getIdentities().size());
     var identity = user.getIdentities().iterator().next();
     assertEquals(AuthProvider.GITHUB, identity.getProvider());

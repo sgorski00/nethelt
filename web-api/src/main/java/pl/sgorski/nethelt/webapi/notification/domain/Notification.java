@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.Nullable;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
+@Getter
 @Entity
 @Table(name = "notifications")
 @ToString(exclude = "user")
@@ -20,22 +21,19 @@ public class Notification {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @Getter
   @Column(nullable = false)
   private String title;
 
-  @Getter
   @Column(nullable = false)
   private String content;
 
-  @Nullable @Getter private Instant readAt;
+  @Nullable private Instant readAt;
 
-  @Getter @CreationTimestamp private Instant createdAt;
+  @CreationTimestamp private Instant createdAt;
 
   public Notification(User user, String title, String content) {
     this.user = user;
