@@ -2,6 +2,8 @@ package pl.sgorski.nethelt.webapi.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.notification.NotificationNotFoundException;
@@ -17,6 +19,10 @@ public class NotificationService {
 
   private final NotificationRepository notificationRepository;
   private final UserService userService;
+
+  public Page<Notification> getNotifications(Long userId, boolean showRead, Pageable pageable) {
+    return notificationRepository.findByUserId(userId, showRead, pageable);
+  }
 
   @Transactional
   public Notification create(NotificationCommand command) {
@@ -39,5 +45,9 @@ public class NotificationService {
             .findById(notificationId)
             .orElseThrow(NotificationNotFoundException::new);
     notification.markAsRead();
+  }
+
+  public Long getUnreadNotificationsCount(Long userId) {
+    return notificationRepository.countByUserIdAndReadAtIsNull(userId);
   }
 }

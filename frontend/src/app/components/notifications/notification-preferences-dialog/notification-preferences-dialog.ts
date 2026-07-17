@@ -1,11 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { NotificationService } from '../../../services/notification-service';
+import { NotificationPreferencesResponse } from '../../../models/notifications/notification-preferences-response';
+import { DialogRef } from '@angular/cdk/dialog';
 import {
   NotificationChannel,
   NotificationChannelLabels,
-  NotificationPreferencesResponse,
-} from '../../../models/notifications/notification-preferences-response';
-import { DialogRef } from '@angular/cdk/dialog';
+} from '../../../models/notifications/notification-channels';
 
 @Component({
   selector: 'app-notification-preferences',

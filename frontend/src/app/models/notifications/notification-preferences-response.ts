@@ -1,12 +1,4 @@
-export enum NotificationChannel {
-  EMAIL = 'EMAIL',
-  WEBSOCKET = 'WEBSOCKET',
-}
-
-export const NotificationChannelLabels: Record<NotificationChannel, string> = {
-  [NotificationChannel.EMAIL]: 'Email',
-  [NotificationChannel.WEBSOCKET]: 'Real-time notifications',
-};
+import { NotificationChannel } from './notification-channels';
 
 export interface NotificationPreferencesResponse {
   userId: number;

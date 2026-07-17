@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  NotificationChannel,
-  NotificationPreferencesResponse,
-} from '../models/notifications/notification-preferences-response';
+import { NotificationPreferencesResponse } from '../models/notifications/notification-preferences-response';
 import { environment } from '../../environments/environment';
+import { NotificationResponse } from '../models/notifications/notification-response';
+import { NotificationChannel } from '../models/notifications/notification-channels';
+import { PageResponse } from '../models/general/page-response';
 
 @Injectable({
   providedIn: 'root',
@@ -32,5 +32,25 @@ export class NotificationService {
       `${this.notificationsUrl}/preferences/${channel}`,
       {},
     );
+  }
+
+  public getNotifications(
+    page = 0,
+    showRead = true,
+    size = 5,
+    sort = 'createdAt,desc',
+  ): Observable<PageResponse<NotificationResponse>> {
+    const params = { page, size, sort, showRead };
+    return this.httpClient.get<PageResponse<NotificationResponse>>(`${this.notificationsUrl}`, {
+      params,
+    });
+  }
+
+  public getUnreadCount(): Observable<number> {
+    return this.httpClient.get<number>(`${this.notificationsUrl}/unread-count`);
+  }
+
+  public markAsRead(notificationId: number): Observable<void> {
+    return this.httpClient.put<void>(`${this.notificationsUrl}/${notificationId}`, {});
   }
 }

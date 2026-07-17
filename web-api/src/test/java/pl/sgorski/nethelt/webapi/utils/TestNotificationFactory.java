@@ -9,6 +9,10 @@ public final class TestNotificationFactory {
     return createNotification("Test notification", "Test content");
   }
 
+  public static Notification createNotification(User user) {
+    return createNotification(user, "Test notification", "Test content");
+  }
+
   public static Notification createNotification(String title, String content) {
     var user = TestUserFactory.createLocalUser();
     return createNotification(user, title, content);

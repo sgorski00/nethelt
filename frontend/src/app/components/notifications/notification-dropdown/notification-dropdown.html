@@ -1,9 +1,76 @@
-<div class="notification-container">
-  <button class="neutral" type="button" (click)="toggle()">Notifications</button>
-  @if (open()) {
-    <div class="dropdown">
-      <a routerLink="" class="nav-link">No notifications</a>
-      <button type="button" class="nav-link" (click)="openPreferencesDialog()">Preferences</button>
-    </div>
+<button class="notification-button" type="button" (click)="toggle()">
+  <i class="fa-solid fa-bell"></i>
+  @if (unreadCount() > 0) {
+    <span class="notification-count">{{ unreadCount() }}</span>
   }
-</div>
+</button>
+@if (open()) {
+  <div class="dropdown">
+    <div class="notifications-container">
+      <div class="notifications-header">
+        <h3>Notifications</h3>
+        <div class="notification-filter">
+          <button
+            type="button"
+            class="filter-button"
+            [class.active]="showRead()"
+            (click)="changeFilter(true)"
+          >
+            All
+          </button>
+
+          <button
+            type="button"
+            class="filter-button"
+            [class.active]="!showRead()"
+            (click)="changeFilter(false)"
+          >
+            Unread
+          </button>
+        </div>
+        <button
+          type="button"
+          class="neutral settings-button"
+          (click)="openPreferencesDialog()"
+          aria-label="Notification preferences"
+        >
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+      <div class="notifications-content">
+        @for (notification of notifications(); track notification.id) {
+          <button type="button" class="notification-item" (click)="markAsRead(notification.id)">
+            <div class="notification-text">
+              <h5>{{ notification.title }}</h5>
+              <p>{{ notification.content }}</p>
+              <small>{{ notification.createdAt | date: 'yyyy-MM-dd HH:mm' }}</small>
+            </div>
+            @if (notification.readAt === null) {
+              <div class="unread-badge"></div>
+            }
+          </button>
+        } @empty {
+          <p>No notifications yet...</p>
+        }
+      </div>
+      <div class="notifications-footer">
+        <button
+          type="button"
+          class="pagination-button"
+          [disabled]="!hasPreviousPage()"
+          (click)="previousPage()"
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          class="pagination-button"
+          [disabled]="!hasNextPage()"
+          (click)="nextPage()"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+}
