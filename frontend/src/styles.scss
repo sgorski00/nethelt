@@ -33,17 +33,22 @@ body {
 }
 
 .success {
-  background: #dcfce7;
-  color: #166534;
+  background: #dcfce7 !important;
+  color: #166534 !important;
+  border-color: #166534 !important;
 }
 
 .danger {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #991b1b !important;
+}
 
-  &:hover {
-    background: #fca5aa;
-  }
+button.success:hover,
+button.danger:hover,
+a.success:hover,
+a.danger:hover {
+  filter: brightness(0.95);
 }
 
 .dialog {
@@ -113,10 +118,10 @@ button {
   background-color: #007bff;
   color: white;
   cursor: pointer;
-}
 
-button:hover {
-  background-color: #0056b3;
+  &:hover {
+    background-color: #0056b3;
+  }
 }
 
 h1 {
@@ -137,9 +142,54 @@ h2 {
   right: 0;
   width: 300px;
   padding: 12px;
-  background: white;
+  background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  button,
+  a {
+    background-color: white;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    text-align: left;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+  }
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 16px;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+
+  .nav-link {
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    background: transparent;
+    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .nav-link:hover {
+    background: #f3f4f6;
+    color: #111827;
+  }
 }

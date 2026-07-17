@@ -3,6 +3,11 @@ export enum NotificationChannel {
   WEBSOCKET = 'WEBSOCKET',
 }
 
+export const NotificationChannelLabels: Record<NotificationChannel, string> = {
+  [NotificationChannel.EMAIL]: 'Email',
+  [NotificationChannel.WEBSOCKET]: 'Real-time notifications',
+};
+
 export interface NotificationPreferencesResponse {
   userId: number;
   enabledChannels: NotificationChannel[];

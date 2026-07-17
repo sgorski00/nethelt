@@ -1,0 +1,33 @@
+<div class="dialog">
+  <h2 class="centered">Notification Preferences</h2>
+  <div>
+    @if (preferences()) {
+      <h4>Enabled channels:</h4>
+      @for (channel of availableChannels; track channel) {
+        <div class="preference-item">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="containsChannel(channel)"
+              (change)="onChannelChange(channel, $event)"
+            />
+            {{ NotificationChannelLabels[channel] }}
+          </label>
+        </div>
+      }
+    } @else {
+      <p>Loading...</p>
+    }
+  </div>
+  <div>
+    @if (successMessage()) {
+      <p class="success-message centered">{{ successMessage() }}</p>
+    }
+    @if (errorMessage()) {
+      <p class="error-message centered">{{ errorMessage() }}</p>
+    }
+  </div>
+  <div class="form-actions">
+    <button type="button" (click)="closeDialog()">Close</button>
+  </div>
+</div>

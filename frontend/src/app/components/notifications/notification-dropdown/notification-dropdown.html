@@ -2,8 +2,8 @@
   <button class="neutral" type="button" (click)="toggle()">Notifications</button>
   @if (open()) {
     <div class="dropdown">
-      <p>No notifications</p>
-      <a routerLink="/notifications/preferences">Preferences</a>
+      <a routerLink="" class="nav-link">No notifications</a>
+      <button type="button" class="nav-link" (click)="openPreferencesDialog()">Preferences</button>
     </div>
   }
 </div>

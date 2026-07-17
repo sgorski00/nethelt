@@ -4,7 +4,7 @@ import { Profile } from './components/profile/profile';
 import { requireAuth, requireNoAuth } from './guards/auth-guard';
 import { Register } from './components/register/register';
 import { oauth2Routes } from './components/oauth2-callback/oauth2.routes';
-import { NotificationPreferences } from './components/notifications/notification-preferences/notification-preferences';
+import { NotificationPreferencesDialog } from './components/notifications/notification-preferences-dialog/notification-preferences-dialog';
 
 export const routes: Routes = [
   {
@@ -29,7 +29,7 @@ export const routes: Routes = [
   },
   {
     path: 'notifications/preferences',
-    component: NotificationPreferences,
+    component: NotificationPreferencesDialog,
     canActivate: [requireAuth],
   },
   {
