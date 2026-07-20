@@ -12,7 +12,7 @@ import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolve
 
 @SuppressWarnings("SpringMvcPathVariableDeclarationInspection")
 @RestController
-@RequestMapping("/notifications/preferences")
+@RequestMapping(value = "/notifications/preferences", version = "1")
 @RequiredArgsConstructor
 public class NotificationPreferencesController {
 

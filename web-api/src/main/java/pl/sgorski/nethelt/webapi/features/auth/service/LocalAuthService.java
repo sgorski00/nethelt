@@ -49,7 +49,7 @@ public class LocalAuthService {
   @Transactional
   public void setLocalPassword(Long userId, String rawPassword) {
     var user = userService.getUser(userId);
-    if (user.getPassword() != null) {
+    if (user.isLocal()) {
       throw new IllegalStateException(
           "User already has a password. If you want to change it, use change password then.");
     }
@@ -60,12 +60,21 @@ public class LocalAuthService {
   @Transactional
   public void changePassword(Long userId, String oldPassword, String newPassword) {
     var user = userService.getUser(userId);
-    if (user.getPassword() == null) {
+    if (!user.isLocal()) {
       throw new IllegalStateException("User doesn't have local password yet.");
     }
 
     if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
       throw new IllegalArgumentException("Invalid current password.");
+    }
+
+    setPasswordAndRevokeTokens(user, newPassword);
+  }
+
+  @Transactional
+  public void resetPassword(User user, String newPassword) {
+    if (!user.isLocal()) {
+      throw new IllegalStateException("User doesn't have local password yet.");
     }
 
     setPasswordAndRevokeTokens(user, newPassword);

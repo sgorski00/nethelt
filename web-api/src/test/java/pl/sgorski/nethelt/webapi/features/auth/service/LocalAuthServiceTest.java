@@ -154,4 +154,30 @@ public class LocalAuthServiceTest {
     verify(passwordEncoder, never()).encode(PASSWORD);
     verify(refreshTokenService, never()).revokeAllUserTokens(anyLong());
   }
+
+  @Test
+  void resetPassword_shouldResetPasswordAndRevokeAllTokens() {
+    var newPassword = "newPassword123";
+    var hashedNewPassword = "hashed-new-password";
+    var user = TestUserFactory.createLocalUser();
+    when(passwordEncoder.encode(newPassword)).thenReturn(hashedNewPassword);
+
+    localAuthService.resetPassword(user, newPassword);
+
+    assertEquals(hashedNewPassword, user.getPassword());
+    verify(passwordEncoder, times(1)).encode(newPassword);
+    verify(refreshTokenService, times(1)).revokeAllUserTokens(user.getId());
+  }
+
+  @Test
+  void resetPassword_shouldThrow_whenPasswordIsNotSetYet() {
+    var newPassword = "newPassword123";
+    var user = TestUserFactory.createOAuth2User(AuthProvider.GITHUB);
+
+    assertThrows(
+        IllegalStateException.class, () -> localAuthService.resetPassword(user, newPassword));
+
+    verify(passwordEncoder, never()).encode(newPassword);
+    verify(refreshTokenService, never()).revokeAllUserTokens(anyLong());
+  }
 }

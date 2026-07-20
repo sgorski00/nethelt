@@ -17,12 +17,12 @@ import pl.sgorski.nethelt.webapi.notification.service.NotificationService;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class AccountCreatedRequestListenerTests {
+public class AccountCreatedEventListenerTests {
 
   @Mock private NotificationPreferencesService notificationPreferencesService;
   @Mock private NotificationService notificationService;
   @Mock private NotificationDeliveryService notificationDeliveryService;
-  @InjectMocks private AccountCreatedRequestListener accountCreatedRequestListener;
+  @InjectMocks private AccountCreatedEventListener accountCreatedEventListener;
 
   @Test
   void handle_shouldSendNotificationOnAccountCreatedEvent() {
@@ -32,7 +32,7 @@ public class AccountCreatedRequestListenerTests {
         .thenReturn(user.getNotificationPreferences());
     when(notificationService.create(any())).thenReturn(notification);
 
-    accountCreatedRequestListener.handle(new AccountCreatedEvent(1L));
+    accountCreatedEventListener.handle(new AccountCreatedEvent(1L));
 
     verify(notificationService)
         .create(
@@ -50,7 +50,7 @@ public class AccountCreatedRequestListenerTests {
     when(notificationPreferencesService.getPreferences(1L))
         .thenThrow(NotificationPreferencesNotFoundException.class);
 
-    accountCreatedRequestListener.handle(new AccountCreatedEvent(1L));
+    accountCreatedEventListener.handle(new AccountCreatedEvent(1L));
 
     verify(notificationDeliveryService, never()).send(any(), any());
     verify(notificationService, never()).create(any());

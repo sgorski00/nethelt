@@ -14,7 +14,7 @@ import pl.sgorski.nethelt.webapi.notification.service.NotificationService;
 import pl.sgorski.nethelt.webapi.security.authenticated.AuthenticatedUserResolver;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping(value = "/notifications", version = "1")
 @RequiredArgsConstructor
 public class NotificationController {
 

@@ -16,7 +16,7 @@ import pl.sgorski.nethelt.webapi.notification.service.NotificationService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AccountCreatedRequestListener {
+public class AccountCreatedEventListener {
 
   private final NotificationPreferencesService notificationPreferencesService;
   private final NotificationService notificationService;

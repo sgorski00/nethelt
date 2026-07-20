@@ -33,6 +33,4 @@ public final class UserPasswordController {
     localAuthService.changePassword(userId, request.oldPassword(), request.newPassword());
     return ResponseEntity.noContent().build();
   }
-
-  // todo: add password reset flow - send email with token, validate token, set new password
 }

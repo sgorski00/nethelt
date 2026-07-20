@@ -8,4 +8,5 @@ public record AuthProperties(
     Duration refreshTokenExpiration,
     Duration jwtTokenExpiration,
     String jwtSecretKey,
-    Duration passwordResetTokenExpiration) {}
+    Duration passwordResetTokenExpiration,
+    String passwordResetConfirmUrl) {}
