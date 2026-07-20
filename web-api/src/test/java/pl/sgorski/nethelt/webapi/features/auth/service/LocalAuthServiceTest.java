@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pl.sgorski.nethelt.webapi.exception.domain.UserAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.domain.auth.UserAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;

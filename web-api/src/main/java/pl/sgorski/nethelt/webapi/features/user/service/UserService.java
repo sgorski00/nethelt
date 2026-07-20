@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.event.AccountCreatedEvent;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;

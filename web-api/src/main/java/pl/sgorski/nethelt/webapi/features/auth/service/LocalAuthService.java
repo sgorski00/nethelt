@@ -7,7 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sgorski.nethelt.webapi.exception.domain.UserAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.domain.auth.UserAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;

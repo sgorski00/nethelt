@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.notification.NotificationNotFoundException;
 import pl.sgorski.nethelt.webapi.features.user.service.UserService;
 import pl.sgorski.nethelt.webapi.notification.dto.command.NotificationCommand;

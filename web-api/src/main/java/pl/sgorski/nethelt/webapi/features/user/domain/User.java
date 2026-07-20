@@ -10,8 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileOperationNotAllowedException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileOperationNotAllowedException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationPreferences;
 

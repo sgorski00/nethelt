@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.event.AccountCreatedEvent;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;

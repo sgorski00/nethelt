@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.webapi.exception.domain.IdentityNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.IdentityNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.domain.UserIdentity;
 import pl.sgorski.nethelt.webapi.features.user.repository.UserIdentityRepository;

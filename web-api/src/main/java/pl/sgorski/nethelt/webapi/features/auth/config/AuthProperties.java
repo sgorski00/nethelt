@@ -5,4 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "auth")
 public record AuthProperties(
-    Duration refreshTokenExpiration, Duration jwtTokenExpiration, String jwtSecretKey) {}
+    Duration refreshTokenExpiration,
+    Duration jwtTokenExpiration,
+    String jwtSecretKey,
+    Duration passwordResetTokenExpiration) {}

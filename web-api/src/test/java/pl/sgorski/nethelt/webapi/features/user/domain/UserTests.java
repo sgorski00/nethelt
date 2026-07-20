@@ -3,8 +3,8 @@ package pl.sgorski.nethelt.webapi.features.user.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileOperationNotAllowedException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileOperationNotAllowedException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 

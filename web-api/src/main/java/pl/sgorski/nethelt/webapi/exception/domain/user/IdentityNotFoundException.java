@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.webapi.exception.domain;
+package pl.sgorski.nethelt.webapi.exception.domain.user;
 
 import pl.sgorski.nethelt.webapi.exception.application.NotFoundException;
 

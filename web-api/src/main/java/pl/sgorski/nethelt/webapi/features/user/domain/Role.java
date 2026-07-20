@@ -5,7 +5,7 @@ import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import pl.sgorski.nethelt.webapi.exception.domain.RoleNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.RoleNotFoundException;
 
 @AllArgsConstructor
 @Getter
