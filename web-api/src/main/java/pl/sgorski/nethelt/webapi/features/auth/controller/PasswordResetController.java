@@ -12,7 +12,7 @@ import pl.sgorski.nethelt.webapi.features.auth.service.PasswordResetTokenService
 @RestController
 @RequestMapping(value = "/auth/password-reset", version = "1")
 @RequiredArgsConstructor
-public class PasswordResetController {
+public final class PasswordResetController {
 
   private final PasswordResetTokenService passwordResetTokenService;
   private final LocalAuthService localAuthService;
@@ -26,7 +26,7 @@ public class PasswordResetController {
 
   @PostMapping("/confirm")
   public ResponseEntity<Void> confirmPasswordReset(
-      @RequestParam String token, @RequestBody @Valid PasswordResetConfirmRequest request) {
+      @RequestParam("token") String token, @RequestBody @Valid PasswordResetConfirmRequest request) {
     var user = passwordResetTokenService.validateAndGetUser(token);
     localAuthService.resetPassword(user, request.newPassword());
     return ResponseEntity.noContent().build();

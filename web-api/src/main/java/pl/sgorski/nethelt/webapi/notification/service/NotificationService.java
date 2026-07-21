@@ -26,15 +26,13 @@ public class NotificationService {
 
   @Transactional
   public Notification create(NotificationCommand command) {
-    log.info(
+    log.debug(
         "Creating notification for user with ID {}: {} - {}",
         command.userId(),
         command.title(),
         command.content());
     var user = userService.getUser(command.userId());
     var notification = new Notification(user, command.title(), command.content());
-    log.info(
-        "Notification created with ID {} for user with ID {}", notification.getId(), user.getId());
     return notificationRepository.save(notification);
   }
 

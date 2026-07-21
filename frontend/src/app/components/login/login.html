@@ -30,6 +30,9 @@
     @if (registered()) {
       <p class="success-message centered">You have successfully registered. Please log in.</p>
     }
+    @if (passwordReset()) {
+      <p class="success-message centered">Your password has been reset successfully. You can now log in with your new password.</p>
+    }
   </form>
   <div class="additional-actions">
     <div class="separator">
@@ -42,7 +45,7 @@
     <div class="separator">
       <span>or</span>
     </div>
-    <a routerLink="/register" class="form-link centered">Forgot your password?</a>
+    <a routerLink="/password-reset/request" class="form-link centered">Forgot your password?</a>
     <a routerLink="/register" class="form-link centered">Don't have an account yet?</a>
   </div>
 </div>
