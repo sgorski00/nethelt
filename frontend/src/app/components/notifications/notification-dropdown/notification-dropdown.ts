@@ -52,7 +52,8 @@ export class NotificationDropdown {
   }
 
   closeOnOutsideClick(event: MouseEvent) {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
+    const target = event.target as Node | null;
+    if (!target || !this.elementRef.nativeElement.contains(target)) {
       this.open.set(false);
     }
   }
