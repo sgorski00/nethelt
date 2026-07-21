@@ -32,8 +32,17 @@
     }
   </form>
   <div class="additional-actions">
-    <button routerLink="/register">Don't have an account yet?</button>
-    <button (click)="loginWithProvider(IdentityProvider.GOOGLE)">Continue with Google</button>
-    <button (click)="loginWithProvider(IdentityProvider.GITHUB)">Continue with Github</button>
+    <div class="separator">
+      <span>Login with</span>
+    </div>
+    <div class="additional-actions-row">
+      <button (click)="loginWithProvider(IdentityProvider.GOOGLE)">Google</button>
+      <button (click)="loginWithProvider(IdentityProvider.GITHUB)">Github</button>
+    </div>
+    <div class="separator">
+      <span>or</span>
+    </div>
+    <a routerLink="/register" class="form-link centered">Forgot your password?</a>
+    <a routerLink="/register" class="form-link centered">Don't have an account yet?</a>
   </div>
 </div>

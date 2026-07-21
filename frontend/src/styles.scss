@@ -35,13 +35,13 @@ body {
 }
 
 .success {
-  background: #dcfce7 !important;
+  background-color: #dcfce7 !important;
   color: #166534 !important;
   border-color: #166534 !important;
 }
 
 .danger {
-  background: #fee2e2 !important;
+  background-color: #fee2e2 !important;
   color: #991b1b !important;
   border-color: #991b1b !important;
 }
@@ -110,6 +110,22 @@ a.danger:hover {
   align-items: center;
   justify-content: center;
   gap: 20px;
+}
+
+.form-link {
+  font-size: 0.9rem;
+  color: #2A00FF;
+  transition: color 0.1s ease;
+  width: 100%;
+
+  &:hover {
+    color: #007bff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+  }
 }
 
 button {
@@ -193,5 +209,25 @@ nav {
   .nav-link:hover {
     background: #f3f4f6;
     color: #111827;
+  }
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  width: 250px;
+  color: #6b7280;
+  font-size: 0.85rem;
+
+  &:before,
+  &:after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #d1d5db;
+  }
+
+  span {
+    margin: 0 8px;
   }
 }
