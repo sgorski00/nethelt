@@ -10,12 +10,12 @@ import org.springframework.data.repository.query.Param;
 import pl.sgorski.nethelt.webapi.features.auth.domain.RefreshToken;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-  Optional<RefreshToken> findByToken(String tokenStr);
+  Optional<RefreshToken> findByToken(String token);
 
   @EntityGraph(attributePaths = "user")
-  Optional<RefreshToken> findWithUserByToken(String tokenStr);
+  Optional<RefreshToken> findWithUserByToken(String token);
 
-  void deleteAllByExpiresAtBeforeOrIsRevokedTrue(Instant now);
+  void deleteAllByExpiresAtBeforeOrIsRevokedTrue(Instant expiresAt);
 
   @Modifying
   @Query("UPDATE RefreshToken rt SET rt.isRevoked = true WHERE rt.user.id = :userId")

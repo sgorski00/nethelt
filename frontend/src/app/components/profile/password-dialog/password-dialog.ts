@@ -15,7 +15,7 @@ import { passwordMatchValidator } from '../../../shared/validators/password-matc
 })
 export class PasswordDialog {
   private readonly userService = inject(UserService);
-  private readonly dialogRef = inject(DialogRef<boolean>);
+  private readonly dialogRef = inject(DialogRef<boolean>, { optional: true });
   private readonly fb = inject(FormBuilder);
   private readonly data = inject<PasswordDialogData>(DIALOG_DATA);
 
@@ -33,7 +33,7 @@ export class PasswordDialog {
   );
 
   public closeDialog() {
-    this.dialogRef.close(false);
+    this.dialogRef?.close(false);
   }
 
   public submit() {
@@ -61,7 +61,7 @@ export class PasswordDialog {
 
   private handlePasswordRequest(request: Observable<void>) {
     request.subscribe({
-      next: () => this.dialogRef.close(true),
+      next: () => this.dialogRef?.close(true),
       error: (err) => this.errorMessage.set(err.error.detail || 'Failed to set/change password'),
     });
   }

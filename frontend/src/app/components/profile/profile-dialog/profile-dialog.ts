@@ -21,7 +21,7 @@ import { DatePipe } from '@angular/common';
 })
 export class ProfileDialog implements OnInit {
   private readonly userService = inject(UserService);
-  private readonly dialogRef = inject(DialogRef<UserProfile>);
+  private readonly dialogRef = inject(DialogRef<UserProfile>, { optional: true });
   private readonly fb = inject(FormBuilder);
   private readonly data = inject<ProfileDialogData>(DIALOG_DATA);
 
@@ -50,7 +50,7 @@ export class ProfileDialog implements OnInit {
   }
 
   public closeDialog() {
-    this.dialogRef.close();
+    this.dialogRef?.close();
   }
 
   public submit() {
@@ -74,7 +74,7 @@ export class ProfileDialog implements OnInit {
     }
     this.userService.updateProfile(profileData).subscribe({
       next: (updatedProfile) => {
-        this.dialogRef.close(updatedProfile);
+        this.dialogRef?.close(updatedProfile);
       },
       error: (err) => this.errorMessage.set(err.error.detail || 'Failed to save profile.'),
     });
@@ -84,7 +84,7 @@ export class ProfileDialog implements OnInit {
     const profileData: ProfileCreateRequest = this.profileForm.getRawValue();
     this.userService.createProfile(profileData).subscribe({
       next: (createdProfile) => {
-        this.dialogRef.close(createdProfile);
+        this.dialogRef?.close(createdProfile);
       },
       error: (err) => this.errorMessage.set(err.error.detail || 'Failed to create profile.'),
     });

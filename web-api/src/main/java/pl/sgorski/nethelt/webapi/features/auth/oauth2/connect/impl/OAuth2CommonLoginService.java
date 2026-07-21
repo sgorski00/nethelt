@@ -48,7 +48,7 @@ public final class OAuth2CommonLoginService implements OAuth2ConnectService {
 
     var user = new User(userInfo.getEmail(), userInfo.getProvider(), userInfo.getProviderId());
     log.debug("New user {} created with linked identity {}...", user.getEmail(), provider.name());
-    userService.save(user);
+    userService.register(user);
     return oauthUser;
   }
 }

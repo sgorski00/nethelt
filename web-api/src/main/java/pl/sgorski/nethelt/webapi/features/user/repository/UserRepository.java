@@ -14,4 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findWithIdentitiesAndProfileByIdAndDeletedAtIsNull(Long id);
 
   Optional<User> findByIdAndDeletedAtIsNull(Long id);
+
+  @EntityGraph(attributePaths = {"notificationPreferences"})
+  Optional<User> findWithNotificationPreferencesByIdAndDeletedAtIsNull(Long id);
 }

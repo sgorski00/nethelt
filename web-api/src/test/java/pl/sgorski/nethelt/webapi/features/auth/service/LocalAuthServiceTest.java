@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pl.sgorski.nethelt.webapi.exception.domain.UserAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.domain.auth.UserAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.LoginUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.dto.command.RegisterUserCommand;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
@@ -46,10 +46,11 @@ public class LocalAuthServiceTest {
     var hashedPassword = "hashed-password";
     when(passwordEncoder.encode(PASSWORD)).thenReturn(hashedPassword);
     when(userService.isUserPresent(EMAIL)).thenReturn(false);
+    when(userService.register(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     localAuthService.registerUser(command);
     verify(passwordEncoder).encode(PASSWORD);
-    verify(userService).save(userCaptor.capture());
+    verify(userService).register(userCaptor.capture());
     var saved = userCaptor.getValue();
 
     assertEquals(EMAIL, saved.getEmail());
@@ -63,7 +64,7 @@ public class LocalAuthServiceTest {
     when(userService.isUserPresent(EMAIL)).thenReturn(true);
 
     assertThrows(UserAlreadyExistsException.class, () -> localAuthService.registerUser(command));
-    verify(userService, never()).save(any());
+    verify(userService, never()).register(any());
     verify(passwordEncoder, never()).encode(any());
   }
 
@@ -151,6 +152,32 @@ public class LocalAuthServiceTest {
         () -> localAuthService.changePassword(1L, PASSWORD, newPassword));
 
     verify(passwordEncoder, never()).encode(PASSWORD);
+    verify(refreshTokenService, never()).revokeAllUserTokens(anyLong());
+  }
+
+  @Test
+  void resetPassword_shouldResetPasswordAndRevokeAllTokens() {
+    var newPassword = "newPassword123";
+    var hashedNewPassword = "hashed-new-password";
+    var user = TestUserFactory.createLocalUser();
+    when(passwordEncoder.encode(newPassword)).thenReturn(hashedNewPassword);
+
+    localAuthService.resetPassword(user, newPassword);
+
+    assertEquals(hashedNewPassword, user.getPassword());
+    verify(passwordEncoder, times(1)).encode(newPassword);
+    verify(refreshTokenService, times(1)).revokeAllUserTokens(user.getId());
+  }
+
+  @Test
+  void resetPassword_shouldThrow_whenPasswordIsNotSetYet() {
+    var newPassword = "newPassword123";
+    var user = TestUserFactory.createOAuth2User(AuthProvider.GITHUB);
+
+    assertThrows(
+        IllegalStateException.class, () -> localAuthService.resetPassword(user, newPassword));
+
+    verify(passwordEncoder, never()).encode(newPassword);
     verify(refreshTokenService, never()).revokeAllUserTokens(anyLong());
   }
 }

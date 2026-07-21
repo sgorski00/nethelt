@@ -1,0 +1,1 @@
+ALTER TABLE notifications ALTER COLUMN content TYPE text;

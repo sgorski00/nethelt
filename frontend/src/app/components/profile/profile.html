@@ -2,7 +2,7 @@
   <div class="profile-header">
     <div>
       <h2>Welcome, {{ user.email }}!</h2>
-      <small>Account created at: {{ user.createdAt | date: 'dd.MM.yyyy HH:mm' }}</small>
+      <small>Account created at: {{ user.createdAt | date: 'yyyy-MM-dd HH:mm' }}</small>
     </div>
     <button type="button" (click)="openPasswordDialog()">
       {{ user.isLocal ? 'Change Password' : 'Set Password' }}

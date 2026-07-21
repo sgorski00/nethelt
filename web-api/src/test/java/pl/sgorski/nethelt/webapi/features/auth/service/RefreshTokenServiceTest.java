@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.webapi.exception.domain.RefreshTokenNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.auth.RefreshTokenNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 import pl.sgorski.nethelt.webapi.features.auth.domain.RefreshToken;
 import pl.sgorski.nethelt.webapi.features.auth.repository.RefreshTokenRepository;
@@ -83,7 +83,6 @@ public class RefreshTokenServiceTest {
     var expiresAt = getExpiresAt();
     var token = new RefreshToken(user, expiresAt);
     when(refreshTokenRepository.findByToken(token.getToken())).thenReturn(Optional.of(token));
-    when(refreshTokenRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
     refreshTokenService.revokeToken(token.getToken());
 

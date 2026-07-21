@@ -10,15 +10,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileAlreadyExistsException;
-import pl.sgorski.nethelt.webapi.exception.domain.ProfileOperationNotAllowedException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileAlreadyExistsException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileOperationNotAllowedException;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
+import pl.sgorski.nethelt.webapi.notification.domain.NotificationPreferences;
 
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Entity
 @Table(name = "users")
 @ToString(exclude = {"passwordHash", "identities"})
-@EqualsAndHashCode(exclude = "identities")
+@EqualsAndHashCode(exclude = {"identities"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements UserDetails {
 
@@ -52,6 +53,10 @@ public class User implements UserDetails {
   @Getter
   private Profile profile;
 
+  @Getter
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private NotificationPreferences notificationPreferences;
+
   @CreationTimestamp @Getter private Instant createdAt;
 
   @UpdateTimestamp @Getter private Instant updatedAt;
@@ -61,11 +66,13 @@ public class User implements UserDetails {
   public User(String email, String hashedPassword) {
     this.email = email;
     this.passwordHash = hashedPassword;
+    this.notificationPreferences = new NotificationPreferences(this);
   }
 
   public User(String email, AuthProvider provider, String providerId) {
     this.email = email;
     this.addIdentity(provider, providerId);
+    this.notificationPreferences = new NotificationPreferences(this);
   }
 
   public boolean hasIdentity(AuthProvider provider) {

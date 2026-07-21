@@ -1,9 +1,11 @@
 package pl.sgorski.nethelt.webapi.features.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sgorski.nethelt.webapi.exception.domain.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.UserNotFoundException;
+import pl.sgorski.nethelt.webapi.features.auth.dto.event.AccountCreatedEvent;
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;
@@ -13,6 +15,14 @@ import pl.sgorski.nethelt.webapi.features.user.repository.UserRepository;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final ApplicationEventPublisher eventPublisher;
+
+  @Transactional
+  public User register(User user) {
+    var saved = userRepository.save(user);
+    eventPublisher.publishEvent(new AccountCreatedEvent(saved.getId()));
+    return saved;
+  }
 
   @Transactional
   public User save(User user) {
@@ -28,6 +38,12 @@ public class UserService {
   public User getUser(Long id) {
     return userRepository
         .findByIdAndDeletedAtIsNull(id)
+        .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+  }
+
+  public User getUserWithNotificationPreferences(Long id) {
+    return userRepository
+        .findWithNotificationPreferencesByIdAndDeletedAtIsNull(id)
         .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
   }
 

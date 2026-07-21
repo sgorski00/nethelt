@@ -1,0 +1,150 @@
+:host {
+  position: relative;
+  cursor: pointer;
+}
+
+.notification-button {
+  all: unset;
+  min-width: 30px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: white;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.settings-button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 300px;
+  max-height: 300px;
+  width: 100%;
+
+  .notifications-header,
+  .notifications-footer {
+    display: flex;
+    flex-direction: row;
+    flex: 0;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .notifications-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    flex: 1;
+    padding: 3px;
+  }
+
+  .notification-item {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    border-bottom: 1px solid #e0e0e0;
+    height: auto;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    &:focus-visible {
+      outline: 1px solid #007bff;
+    }
+
+    .notification-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      font-size: 14px;
+      color: #333;
+    }
+  }
+}
+
+.notification-filter {
+  display: flex;
+  gap: 4px;
+
+  .filter-button {
+    border: none;
+    background: transparent;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+
+    &.active {
+      background-color: #007bff;
+      color: white;
+    }
+  }
+}
+
+.pagination-button {
+  width: 120px;
+  border: 1px solid black;
+  border-radius: 6px;
+  text-align: center;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &:disabled {
+    background-color: #ddd;
+    color: #888;
+    cursor: not-allowed;
+  }
+}
+
+.unread-badge {
+  min-width: 10px;
+  min-height: 10px;
+  max-height: 10px;
+  border-radius: 50%;
+  background-color: #007bff;
+}

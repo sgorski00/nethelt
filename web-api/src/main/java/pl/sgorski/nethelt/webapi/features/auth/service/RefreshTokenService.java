@@ -4,7 +4,7 @@ import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sgorski.nethelt.webapi.exception.domain.RefreshTokenNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.auth.RefreshTokenNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 import pl.sgorski.nethelt.webapi.features.auth.domain.RefreshToken;
 import pl.sgorski.nethelt.webapi.features.auth.repository.RefreshTokenRepository;
@@ -24,28 +24,17 @@ public class RefreshTokenService {
     return refreshTokenRepository.save(token);
   }
 
-  public User validateAndGetUser(String tokenStr) {
-    var token =
-        refreshTokenRepository
-            .findWithUserByToken(tokenStr)
-            .orElseThrow(RefreshTokenNotFoundException::new);
-
-    if (!token.isValid()) {
-      throw new RefreshTokenNotFoundException();
-    }
-
-    return token.getUser();
+  public User validateAndGetUser(String token) {
+    return refreshTokenRepository
+        .findWithUserByToken(token)
+        .filter(RefreshToken::isValid)
+        .map(RefreshToken::getUser)
+        .orElseThrow(RefreshTokenNotFoundException::new);
   }
 
   @Transactional
-  public void revokeToken(String tokenStr) {
-    refreshTokenRepository
-        .findByToken(tokenStr)
-        .ifPresent(
-            t -> {
-              t.revoke();
-              refreshTokenRepository.save(t);
-            });
+  public void revokeToken(String token) {
+    refreshTokenRepository.findByToken(token).ifPresent(RefreshToken::revoke);
   }
 
   @Transactional

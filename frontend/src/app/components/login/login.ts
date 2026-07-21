@@ -27,6 +27,10 @@ export class Login implements OnInit {
     this.route.queryParams.pipe(map((params) => params['registered'] === 'true')),
     { initialValue: false },
   );
+  public readonly passwordReset = toSignal(
+    this.route.queryParams.pipe(map((params) => params['reset'] === 'success')),
+    { initialValue: false },
+  );
   public readonly errorMessage = signal('');
   public readonly loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -34,10 +38,7 @@ export class Login implements OnInit {
   });
 
   ngOnInit(): void {
-    const error = this.route.snapshot.queryParamMap.get('error') as OAuth2Error | null;
-    if (error) {
-      this.errorMessage.set(getOAuth2ErrorMessage(error));
-    }
+    this.setOAuth2ErrorMessage();
   }
 
   public login() {
@@ -56,5 +57,12 @@ export class Login implements OnInit {
 
   public loginWithProvider(provider: IdentityProvider) {
     window.location.href = `${environment.apiUrl}/oauth2/authorization/${provider.toLocaleLowerCase()}`;
+  }
+
+  private setOAuth2ErrorMessage() {
+    const error = this.route.snapshot.queryParamMap.get('error') as OAuth2Error | null;
+    if (error) {
+      this.errorMessage.set(getOAuth2ErrorMessage(error));
+    }
   }
 }
