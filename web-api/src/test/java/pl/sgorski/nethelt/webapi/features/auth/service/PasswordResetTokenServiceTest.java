@@ -34,13 +34,13 @@ public class PasswordResetTokenServiceTest {
   @InjectMocks private PasswordResetTokenService passwordResetTokenService;
 
   @Test
-  void generatePasswordResetTokenAndSendNotification_shouldReturnValidTokenAndSendNotification() {
+  void generate() {
     var user = TestUserFactory.createLocalUser();
     when(userService.getUser("john.doe@example.com")).thenReturn(user);
     when(authProperties.passwordResetTokenExpiration()).thenReturn(Duration.ofMinutes(60));
     when(passwordResetTokenRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-    passwordResetTokenService.generatePasswordResetTokenAndSendNotification("john.doe@example.com");
+    passwordResetTokenService.generate("john.doe@example.com");
 
     var captor = ArgumentCaptor.forClass(PasswordResetToken.class);
     verify(passwordResetTokenRepository).save(captor.capture());
@@ -51,47 +51,43 @@ public class PasswordResetTokenServiceTest {
   }
 
   @Test
-  void
-      generatePasswordResetTokenAndSendNotification_shouldNotGenerate_whenUserNotFoundAndSendNotification() {
+  void generate_shouldNotGenerate_whenUserNotFoundAndSendNotification() {
     var user = TestUserFactory.createOAuth2User(AuthProvider.GITHUB);
     when(userService.getUser("john.doe@example.com")).thenReturn(user);
 
-    assertDoesNotThrow(
-        () ->
-            passwordResetTokenService.generatePasswordResetTokenAndSendNotification(
-                "john.doe@example.com"));
+    assertDoesNotThrow(() -> passwordResetTokenService.generate("john.doe@example.com"));
     verify(passwordResetTokenRepository, never()).save(any());
     verify(eventPublisher, never()).publishEvent(any(PasswordResetRequestEvent.class));
   }
 
   @Test
-  void generatePasswordResetTokenAndSendNotification_shouldNotGenerate_whenUserIsNotLocal() {
+  void generate_shouldNotGenerate_whenUserIsNotLocal() {
     when(userService.getUser("john.doe@example.com")).thenThrow(UserNotFoundException.class);
 
     assertThrows(
         UserNotFoundException.class,
-        () ->
-            passwordResetTokenService.generatePasswordResetTokenAndSendNotification(
-                "john.doe@example.com"));
+        () -> passwordResetTokenService.generate("john.doe@example.com"));
     verify(passwordResetTokenRepository, never()).save(any());
     verify(eventPublisher, never()).publishEvent(any(PasswordResetRequestEvent.class));
   }
 
   @Test
-  void validateAndGetUser_shouldReturnUserForValidToken() {
+  void consume_shouldRevokeAndReturnUser_whenValidToken() {
     var user = TestUserFactory.createLocalUser();
     var expiresAt = getExpiresAt();
     var token = new PasswordResetToken(user, expiresAt);
     when(passwordResetTokenRepository.findWithUserByToken(token.getToken()))
         .thenReturn(Optional.of(token));
 
-    var retrieved = passwordResetTokenService.validateAndGetUser(token.getToken());
+    assertTrue(token.isValid());
+    var retrieved = passwordResetTokenService.consume(token.getToken());
 
     assertEquals(user, retrieved);
+    assertFalse(token.isValid());
   }
 
   @Test
-  void validateAndGetUser_shouldThrow_whenTokenNotFound() {
+  void consume_shouldThrow_whenTokenNotFound() {
     var expiresAt = getExpiresAt();
     var token = new PasswordResetToken(TestUserFactory.createLocalUser(), expiresAt);
     when(passwordResetTokenRepository.findWithUserByToken(token.getToken()))
@@ -99,11 +95,11 @@ public class PasswordResetTokenServiceTest {
 
     assertThrows(
         PasswordResetTokenNotFoundException.class,
-        () -> passwordResetTokenService.validateAndGetUser(token.getToken()));
+        () -> passwordResetTokenService.consume(token.getToken()));
   }
 
   @Test
-  void validateAndGetUser_shouldThrow_whenTokenIsNotValid() {
+  void consume_shouldThrow_whenTokenIsNotValid() {
     var user = TestUserFactory.createLocalUser();
     var expiresAt = getExpiresAt();
     var token = new PasswordResetToken(user, expiresAt);
@@ -113,29 +109,7 @@ public class PasswordResetTokenServiceTest {
 
     assertThrows(
         PasswordResetTokenNotFoundException.class,
-        () -> passwordResetTokenService.validateAndGetUser(token.getToken()));
-  }
-
-  @Test
-  void revokeToken_shouldRevokeToken() {
-    var user = TestUserFactory.createLocalUser();
-    var expiresAt = getExpiresAt();
-    var token = new PasswordResetToken(user, expiresAt);
-    when(passwordResetTokenRepository.findByToken(token.getToken())).thenReturn(Optional.of(token));
-
-    passwordResetTokenService.revokeToken(token.getToken());
-
-    assertFalse(token.isValid());
-  }
-
-  @Test
-  void revokeToken_shouldSkip_whenNotPresent() {
-    var user = TestUserFactory.createLocalUser();
-    var expiresAt = getExpiresAt();
-    var token = new PasswordResetToken(user, expiresAt);
-    when(passwordResetTokenRepository.findByToken(token.getToken())).thenReturn(Optional.empty());
-
-    assertDoesNotThrow(() -> passwordResetTokenService.revokeToken(token.getToken()));
+        () -> passwordResetTokenService.consume(token.getToken()));
   }
 
   private Instant getExpiresAt() {

@@ -5,7 +5,7 @@ import { requireAuth, requireNoAuth } from './guards/auth-guard';
 import { Register } from './components/register/register';
 import { oauth2Routes } from './components/oauth2-callback/oauth2.routes';
 import { NotificationPreferencesDialog } from './components/notifications/notification-preferences-dialog/notification-preferences-dialog';
-import {passwordResetRoutes} from './components/password-reset/password-reset.routes';
+import { passwordResetRoutes } from './components/password-reset/password-reset.routes';
 
 export const routes: Routes = [
   {

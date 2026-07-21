@@ -1,16 +1,12 @@
-import {Component, inject, signal} from '@angular/core';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {RouterLink} from "@angular/router";
-import {AuthService} from '../../../services/auth-service';
-import {PasswordResetRequest} from '../../../models/auth/password-reset-request';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth-service';
+import { PasswordResetRequest } from '../../../models/auth/password-reset-request';
 
 @Component({
   selector: 'app-password-reset',
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        RouterLink
-    ],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './password-reset.html',
   styleUrl: './password-reset.scss',
 })
@@ -36,7 +32,10 @@ export class PasswordReset {
 
     this.authService.requestPasswordReset(request).subscribe({
       next: () => this.success.set(true),
-      error: err => this.errorMessage.set(err.error?.detail || 'An error occurred while requesting password reset.'),
+      error: (err) =>
+        this.errorMessage.set(
+          err.error?.detail || 'An error occurred while requesting password reset.',
+        ),
     });
   }
 }

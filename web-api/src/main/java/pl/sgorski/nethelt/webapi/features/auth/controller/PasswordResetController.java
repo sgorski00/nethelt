@@ -20,14 +20,15 @@ public final class PasswordResetController {
   @PostMapping("/request")
   public ResponseEntity<Void> requestPasswordReset(
       @RequestBody @Valid PasswordResetRequest request) {
-    passwordResetTokenService.generatePasswordResetTokenAndSendNotification(request.email());
+    passwordResetTokenService.generate(request.email());
     return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/confirm")
   public ResponseEntity<Void> confirmPasswordReset(
-      @RequestParam("token") String token, @RequestBody @Valid PasswordResetConfirmRequest request) {
-    var user = passwordResetTokenService.validateAndGetUser(token);
+      @RequestParam("token") String token,
+      @RequestBody @Valid PasswordResetConfirmRequest request) {
+    var user = passwordResetTokenService.consume(token);
     localAuthService.resetPassword(user, request.newPassword());
     return ResponseEntity.noContent().build();
   }

@@ -23,7 +23,7 @@ public class PasswordResetTokenService {
   private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
-  public void generatePasswordResetTokenAndSendNotification(String email) {
+  public void generate(String email) {
     var user = userService.getUser(email);
     if (user.isLocal()) {
       var expiration = authProperties.passwordResetTokenExpiration();
@@ -33,17 +33,15 @@ public class PasswordResetTokenService {
     }
   }
 
-  public User validateAndGetUser(String token) {
-    return passwordResetTokenRepository
-        .findWithUserByToken(token)
-        .filter(PasswordResetToken::isValid)
-        .map(PasswordResetToken::getUser)
-        .orElseThrow(PasswordResetTokenNotFoundException::new);
-  }
-
   @Transactional
-  public void revokeToken(String token) {
-    passwordResetTokenRepository.findByToken(token).ifPresent(PasswordResetToken::revoke);
+  public User consume(String token) {
+    var resetToken =
+        passwordResetTokenRepository
+            .findWithUserByToken(token)
+            .filter(PasswordResetToken::isValid)
+            .orElseThrow(PasswordResetTokenNotFoundException::new);
+    resetToken.revoke();
+    return resetToken.getUser();
   }
 
   private void sendPasswordResetLink(String token, Long userId) {
