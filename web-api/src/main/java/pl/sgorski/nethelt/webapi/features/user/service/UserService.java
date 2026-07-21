@@ -24,6 +24,11 @@ public class UserService {
     return saved;
   }
 
+  @Transactional
+  public User save(User user) {
+    return userRepository.save(user);
+  }
+
   public User getUser(String email) {
     return userRepository
         .findByEmailAndDeletedAtIsNull(email)

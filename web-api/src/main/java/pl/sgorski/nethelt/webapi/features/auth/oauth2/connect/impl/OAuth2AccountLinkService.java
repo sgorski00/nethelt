@@ -44,7 +44,7 @@ public final class OAuth2AccountLinkService implements OAuth2ConnectService {
     var user = userService.getUserWithProfileAndIdentities(userId);
     log.debug("Linking new identity {} to existing user {}", provider.name(), user.getEmail());
     user.addIdentity(userInfo.getProvider(), userInfo.getProviderId());
-    userService.register(user);
+    userService.save(user);
     return context.oauthUser();
   }
 }

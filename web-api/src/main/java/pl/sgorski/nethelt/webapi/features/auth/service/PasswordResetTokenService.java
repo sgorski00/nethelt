@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.auth.PasswordResetTokenNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.user.UserNotFoundException;
 import pl.sgorski.nethelt.webapi.features.auth.config.AuthProperties;
 import pl.sgorski.nethelt.webapi.features.auth.domain.PasswordResetToken;
 import pl.sgorski.nethelt.webapi.features.auth.dto.event.PasswordResetRequestEvent;
@@ -24,12 +25,15 @@ public class PasswordResetTokenService {
 
   @Transactional
   public void generate(String email) {
-    var user = userService.getUser(email);
-    if (user.isLocal()) {
-      var expiration = authProperties.passwordResetTokenExpiration();
-      var token = new PasswordResetToken(user, Instant.now().plus(expiration));
-      var saved = passwordResetTokenRepository.save(token);
-      sendPasswordResetLink(saved.getToken(), user.getId());
+    try {
+      var user = userService.getUser(email);
+      if (user.isLocal()) {
+        var expiration = authProperties.passwordResetTokenExpiration();
+        var token = new PasswordResetToken(user, Instant.now().plus(expiration));
+        var saved = passwordResetTokenRepository.save(token);
+        sendPasswordResetLink(saved.getToken(), user.getId());
+      }
+    } catch (UserNotFoundException ignored) {
     }
   }
 

@@ -51,7 +51,7 @@ public class PasswordResetTokenServiceTest {
   }
 
   @Test
-  void generate_shouldNotGenerate_whenUserNotFoundAndSendNotification() {
+  void generate_shouldNotGenerate_whenUserIsNotLocal() {
     var user = TestUserFactory.createOAuth2User(AuthProvider.GITHUB);
     when(userService.getUser("john.doe@example.com")).thenReturn(user);
 
@@ -61,12 +61,10 @@ public class PasswordResetTokenServiceTest {
   }
 
   @Test
-  void generate_shouldNotGenerate_whenUserIsNotLocal() {
+  void generate_shouldNotGenerateAndIgnoreException_whenUserNotFound() {
     when(userService.getUser("john.doe@example.com")).thenThrow(UserNotFoundException.class);
 
-    assertThrows(
-        UserNotFoundException.class,
-        () -> passwordResetTokenService.generate("john.doe@example.com"));
+    assertDoesNotThrow(() -> passwordResetTokenService.generate("john.doe@example.com"));
     verify(passwordResetTokenRepository, never()).save(any());
     verify(eventPublisher, never()).publishEvent(any(PasswordResetRequestEvent.class));
   }

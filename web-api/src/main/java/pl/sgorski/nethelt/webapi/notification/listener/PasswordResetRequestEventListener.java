@@ -30,7 +30,7 @@ public class PasswordResetRequestEventListener {
       notificationDeliveryService.send(notification, Set.of(NotificationChannel.EMAIL));
     } catch (Exception e) {
       log.error(
-          "Failed to send welcome notification for user with ID {}: {}",
+          "Failed to send password reset notification for user with ID {}: {}",
           event.userId(),
           e.getMessage(),
           e);

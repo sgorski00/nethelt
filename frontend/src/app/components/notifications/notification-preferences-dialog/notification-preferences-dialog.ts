@@ -15,7 +15,9 @@ import {
 })
 export class NotificationPreferencesDialog implements OnInit {
   private readonly notificationService = inject(NotificationService);
-  private readonly dialogRef = inject(DialogRef<NotificationPreferencesResponse>);
+  private readonly dialogRef = inject(DialogRef<NotificationPreferencesResponse>, {
+    optional: true,
+  });
   protected readonly NotificationChannelLabels = NotificationChannelLabels;
   public availableChannels = Object.values(NotificationChannel);
   public readonly errorMessage = signal('');
@@ -27,7 +29,7 @@ export class NotificationPreferencesDialog implements OnInit {
   }
 
   closeDialog() {
-    this.dialogRef.close();
+    this.dialogRef?.close();
   }
 
   containsChannel(channel: NotificationChannel): boolean {

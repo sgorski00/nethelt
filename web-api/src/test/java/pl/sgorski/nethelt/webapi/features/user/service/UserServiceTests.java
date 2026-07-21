@@ -36,6 +36,17 @@ public class UserServiceTests {
   }
 
   @Test
+  void save_shouldSaveUser() {
+    var user = TestUserFactory.createLocalUser();
+    when(userRepository.save(any())).then(invocation -> invocation.getArgument(0));
+
+    userService.save(user);
+
+    verify(userRepository, times(1)).save(user);
+    verify(eventPublisher, never()).publishEvent(any());
+  }
+
+  @Test
   void getUser_shouldFindUserByEmail() {
     var user = TestUserFactory.createLocalUser();
     var email = user.getEmail();

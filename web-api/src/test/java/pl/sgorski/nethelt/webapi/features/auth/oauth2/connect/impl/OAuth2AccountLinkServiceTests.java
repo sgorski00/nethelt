@@ -84,7 +84,7 @@ public class OAuth2AccountLinkServiceTests {
 
     var result = connectService.handle(ctx);
 
-    verify(userService).register(user);
+    verify(userService).save(user);
     assertTrue(user.hasIdentity(ctx.provider()));
     assertSame(oAuthUser, result);
   }
