@@ -3,8 +3,8 @@ import { Dialog } from '@angular/cdk/dialog';
 import { NotificationPreferencesDialog } from '../notification-preferences-dialog/notification-preferences-dialog';
 import { NotificationService } from '../../../services/notification-service';
 import { DatePipe } from '@angular/common';
-import {combineLatest, switchMap} from 'rxjs';
-import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import { combineLatest, switchMap } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -26,16 +26,19 @@ export class NotificationDropdown {
   public readonly open = signal(false);
   public readonly notifications = computed(() => this.notificationsPage()?.content ?? []);
 
-  public readonly unreadCount = toSignal(toObservable(this.refresh).pipe(
-    switchMap(() => this.notificationService.getUnreadCount())
-  ), {initialValue: 0});
-  private readonly notificationsPage = toSignal(combineLatest([
-    toObservable(this.currentPage),
-    toObservable(this.showRead),
-    toObservable(this.refresh)
-  ]).pipe(
-    switchMap(([page, showRead]) => this.notificationService.getNotifications(page, showRead))),
-    { initialValue: null }
+  public readonly unreadCount = toSignal(
+    toObservable(this.refresh).pipe(switchMap(() => this.notificationService.getUnreadCount())),
+    { initialValue: 0 },
+  );
+  private readonly notificationsPage = toSignal(
+    combineLatest([
+      toObservable(this.currentPage),
+      toObservable(this.showRead),
+      toObservable(this.refresh),
+    ]).pipe(
+      switchMap(([page, showRead]) => this.notificationService.getNotifications(page, showRead)),
+    ),
+    { initialValue: null },
   );
   public readonly hasNextPage = computed(() => !(this.notificationsPage()?.last ?? true));
   public readonly hasPreviousPage = computed(() => !(this.notificationsPage()?.first ?? true));
@@ -56,23 +59,23 @@ export class NotificationDropdown {
 
   nextPage() {
     this.currentPage.update((page) => page + 1);
-    this.refresh.update(v => v + 1);
+    this.refresh.update((v) => v + 1);
   }
 
   previousPage() {
     this.currentPage.update((page) => page - 1);
-    this.refresh.update(v => v + 1);
+    this.refresh.update((v) => v + 1);
   }
 
   changeFilter(showRead: boolean) {
     this.showRead.set(showRead);
     this.currentPage.set(0);
-    this.refresh.update(v => v + 1);
+    this.refresh.update((v) => v + 1);
   }
 
   markAsRead(notificationId: number) {
     this.notificationService.markAsRead(notificationId).subscribe(() => {
-      this.refresh.update(v => v + 1);
+      this.refresh.update((v) => v + 1);
     });
   }
 }
