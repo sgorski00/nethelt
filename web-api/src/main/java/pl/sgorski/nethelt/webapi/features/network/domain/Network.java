@@ -50,4 +50,9 @@ public class Network {
   public boolean isDeleted() {
     return deletedAt != null;
   }
+
+  public void update(String name, @Nullable String description) {
+    this.name = name;
+    this.description = description;
+  }
 }

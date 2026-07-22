@@ -45,4 +45,16 @@ public class NetworkTests {
 
     assertFalse(network.isDeleted());
   }
+
+  @Test
+  void update_shouldUpdateNameAndDescription() {
+    var network = TestNetworkFactory.createNetwork();
+    var newName = "Updated Network Name";
+    var newDescription = "Updated Network Description";
+
+    network.update(newName, newDescription);
+
+    assertEquals(newName, network.getName());
+    assertEquals(newDescription, network.getDescription());
+  }
 }

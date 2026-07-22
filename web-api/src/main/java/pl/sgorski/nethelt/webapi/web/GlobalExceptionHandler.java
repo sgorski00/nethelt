@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pl.sgorski.nethelt.webapi.exception.application.AlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.application.NotAllowedException;
 import pl.sgorski.nethelt.webapi.exception.application.NotFoundException;
+import pl.sgorski.nethelt.webapi.exception.application.ValidationFailedException;
 
 @RestControllerAdvice
 public final class GlobalExceptionHandler {
@@ -49,6 +50,14 @@ public final class GlobalExceptionHandler {
   public ProblemDetail handleNotAllowedException(NotAllowedException ex) {
     var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
     problem.setTitle("Operation Not Allowed");
+    problem.setDetail(ex.getMessage());
+    return problem;
+  }
+
+  @ExceptionHandler(ValidationFailedException.class)
+  public ProblemDetail handleValidationFailedException(ValidationFailedException ex) {
+    var problem = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_CONTENT);
+    problem.setTitle("Validation Failed");
     problem.setDetail(ex.getMessage());
     return problem;
   }
