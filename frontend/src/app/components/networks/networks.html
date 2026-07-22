@@ -1,7 +1,7 @@
 <div class="side-nav">
   @if (networks(); as networks) {
     @for (network of networks; track network.id) {
-      <a [routerLink]="[network.id]">{{ network.name }}</a>
+      <a [routerLink]="[network.id]" class="side-nav-link">{{ network.name }}</a>
     } @empty {
       <p>No networks found</p>
     }
