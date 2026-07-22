@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth-service';
-import { PasswordResetRequest } from '../../../models/auth/password-reset-request';
+import { AuthService } from '../../../../services/auth-service';
+import { PasswordResetRequest } from '../../../../models/auth/password-reset-request';
 
 @Component({
   selector: 'app-password-reset',

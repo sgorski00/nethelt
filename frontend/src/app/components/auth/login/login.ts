@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { AuthService } from '../../services/auth-service';
+import { AuthService } from '../../../services/auth-service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { LoginRequest } from '../../models/auth/login-request';
+import { LoginRequest } from '../../../models/auth/login-request';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { environment } from '../../../environments/environment';
-import { IdentityProvider } from '../../models/user/identity-provider';
+import { environment } from '../../../../environments/environment';
+import { IdentityProvider } from '../../../models/user/identity-provider';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { getOAuth2ErrorMessage, OAuth2Error } from '../oauth2-callback/oauth2-errors';

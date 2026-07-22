@@ -1,11 +1,5 @@
 import { Routes } from '@angular/router';
-import { Login } from './components/login/login';
-import { Profile } from './components/profile/profile';
 import { requireAuth, requireNoAuth } from './guards/auth-guard';
-import { Register } from './components/register/register';
-import { oauth2Routes } from './components/oauth2-callback/oauth2.routes';
-import { NotificationPreferencesDialog } from './components/notifications/notification-preferences-dialog/notification-preferences-dialog';
-import { passwordResetRoutes } from './components/password-reset/password-reset.routes';
 
 export const routes: Routes = [
   {
@@ -15,31 +9,44 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    component: Login,
+    loadComponent: () => import('./components/auth/login/login').then((m) => m.Login),
     canActivate: [requireNoAuth('/profile')],
   },
   {
     path: 'register',
-    component: Register,
+    loadComponent: () => import('./components/auth/register/register').then((m) => m.Register),
     canActivate: [requireNoAuth('/profile')],
   },
   {
     path: 'password-reset',
-    children: passwordResetRoutes,
+    loadChildren: () =>
+      import('./components/auth/password-reset/password-reset.routes').then(
+        (m) => m.passwordResetRoutes,
+      ),
     canActivate: [requireNoAuth('/profile')],
   },
   {
     path: 'profile',
-    component: Profile,
+    loadComponent: () => import('./components/profile/profile').then((m) => m.Profile),
     canActivate: [requireAuth],
   },
   {
     path: 'notifications/preferences',
-    component: NotificationPreferencesDialog,
+    loadComponent: () =>
+      import('./components/notifications/notification-preferences-dialog/notification-preferences-dialog').then(
+        (m) => m.NotificationPreferencesDialog,
+      ),
     canActivate: [requireAuth],
   },
   {
     path: 'oauth2',
-    children: oauth2Routes,
+    loadChildren: () =>
+      import('./components/auth/oauth2-callback/oauth2.routes').then((m) => m.oauth2Routes),
+  },
+  {
+    path: 'networks',
+    loadChildren: () =>
+      import('./components/networks/networks.routes').then((m) => m.networksRoutes),
+    canActivate: [requireAuth],
   },
 ];

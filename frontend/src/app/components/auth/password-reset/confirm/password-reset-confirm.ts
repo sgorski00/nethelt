@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../../services/auth-service';
-import { PasswordResetConfirmRequest } from '../../../models/auth/password-reset-request';
-import { passwordMatchValidator } from '../../../shared/validators/password-match.validator';
+import { AuthService } from '../../../../services/auth-service';
+import { PasswordResetConfirmRequest } from '../../../../models/auth/password-reset-request';
+import { passwordMatchValidator } from '../../../../shared/validators/password-match.validator';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
