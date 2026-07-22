@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +14,6 @@ import pl.sgorski.nethelt.webapi.exception.domain.user.ProfileOperationNotAllowe
 import pl.sgorski.nethelt.webapi.features.auth.oauth2.userinfo.AuthProvider;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationPreferences;
 
-@SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Entity
 @Table(name = "users")
 @ToString(exclude = {"passwordHash", "identities"})
