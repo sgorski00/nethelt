@@ -1,0 +1,20 @@
+@if (network(); as network) {
+  <div class="network-details">
+    <div class="network-details-header">
+      <div>
+        <h2>{{ network.name }}</h2>
+        <small>Created: {{ network.createdAt | date: 'yyyy-MM-dd HH:mm' }}</small>
+      </div>
+      <div class="network-actions">
+        <button type="button" (click)="editNetwork()">Edit</button>
+        <button class="danger" type="button" (click)="deleteNetwork()">Delete</button>
+      </div>
+    </div>
+    <div class="network-details-description">
+      <p>Details:</p>
+      <p>{{ network.description || 'No description' }}</p>
+    </div>
+  </div>
+} @else {
+  <p>Loading...</p>
+}

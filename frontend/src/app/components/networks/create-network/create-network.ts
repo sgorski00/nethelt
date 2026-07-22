@@ -31,6 +31,7 @@ export class CreateNetwork {
 
     this.networkService.createNetwork(request).subscribe({
       next: (network) => {
+        this.networkService.addNetworkToCache(network);
         this.router.navigate(['/networks', network.id]);
       },
       error: (err) =>

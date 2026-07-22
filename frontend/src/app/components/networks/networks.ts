@@ -1,6 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { NetworkService } from '../../services/network-service';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -9,8 +8,16 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   templateUrl: './networks.html',
   styleUrl: './networks.scss',
 })
-export class Networks {
+export class Networks implements OnInit {
   private readonly networkService = inject(NetworkService);
 
-  protected readonly networks = toSignal(this.networkService.getNetworks());
+  protected readonly networks = this.networkService.networks;
+
+  ngOnInit(): void {
+    this.reloadNetworks();
+  }
+
+  protected reloadNetworks() {
+    this.networkService.loadNetworks();
+  }
 }

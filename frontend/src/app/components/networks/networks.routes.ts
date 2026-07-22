@@ -9,6 +9,11 @@ export const networksRoutes: Routes = [
         path: 'create',
         loadComponent: () => import('./create-network/create-network').then((m) => m.CreateNetwork),
       },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./network-details/network-details').then((m) => m.NetworkDetails),
+      },
     ],
   },
 ];
