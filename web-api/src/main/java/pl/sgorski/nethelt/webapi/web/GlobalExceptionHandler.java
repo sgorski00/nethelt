@@ -1,5 +1,6 @@
 package pl.sgorski.nethelt.webapi.web;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
@@ -11,6 +12,7 @@ import pl.sgorski.nethelt.webapi.exception.application.NotAllowedException;
 import pl.sgorski.nethelt.webapi.exception.application.NotFoundException;
 import pl.sgorski.nethelt.webapi.exception.application.ValidationFailedException;
 
+@Slf4j
 @RestControllerAdvice
 public final class GlobalExceptionHandler {
 
@@ -66,7 +68,8 @@ public final class GlobalExceptionHandler {
   public ProblemDetail handleException(Exception ex) {
     var problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     problemDetail.setTitle("Internal Server Error");
-    problemDetail.setDetail(ex.getMessage());
+    problemDetail.setDetail("Something went wrong. Please try again later or contact support.");
+    log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
     return problemDetail;
   }
 }

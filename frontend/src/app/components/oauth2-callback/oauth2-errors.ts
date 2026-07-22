@@ -14,7 +14,7 @@ export function getOAuth2ErrorMessage(error: OAuth2Error): string {
     case OAUTH2_ERRORS.OAUTH2_MISSING_DATA:
       return 'Some data is missing. Please try again.';
     case OAUTH2_ERRORS.ACCOUNT_LINK_REQUIRED:
-      return "Failed to link this account. Probably it's already linked to another user.";
+      return 'Account with provided email already exists. Login locally and try to link this account.';
     case OAUTH2_ERRORS.OAUTH2_INVALID_USER_INFO:
       return "Couldn't retrieve user information from the social media account. Please try again.";
     default:

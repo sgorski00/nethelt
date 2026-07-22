@@ -21,7 +21,7 @@ function handle401(
   error: HttpErrorResponse,
   next: (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>,
 ) {
-  if (req.url.includes('/auth/refresh')) {
+  if (req.url.includes('/auth/')) {
     authService.handleUnauthorized();
     return throwError(() => error);
   }
