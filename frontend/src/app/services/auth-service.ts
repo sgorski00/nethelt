@@ -29,7 +29,7 @@ export class AuthService {
 
   public login(body: LoginRequest): Observable<LoginResponse> {
     return this.httpClient
-      .post<LoginResponse>(`${this.authUrl}/login`, body, { withCredentials: true })
+      .post<LoginResponse>(`${this.authUrl}/login`, body)
       .pipe(tap((res) => this.saveAccessToken(res.token)));
   }
 

@@ -1,1 +1,9 @@
-<p>networks works!</p>
+@if (networks(); as networks) {
+  @for (network of networks; track network.id) {
+    <p>Networks found</p>
+  } @empty {
+    <p>No networks found. Create new one first.</p>
+  }
+} @else {
+  <p>Loading...</p>
+}
