@@ -1,9 +1,15 @@
-@if (networks(); as networks) {
-  @for (network of networks; track network.id) {
-    <p>Networks found</p>
-  } @empty {
-    <p>No networks found. Create new one first.</p>
+<div class="side-nav">
+  @if (networks(); as networks) {
+    @for (network of networks; track network.id) {
+      <a [routerLink]="[network.id]">{{ network.name }}</a>
+    } @empty {
+      <p>No networks found</p>
+    }
+  } @else {
+    <p>Loading...</p>
   }
-} @else {
-  <p>Loading...</p>
-}
+  <a routerLink="create" class="side-nav-link bottom-link">Create Network</a>
+</div>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>
