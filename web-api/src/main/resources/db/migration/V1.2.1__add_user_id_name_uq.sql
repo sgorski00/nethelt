@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX uq_networks_user_id_name_active ON networks (user_id, name) WHERE deleted_at IS NULL;

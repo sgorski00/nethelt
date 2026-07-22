@@ -87,7 +87,7 @@ public class NetworkServiceTests {
     var userId = 1L;
     var network = TestNetworkFactory.createNetwork(name);
     when(networkRepository.countByUserIdAndDeletedAtIsNull(userId)).thenReturn(0L);
-    when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNotNull(userId, name))
+    when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNull(userId, name))
         .thenReturn(List.of(network));
 
     var command = new NetworkCreateCommand(userId, name, "Network Description");
@@ -102,7 +102,7 @@ public class NetworkServiceTests {
     var userId = 1L;
     var user = TestUserFactory.createLocalUser();
     when(networkRepository.countByUserIdAndDeletedAtIsNull(userId)).thenReturn(0L);
-    when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNotNull(userId, name))
+    when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNull(userId, name))
         .thenReturn(List.of());
     when(userService.getUser(userId)).thenReturn(user);
     when(networkRepository.save(any())).then(invocation -> invocation.getArgument(0));

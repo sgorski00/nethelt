@@ -43,7 +43,6 @@ public class NetworkService {
 
   @Transactional
   public Network updateNetwork(Long id, NetworkUpdateCommand command) {
-    // todo: validate in controller with PreAuth(isOwner)
     var network = getNetwork(id);
     network.update(command.name(), command.description());
     return network;
@@ -51,7 +50,6 @@ public class NetworkService {
 
   @Transactional
   public void deleteNetwork(Long id) {
-    // todo: validate in controller with PreAuth(isOwner)
     var network = getNetwork(id);
     network.delete();
   }
@@ -66,7 +64,7 @@ public class NetworkService {
 
   private void validateNetworkNameForUser(Long userId, String name) {
     var networksWithSameName =
-        networkRepository.findAllByUserIdAndNameAndDeletedAtIsNotNull(userId, name);
+        networkRepository.findAllByUserIdAndNameAndDeletedAtIsNull(userId, name);
     if (!networksWithSameName.isEmpty()) {
       throw new NetworkValidationFailedException("Network with the same name already exists.");
     }
