@@ -30,10 +30,7 @@ export class CreateNetwork {
     const request: NetworkRequest = this.networkCreateForm.getRawValue();
 
     this.networkService.createNetwork(request).subscribe({
-      next: (network) => {
-        this.networkService.addNetworkToCache(network);
-        this.router.navigate(['/networks', network.id]);
-      },
+      next: (network) => this.router.navigate(['/networks', network.id]),
       error: (err) =>
         this.errorMessage.set(err.error?.detail || 'An error occurred while creating the network.'),
     });

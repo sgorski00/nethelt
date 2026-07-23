@@ -1,0 +1,25 @@
+<div class="dialog">
+  <h2 class="centered">Delete network</h2>
+  <p>
+    This action will permanently delete the network <strong>{{ data.networkName }}</strong> and all
+    its contents.
+  </p>
+  <p>This action cannot be undone.</p>
+  <p>
+    Type <strong>{{ data.networkName }}</strong> to confirm.
+  </p>
+
+  <input
+    type="text"
+    [ngModel]="confirmation()"
+    (ngModelChange)="confirmation.set($event)"
+    placeholder="Network name"
+  />
+
+  <div class="form-actions">
+    <button type="button" (click)="cancel()">Cancel</button>
+    <button type="button" class="danger" [disabled]="!canDelete()" (click)="delete()">
+      Delete
+    </button>
+  </div>
+</div>

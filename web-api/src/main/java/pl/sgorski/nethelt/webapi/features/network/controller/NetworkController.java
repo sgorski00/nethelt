@@ -54,7 +54,7 @@ public class NetworkController {
   @PutMapping("/{id}")
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<NetworkResponse> updateNetwork(
-      @PathVariable("id") Long networkId,
+      @P("networkId") @PathVariable("id") Long networkId,
       @RequestBody @Valid NetworkUpdateRequest request,
       Authentication authentication) {
     var command = networkMapper.toCommand(request);
@@ -65,7 +65,7 @@ public class NetworkController {
   @DeleteMapping("/{id}")
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<Void> deleteNetwork(
-      @PathVariable("id") Long networkId, Authentication authentication) {
+      @P("networkId") @PathVariable("id") Long networkId, Authentication authentication) {
     networkService.deleteNetwork(networkId);
     return ResponseEntity.noContent().build();
   }

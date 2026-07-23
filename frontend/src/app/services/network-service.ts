@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { NetworkResponse } from '../models/network/network-response';
 import { NetworkRequest } from '../models/network/network-request';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class NetworkService {
   public loadNetworks() {
     return this.httpClient
       .get<NetworkResponse[]>(`${this.networksUrl}`)
-      .subscribe((networks) => this.networksCache.set(networks));
+      .pipe(tap((networks) => this.networksCache.set(networks)));
   }
 
   public getNetwork(id: number) {
@@ -24,7 +25,24 @@ export class NetworkService {
   }
 
   public createNetwork(request: NetworkRequest) {
-    return this.httpClient.post<NetworkResponse>(`${this.networksUrl}`, request);
+    return this.httpClient
+      .post<NetworkResponse>(`${this.networksUrl}`, request)
+      .pipe(tap((network) => this.addNetworkToCache(network)));
+  }
+
+  public updateNetwork(id: number, request: NetworkRequest) {
+    return this.httpClient.put<NetworkResponse>(`${this.networksUrl}/${id}`, request).pipe(
+      tap((network) => {
+        this.removeNetworkFromCache(id);
+        this.addNetworkToCache(network);
+      }),
+    );
+  }
+
+  public deleteNetwork(id: number) {
+    return this.httpClient
+      .delete<void>(`${this.networksUrl}/${id}`)
+      .pipe(tap(() => this.removeNetworkFromCache(id)));
   }
 
   public addNetworkToCache(network: NetworkResponse) {
