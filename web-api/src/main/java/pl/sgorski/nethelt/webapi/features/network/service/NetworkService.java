@@ -44,6 +44,9 @@ public class NetworkService {
   @Transactional
   public Network updateNetwork(Long id, NetworkUpdateCommand command) {
     var network = getNetwork(id);
+    if (!network.getName().equals(command.name())) {
+      validateNetworkNameForUser(network.getUser().getId(), command.name());
+    }
     network.update(command.name(), command.description());
     return network;
   }
