@@ -1,9 +1,8 @@
 package pl.sgorski.nethelt.webapi.features.network.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -91,8 +90,9 @@ public class NetworkServiceTests {
         .thenReturn(List.of(network));
 
     var command = new NetworkCreateCommand(userId, name, "Network Description");
-
-    var thrown = assertThrows(Exception.class, () -> networkService.createNetwork(command));
+    var thrown =
+        assertThrows(
+            NetworkValidationFailedException.class, () -> networkService.createNetwork(command));
     assertTrue(thrown.getMessage().contains("already exists"));
   }
 
@@ -122,11 +122,44 @@ public class NetworkServiceTests {
     var command = new NetworkUpdateCommand("New Name", "New Description");
     var network = TestNetworkFactory.createNetwork("Old Name", "Old Description");
     when(networkRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(network));
+    when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNull(
+            nullable(Long.class), eq("New Name")))
+        .thenReturn(List.of());
 
     var result = networkService.updateNetwork(1L, command);
 
     assertEquals("New Name", result.getName());
     assertEquals("New Description", result.getDescription());
+  }
+
+  @Test
+  void updateNetwork_shouldUpdateWithCorrectValues_whenNameIsNotChanged() {
+    var command = new NetworkUpdateCommand("Old Name", "New Description");
+    var network = TestNetworkFactory.createNetwork("Old Name", "Old Description");
+    when(networkRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(network));
+
+    var result = networkService.updateNetwork(1L, command);
+
+    assertEquals("Old Name", result.getName());
+    assertEquals("New Description", result.getDescription());
+    verify(networkRepository, never())
+        .findAllByUserIdAndNameAndDeletedAtIsNull(nullable(Long.class), anyString());
+  }
+
+  @Test
+  void updateNetwork_shouldThrow_whenNameIsChangedAndSameAlreadyExists() {
+    var command = new NetworkUpdateCommand("New Name", "New Description");
+    var network = TestNetworkFactory.createNetwork("Old Name", "Old Description");
+    when(networkRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(network));
+    when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNull(
+            nullable(Long.class), eq("New Name"))) // nullable because userid is null before save to db
+        .thenReturn(
+            List.of(
+                TestNetworkFactory
+                    .createNetwork()));
+
+    assertThrows(
+        NetworkValidationFailedException.class, () -> networkService.updateNetwork(1L, command));
   }
 
   @Test

@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pl.sgorski.nethelt.webapi.exception.application.AlreadyExistsException;
@@ -64,6 +66,14 @@ public final class GlobalExceptionHandler {
     return problem;
   }
 
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    var problem = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_CONTENT);
+    problem.setTitle("Validation Failed");
+    problem.setDetail(getValidationFailedMessage(ex));
+    return problem;
+  }
+
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleException(Exception ex) {
     var problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -71,5 +81,12 @@ public final class GlobalExceptionHandler {
     problemDetail.setDetail("Something went wrong. Please try again later or contact support.");
     log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
     return problemDetail;
+  }
+
+  private String getValidationFailedMessage(MethodArgumentNotValidException ex) {
+    return ex.getBindingResult().getFieldErrors().stream()
+        .findFirst()
+        .map(FieldError::getDefaultMessage)
+        .orElse("Validation failed");
   }
 }
