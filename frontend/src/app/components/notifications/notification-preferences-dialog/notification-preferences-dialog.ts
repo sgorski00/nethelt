@@ -11,7 +11,6 @@ import {
   selector: 'app-notification-preferences',
   imports: [],
   templateUrl: './notification-preferences-dialog.html',
-  styleUrl: './notification-preferences-dialog.scss',
 })
 export class NotificationPreferencesDialog implements OnInit {
   private readonly notificationService = inject(NotificationService);

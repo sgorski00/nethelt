@@ -1,4 +1,4 @@
-# AI Model
+# NetHelt - AI Model
 
 Python module for network anomaly detection using Isolation Forest algorithm.
 

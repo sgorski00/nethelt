@@ -37,20 +37,14 @@ export class UserService {
 
   public unlinkAccount(provider: IdentityProvider): Observable<void> {
     const providerStr = provider.toLocaleLowerCase();
-    return this.httpClient.delete<void>(`${this.apiUrl}/identities/${providerStr}`, {
-      withCredentials: true,
-    });
+    return this.httpClient.delete<void>(`${this.apiUrl}/identities/${providerStr}`);
   }
 
   public changePassword(request: PasswordChangeRequest): Observable<void> {
-    return this.httpClient.patch<void>(`${this.apiUrl}/profile/password`, request, {
-      withCredentials: true,
-    });
+    return this.httpClient.patch<void>(`${this.apiUrl}/profile/password`, request);
   }
 
   public setPassword(request: PasswordSetRequest): Observable<void> {
-    return this.httpClient.put<void>(`${this.apiUrl}/profile/password`, request, {
-      withCredentials: true,
-    });
+    return this.httpClient.put<void>(`${this.apiUrl}/profile/password`, request);
   }
 }

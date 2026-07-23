@@ -1,4 +1,4 @@
-# Desktop Client
+# NetHelt - Desktop Client
 
 Desktop application for network health monitoring. Contains background service and GUI client.
 

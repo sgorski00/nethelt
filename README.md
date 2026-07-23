@@ -1,18 +1,18 @@
 [![codecov](https://codecov.io/gh/sgorski00/nethelt/graph/badge.svg?token=Q49QZKE7OD)](https://codecov.io/gh/sgorski00/nethelt)
 
-# nethelt
+# NetHelt
 
-Network health checker with web app and desktop client.
+Network monitoring platform consisting of a Spring Boot backend, Angular web application, desktop client, and AI-based anomaly detection module.
 
 ## Project structure
 
 | Directory | Description |
 |-----------|-------------|
 | `core` | Shared models and interfaces used by `web-api` and `desktop-client` (Device, Result, NetworkOperation) |
-| `web-api` | Spring Boot REST API - receives health check results from clients, serves configuration |
+| `web-api` | Spring Boot backend exposing the REST API, managing users, devices, notifications, and receiving health check results from clients |
 | `desktop-client` | Desktop application with background service (bg-client) and GUI (gui-client) |
 | `ai-model` | Python module for network anomaly detection using Isolation Forest |
-| `frontend` | Angular web dashboard (planned) |
+| `frontend` | Angular web application for monitoring networks, devices, metrics, and user management |
 | `infrastructure` | Docker Compose configuration and environment setup |
 | `docs` | Project documentation |
 | `coverage-aggregator` | JaCoCo test coverage aggregator |
@@ -20,11 +20,18 @@ Network health checker with web app and desktop client.
 ## Requirements
 
 - Java 25 or higher
-- Python 3.12 or higher (for ai-model)
+- Python 3.12 or higher
 - Docker and Docker Compose
-- Node.js 20+ and npm
+- Node.js 22+, npm, Angular 21+ CLI
 
 ## Quick Start
+
+Clone the repository:
+
+```bash
+git clone https://github.com/sgorski00/nethelt.git
+cd nethelt
+```
 
 ### Using Docker (recommended)
 
@@ -44,20 +51,23 @@ mvn clean install -pl desktop-client -am
 
 # Generate coverage report
 mvn verify -P coverage
-```
 
-The `-am` flag automatically builds required dependencies.
+# Start frontend
+cd frontend
+npm install
+ng serve
+```
 
 ## Status
 
-| Module | Status |
-|--------|--------|
-| core | Basic implementation |
-| bg-client | Basic implementation |
-| web-api | In progress |
-| ai-model | In progress |
-| gui-client | Planned |
-| frontend | Planned |
+| Module | Status         |
+|--------|----------------|
+| core | Stable         |
+| bg-client | In development |
+| web-api | In development    |
+| ai-model | In development    |
+| gui-client | Planned        |
+| frontend | In development    |
 
 ## Author
 

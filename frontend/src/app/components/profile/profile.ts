@@ -9,7 +9,7 @@ import { IdentityProvider } from '../../models/user/identity-provider';
 import { hasIdentity } from '../../models/user/user.utils';
 import { PasswordDialog } from './password-dialog/password-dialog';
 import { ActivatedRoute } from '@angular/router';
-import { getOAuth2ErrorMessage } from '../oauth2-callback/oauth2-errors';
+import { getOAuth2ErrorMessage } from '../auth/oauth2-callback/oauth2-errors';
 import { PROFILE_DIALOG_MODE } from './profile-dialog/profile-dialog-data';
 import { PASSWORD_DIALOG_MODE } from './password-dialog/password-dialog-data';
 

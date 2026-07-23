@@ -1,6 +1,6 @@
 <div class="dialog">
   <h2 class="centered">Create profile</h2>
-  <form class="auth-form" [formGroup]="profileForm" (ngSubmit)="submit()">
+  <form class="form" [formGroup]="profileForm" (ngSubmit)="submit()">
     @if (!isEdit) {
       <h4 class="badge danger centered">Username cannot be changed after save!</h4>
       <div class="form-group">
