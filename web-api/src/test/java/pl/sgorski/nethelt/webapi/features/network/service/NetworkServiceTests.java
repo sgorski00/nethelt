@@ -90,7 +90,6 @@ public class NetworkServiceTests {
         .thenReturn(List.of(network));
 
     var command = new NetworkCreateCommand(userId, name, "Network Description");
-
     var thrown =
         assertThrows(
             NetworkValidationFailedException.class, () -> networkService.createNetwork(command));
@@ -153,11 +152,11 @@ public class NetworkServiceTests {
     var network = TestNetworkFactory.createNetwork("Old Name", "Old Description");
     when(networkRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(network));
     when(networkRepository.findAllByUserIdAndNameAndDeletedAtIsNull(
-            nullable(Long.class), eq("New Name")))
+            nullable(Long.class), eq("New Name"))) // nullable because userid is null before save to db
         .thenReturn(
             List.of(
                 TestNetworkFactory
-                    .createNetwork())); // nullable because userid is null before save to db
+                    .createNetwork()));
 
     assertThrows(
         NetworkValidationFailedException.class, () -> networkService.updateNetwork(1L, command));

@@ -13,7 +13,11 @@ Docker Compose configuration for the NetHelt project.
 
 ## Environment Setup
 
+<<<<<<< HEAD
 1. Create a local environment file:
+=======
+1. Create a local environemtn file:
+>>>>>>> main
 ```bash
 cp .env.example .env
 ```
