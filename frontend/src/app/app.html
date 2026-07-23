@@ -11,6 +11,7 @@
     </div>
     <div class="nav-section">
       @if (isAuthenticated()) {
+        <app-network-selector></app-network-selector>
         <app-notification-dropdown class="nav-link"></app-notification-dropdown>
         <button type="button" (click)="logout()" class="nav-link danger">Logout</button>
       } @else {

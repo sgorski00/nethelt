@@ -13,6 +13,32 @@ body {
   flex-direction: column;
 }
 
+.nav-section {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+
+  .nav-link {
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    background: transparent;
+    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+  }
+}
+
 .message-box {
   width: 100%;
   display: flex;
@@ -143,6 +169,60 @@ a.danger:hover {
   &:focus-visible {
     outline: 2px solid #007bff;
     outline-offset: 2px;
+  }
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #111827;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  &:hover {
+    border-color: #9ca3af;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #f3f4f6;
+    color: #6b7280;
+  }
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+select {
+  cursor: pointer;
+}
+
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: #dc2626;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
   }
 }
 

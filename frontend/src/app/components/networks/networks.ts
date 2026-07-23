@@ -26,6 +26,6 @@ export class Networks implements OnInit {
   }
 
   protected reloadNetworks() {
-    this.networkService.loadNetworks().subscribe();
+    this.networkService.loadNetworks();
   }
 }

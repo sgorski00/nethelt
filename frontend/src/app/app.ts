@@ -2,10 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth-service';
 import { NotificationDropdown } from './components/notifications/notification-dropdown/notification-dropdown';
+import { NetworkSelector } from './components/networks/network-selector/network-selector';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, NotificationDropdown],
+  imports: [RouterOutlet, RouterLink, NotificationDropdown, NetworkSelector],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

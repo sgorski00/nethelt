@@ -17,7 +17,7 @@ export class NetworkService {
   public loadNetworks() {
     return this.httpClient
       .get<NetworkResponse[]>(`${this.networksUrl}`)
-      .pipe(tap((networks) => this.networksCache.set(networks)));
+      .subscribe((networks) => this.networksCache.set(networks));
   }
 
   public getNetwork(id: number) {
