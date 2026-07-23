@@ -65,7 +65,7 @@ export class NetworkDetails implements OnInit {
           this.editing.set(false);
           this.network.set(updated);
         },
-        error: (err) => this.errorMessage.set(`Failed to update network: ${err.message}`),
+        error: (err) => this.errorMessage.set(`Failed to update network: ${err.error.detail}`),
       });
   }
 
@@ -81,7 +81,7 @@ export class NetworkDetails implements OnInit {
 
         this.networkService.deleteNetwork(this.network()!.id).subscribe({
           next: () => this.router.navigate(['/networks'], { queryParams: { deleted: true } }),
-          error: (err) => this.errorMessage.set(`Failed to delete network: ${err.message}`),
+          error: (err) => this.errorMessage.set(`Failed to delete network: ${err.error.detail}`),
         });
       });
   }
@@ -91,7 +91,7 @@ export class NetworkDetails implements OnInit {
       .pipe(switchMap((params) => this.networkService.getNetwork(Number(params.get('id')))))
       .subscribe({
         next: (network) => this.network.set(network),
-        error: (err) => this.errorMessage.set(`Failed to load network: ${err.message}`),
+        error: (err) => this.errorMessage.set(`Failed to load network: ${err.error.detail}`),
       });
   }
 }
