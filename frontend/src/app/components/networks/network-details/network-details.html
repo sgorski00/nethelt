@@ -2,20 +2,51 @@
   <div class="network-details">
     <div class="network-details-header">
       <div>
-        <h2>{{ network.name }}</h2>
+        @if (editing()) {
+          <input
+            type="text"
+            [value]="name()"
+            (input)="name.set($any($event.target).value)"
+            placeholder="Network Name"
+          />
+          <br />
+        } @else {
+          <h2>{{ network.name }}</h2>
+        }
         <small>Created: {{ network.createdAt | date: 'yyyy-MM-dd HH:mm' }}</small>
         @if (errorMessage(); as errorMessage) {
           <p class="error-message">{{ errorMessage }}</p>
         }
       </div>
       <div class="network-actions">
-        <button type="button" (click)="edit()">Edit</button>
-        <button class="danger" type="button" (click)="delete()">Delete</button>
+        @if (editing()) {
+          <button type="button" [disabled]="!changed()" (click)="save()">
+            <i class="fa-solid fa-floppy-disk"></i> Save
+          </button>
+          <button class="danger" type="button" (click)="cancelEdit()">
+            <i class="fa-solid fa-xmark"></i> Cancel
+          </button>
+        } @else {
+          <button type="button" (click)="edit()">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </button>
+          <button class="danger" type="button" (click)="delete()">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        }
       </div>
     </div>
     <div class="network-details-description">
       <p>Details:</p>
-      <p>{{ network.description || 'No description' }}</p>
+      @if (editing()) {
+        <textarea
+          [value]="description()"
+          (input)="description.set($any($event.target).value)"
+          placeholder="Network Description"
+        ></textarea>
+      } @else {
+        <p>{{ network.description || 'No description' }}</p>
+      }
     </div>
   </div>
 } @else {

@@ -158,6 +158,12 @@ button {
   &:hover {
     background-color: #0056b3;
   }
+
+  &:disabled {
+    background-color: #ddd !important;
+    color: #888 !important;
+    cursor: not-allowed;
+  }
 }
 
 h1 {

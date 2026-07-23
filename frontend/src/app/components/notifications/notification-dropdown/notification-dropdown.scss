@@ -133,12 +133,6 @@
   &:hover {
     background-color: #f0f0f0;
   }
-
-  &:disabled {
-    background-color: #ddd;
-    color: #888;
-    cursor: not-allowed;
-  }
 }
 
 .unread-badge {
