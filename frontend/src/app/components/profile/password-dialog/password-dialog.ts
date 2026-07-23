@@ -11,7 +11,6 @@ import { passwordMatchValidator } from '../../../shared/validators/password-matc
   selector: 'app-password-dialog',
   imports: [ReactiveFormsModule],
   templateUrl: './password-dialog.html',
-  styleUrl: './password-dialog.scss',
 })
 export class PasswordDialog {
   private readonly userService = inject(UserService);

@@ -10,7 +10,6 @@ export interface ConfirmDeleteNetworkDialogData {
   selector: 'app-confirm-delete-network-dialog',
   imports: [FormsModule],
   templateUrl: './confirm-delete-network-dialog.html',
-  styleUrl: './confirm-delete-network-dialog.scss',
 })
 export class ConfirmDeleteNetworkDialog {
   protected readonly data = inject<ConfirmDeleteNetworkDialogData>(DIALOG_DATA);
