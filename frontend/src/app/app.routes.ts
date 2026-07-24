@@ -49,4 +49,9 @@ export const routes: Routes = [
       import('./components/networks/networks.routes').then((m) => m.networksRoutes),
     canActivate: [requireAuth],
   },
+  {
+    path: 'console',
+    loadChildren: () => import('./components/console/console.routes').then((m) => m.consoleRoutes),
+    canActivate: [requireAuth],
+  },
 ];

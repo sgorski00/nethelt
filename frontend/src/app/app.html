@@ -1,24 +1,6 @@
 <header>
   <h1 class="logo">Nethelt</h1>
-  <nav>
-    <div class="nav-section">
-      @if (isAuthenticated()) {
-        <a routerLink="/profile" class="nav-link">Profile</a>
-        <a routerLink="/networks" class="nav-link">Networks</a>
-      } @else {
-        <a routerLink="/" class="nav-link">Home Page</a>
-      }
-    </div>
-    <div class="nav-section">
-      @if (isAuthenticated()) {
-        <app-notification-dropdown class="nav-link"></app-notification-dropdown>
-        <button type="button" (click)="logout()" class="nav-link danger">Logout</button>
-      } @else {
-        <a routerLink="/login" class="nav-link">Login</a>
-        <a routerLink="/register" class="nav-link">Register</a>
-      }
-    </div>
-  </nav>
+  <app-navigation></app-navigation>
 </header>
 <main>
   <router-outlet></router-outlet>

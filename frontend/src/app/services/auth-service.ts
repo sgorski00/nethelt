@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { LoginRequest } from '../models/auth/login-request';
@@ -20,6 +20,9 @@ export class AuthService {
   private readonly authUrl = `${environment.apiUrl}/auth`;
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
+
+  private readonly authenticated = signal(!!localStorage.getItem(this.jwtTokenKey));
+  public readonly isAuthenticated = this.authenticated.asReadonly();
 
   private refreshTokenRequest$: Observable<LoginResponse> | null = null;
 
@@ -63,10 +66,6 @@ export class AuthService {
     });
   }
 
-  public isAuthenticated(): boolean {
-    return !!this.accessToken;
-  }
-
   public handleUnauthorized(): void {
     this.clearAccessToken();
     this.router.navigate(['/login']);
@@ -78,9 +77,11 @@ export class AuthService {
 
   private saveAccessToken(token: string): void {
     localStorage.setItem(this.jwtTokenKey, token);
+    this.authenticated.set(true);
   }
 
   private clearAccessToken(): void {
     localStorage.removeItem(this.jwtTokenKey);
+    this.authenticated.set(false);
   }
 }
