@@ -64,11 +64,6 @@ public class Agent {
     this.tokenCreatedAt = Instant.now();
   }
 
-  public boolean isOnline(int timeoutInSeconds) {
-    var timeoutInstant = Instant.now().minusSeconds(timeoutInSeconds);
-    return lastHeartbeatAt != null && lastHeartbeatAt.isAfter(timeoutInstant);
-  }
-
   public void heartbeat() {
     this.lastHeartbeatAt = Instant.now();
   }

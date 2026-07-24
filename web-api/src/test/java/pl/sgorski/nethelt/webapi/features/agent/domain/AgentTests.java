@@ -42,33 +42,12 @@ public class AgentTests {
   }
 
   @Test
-  void isOnline_shouldReturnFalse_whenHeartbeatNotRecordedYet() {
+  void heartbeat_shouldUpdateLastHeartbeatAt() {
     var agent = TestAgentFactory.createAgent();
 
-    var result = agent.isOnline(60);
-
-    assertFalse(result);
-  }
-
-  @Test
-  void isOnline_shouldReturnFalse_whenHeartbeatIsAfterTimeout() throws InterruptedException {
-    var agent = TestAgentFactory.createAgent();
+    assertNull(agent.getLastHeartbeatAt());
     agent.heartbeat();
-    Thread.sleep(1001);
-
-    var result = agent.isOnline(1);
-
-    assertFalse(result);
-  }
-
-  @Test
-  void isOnline_shouldReturnTrue_whenHeartbeatIsBeforeTimeout() throws InterruptedException {
-    var agent = TestAgentFactory.createAgent();
-    agent.heartbeat();
-
-    var result = agent.isOnline(60);
-
-    assertTrue(result);
+    assertNotNull(agent.getLastHeartbeatAt());
   }
 
   @Test
