@@ -1,13 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
 import { NetworkSelector } from '../networks/network-selector/network-selector';
 import { NotificationDropdown } from '../notifications/notification-dropdown/notification-dropdown';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
 import { NetworkContextService } from '../../services/network-context-service';
 
 @Component({
   selector: 'app-navigation',
-  imports: [NetworkSelector, NotificationDropdown, RouterLink],
+  imports: [NetworkSelector, NotificationDropdown, RouterLink, RouterLinkActive],
   templateUrl: './navigation.html',
   styleUrl: './navigation.scss',
 })

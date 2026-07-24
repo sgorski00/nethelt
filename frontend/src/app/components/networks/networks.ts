@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { NetworkService } from '../../services/network-service';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 
 @Component({
   selector: 'app-networks',
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterOutlet, RouterLinkActive],
   templateUrl: './networks.html',
   styleUrl: './networks.scss',
 })
