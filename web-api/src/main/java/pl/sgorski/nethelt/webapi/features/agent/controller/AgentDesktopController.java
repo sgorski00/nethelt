@@ -5,14 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.sgorski.nethelt.webapi.features.agent.service.AgentService;
+import pl.sgorski.nethelt.webapi.features.agent.service.AgentDesktopService;
 
 @RestController
 @RequestMapping(value = "/agent", version = "1")
 @RequiredArgsConstructor
-public class AgentController {
+public class AgentDesktopController {
 
-  private final AgentService agentService;
+  private final AgentDesktopService agentDesktopService;
 
   @PostMapping("/heartbeat")
   public ResponseEntity<Void> heartbeat() {
@@ -20,7 +20,7 @@ public class AgentController {
     // maybe via authenticatedUserResolver?
     // can be done after implementing AgentPrincipal
     // secure /agent only for authenticated agents
-    agentService.heartbeat(1L);
+    agentDesktopService.heartbeat(1L);
     return ResponseEntity.noContent().build();
   }
 

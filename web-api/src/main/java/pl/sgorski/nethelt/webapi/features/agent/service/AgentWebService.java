@@ -14,7 +14,7 @@ import pl.sgorski.nethelt.webapi.features.network.service.NetworkService;
 
 @Service
 @RequiredArgsConstructor
-public class AgentService {
+public class AgentWebService {
 
   private final AgentRepository agentRepository;
   private final AgentTokenService agentTokenService;
@@ -61,12 +61,6 @@ public class AgentService {
       case DISABLED -> agent.deactivate();
     }
     return agent;
-  }
-
-  @Transactional
-  public void heartbeat(Long networkId) {
-    var agent = getAgent(networkId);
-    agent.heartbeat();
   }
 
   @Transactional

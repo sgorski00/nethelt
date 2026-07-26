@@ -13,14 +13,14 @@ import pl.sgorski.nethelt.webapi.features.agent.dto.request.AgentUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.agent.dto.response.AgentResponse;
 import pl.sgorski.nethelt.webapi.features.agent.dto.response.AgentTokenResponse;
 import pl.sgorski.nethelt.webapi.features.agent.mapper.AgentMapper;
-import pl.sgorski.nethelt.webapi.features.agent.service.AgentService;
+import pl.sgorski.nethelt.webapi.features.agent.service.AgentWebService;
 
 @RestController
 @RequestMapping(value = "/networks/{networkId}/agent", version = "1")
 @RequiredArgsConstructor
-public class NetworkAgentController {
+public class AgentWebController {
 
-  private final AgentService agentService;
+  private final AgentWebService agentWebService;
   private final AgentMapper agentMapper;
 
   @PostMapping
@@ -30,7 +30,7 @@ public class NetworkAgentController {
       @RequestBody @Valid AgentCreateRequest request,
       Authentication authentication) {
     var command = agentMapper.toCommand(networkId, request);
-    var token = agentService.createAgentAndRetrieveRawToken(command);
+    var token = agentWebService.createAgentAndRetrieveRawToken(command);
     return ResponseEntity.status(201).body(new AgentTokenResponse(token));
   }
 
@@ -38,7 +38,7 @@ public class NetworkAgentController {
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<AgentTokenResponse> renewToken(
       @P("networkId") @PathVariable("networkId") Long networkId, Authentication authentication) {
-    var token = agentService.renewToken(networkId);
+    var token = agentWebService.renewToken(networkId);
     return ResponseEntity.ok(new AgentTokenResponse(token));
   }
 
@@ -46,7 +46,7 @@ public class NetworkAgentController {
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<AgentResponse> getAgent(
       @P("networkId") @PathVariable("networkId") Long networkId, Authentication authentication) {
-    var agent = agentService.getAgent(networkId);
+    var agent = agentWebService.getAgent(networkId);
     return ResponseEntity.ok(agentMapper.toResponse(agent));
   }
 
@@ -57,7 +57,7 @@ public class NetworkAgentController {
       @RequestBody @Valid AgentUpdateRequest request,
       Authentication authentication) {
     var command = agentMapper.toCommand(networkId, request);
-    var agent = agentService.updateAgent(command);
+    var agent = agentWebService.updateAgent(command);
     return ResponseEntity.ok(agentMapper.toResponse(agent));
   }
 
@@ -67,7 +67,7 @@ public class NetworkAgentController {
       @P("networkId") @PathVariable("networkId") Long networkId,
       @RequestParam("request") @Valid AgentStatusUpdateRequest request,
       Authentication authentication) {
-    var agent = agentService.changeStatus(networkId, request.status());
+    var agent = agentWebService.changeStatus(networkId, request.status());
     return ResponseEntity.ok(agentMapper.toResponse(agent));
   }
 
@@ -75,7 +75,7 @@ public class NetworkAgentController {
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<Void> deleteAgent(
       @P("networkId") @PathVariable("networkId") Long networkId, Authentication authentication) {
-    agentService.deleteAgent(networkId);
+    agentWebService.deleteAgent(networkId);
     return ResponseEntity.noContent().build();
   }
 }

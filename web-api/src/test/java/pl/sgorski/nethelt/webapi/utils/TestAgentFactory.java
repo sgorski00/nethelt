@@ -13,6 +13,10 @@ public final class TestAgentFactory {
     return createAgent(network, name, hashedToken);
   }
 
+  public static Agent createAgent(Network network) {
+    return createAgent(network, "Test Agent", "hashedToken123");
+  }
+
   public static Agent createAgent(String name, String hashedToken) {
     var network = TestNetworkFactory.createNetwork();
     return createAgent(network, name, hashedToken);
