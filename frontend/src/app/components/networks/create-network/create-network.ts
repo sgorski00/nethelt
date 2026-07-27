@@ -3,6 +3,7 @@ import { NetworkService } from '../../../services/network-service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NetworkRequest } from '../../../models/network/network-request';
+import { NetworkContextService } from '../../../services/network-context-service';
 
 @Component({
   selector: 'app-create-network',
@@ -13,6 +14,7 @@ import { NetworkRequest } from '../../../models/network/network-request';
 export class CreateNetwork {
   private readonly fb = inject(FormBuilder);
   private readonly networkService = inject(NetworkService);
+  private readonly networkContext = inject(NetworkContextService);
   private readonly router = inject(Router);
 
   protected readonly errorMessage = signal('');
@@ -30,7 +32,10 @@ export class CreateNetwork {
     const request: NetworkRequest = this.networkCreateForm.getRawValue();
 
     this.networkService.createNetwork(request).subscribe({
-      next: (network) => this.router.navigate(['/networks', network.id]),
+      next: (network) => {
+        this.networkContext.setActiveNetwork(network);
+        this.router.navigate(['/networks', network.id]);
+      },
       error: (err) =>
         this.errorMessage.set(err.error?.detail || 'An error occurred while creating the network.'),
     });

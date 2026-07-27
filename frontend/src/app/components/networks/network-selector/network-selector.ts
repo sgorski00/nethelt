@@ -22,6 +22,7 @@ export class NetworkSelector {
 
     if (network) {
       this.networkContext.setActiveNetwork(network);
+      window.location.reload(); // hard refresh to reload the page to apply the new network context
     }
   }
 }

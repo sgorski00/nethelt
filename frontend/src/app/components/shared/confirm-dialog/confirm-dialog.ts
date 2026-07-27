@@ -2,30 +2,32 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
 
-export interface ConfirmDeleteNetworkDialogData {
-  networkName: string;
+export interface ConfirmDialogData {
+  title: string;
+  message: string;
+  confirmText: string;
 }
 
 @Component({
   selector: 'app-confirm-delete-network-dialog',
   imports: [FormsModule],
-  templateUrl: './confirm-delete-network-dialog.html',
+  templateUrl: './confirm-dialog.html',
 })
-export class ConfirmDeleteNetworkDialog {
-  protected readonly data = inject<ConfirmDeleteNetworkDialogData>(DIALOG_DATA);
+export class ConfirmDialog {
+  protected readonly data = inject<ConfirmDialogData>(DIALOG_DATA);
   private readonly dialogRef = inject(DialogRef<boolean>);
 
   protected readonly confirmation = signal('');
-  protected readonly canDelete = computed(
-    () => this.confirmation().trim() === this.data.networkName,
+  protected readonly canConfirm = computed(
+    () => this.confirmation().trim() === this.data.confirmText,
   );
 
   protected cancel() {
     this.dialogRef.close(false);
   }
 
-  protected delete() {
-    if (!this.canDelete()) return;
+  protected confirm() {
+    if (!this.canConfirm()) return;
     this.dialogRef.close(true);
   }
 }

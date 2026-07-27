@@ -1,0 +1,18 @@
+<div class="form-container">
+  <h2>Configure new Agent</h2>
+  <form class="form" [formGroup]="agentCreateForm" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+      @if (agentCreateForm.controls.name.invalid && agentCreateForm.controls.name.touched) {
+        <small class="error-message">Name is required and must be max 100 characters.</small>
+      }
+    </div>
+    <div class="form-actions">
+      <button type="submit">Create</button>
+    </div>
+    @if (errorMessage()) {
+      <p class="error-message centered">{{ errorMessage() }}</p>
+    }
+  </form>
+</div>

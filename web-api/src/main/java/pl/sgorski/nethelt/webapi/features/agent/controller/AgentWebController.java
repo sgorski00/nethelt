@@ -65,7 +65,7 @@ public class AgentWebController {
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<AgentResponse> changeStatus(
       @P("networkId") @PathVariable("networkId") Long networkId,
-      @RequestParam("request") @Valid AgentStatusUpdateRequest request,
+      @RequestBody @Valid AgentStatusUpdateRequest request,
       Authentication authentication) {
     var agent = agentWebService.changeStatus(networkId, request.status());
     return ResponseEntity.ok(agentMapper.toResponse(agent));
