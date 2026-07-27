@@ -1,0 +1,86 @@
+@if (agent(); as agent) {
+  <div class="content-details">
+    <div class="content-details-header">
+      <div>
+        @if (editing()) {
+          <input
+            type="text"
+            [value]="name()"
+            (input)="name.set($any($event.target).value)"
+            placeholder="Agent Name"
+          />
+          <br />
+        } @else {
+          <h2>{{ agent.name }}</h2>
+        }
+      </div>
+      <div class="content-header-actions">
+        @if (editing()) {
+          <button type="button" [disabled]="!changed()" (click)="save()">
+            <i class="fa-solid fa-floppy-disk"></i> Save
+          </button>
+          <button class="danger" type="button" (click)="cancelEdit()">
+            <i class="fa-solid fa-xmark"></i> Cancel
+          </button>
+        } @else {
+          <button type="button" (click)="renewToken()">
+            <i class="fa-solid fa-arrows-rotate"></i> Renew token
+          </button>
+          <button type="button" (click)="edit()">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </button>
+          @if (agent.status === AgentStatus.ACTIVE) {
+            <button type="button" class="danger" (click)="changeStatus(AgentStatus.DISABLED)">
+              <i class="fa-solid fa-ban"></i> Disable
+            </button>
+          } @else {
+            <button type="button" (click)="changeStatus(AgentStatus.ACTIVE)">
+              <i class="fa-solid fa-play"></i> Activate
+            </button>
+          }
+          <button class="danger" type="button" (click)="delete()">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        }
+      </div>
+    </div>
+    @if (token() || errorMessage()) {
+      <div class="message-box">
+        @if (token(); as token) {
+          <p>
+            Below is the generated token used for communication between the agent and the web
+            server.
+          </p>
+          <p>Please copy it and store it securely. <b>This token will not be shown again!</b></p>
+          <p>After saving it in a secure location, configure the desktop agent using this token.</p>
+          <p class="success-message">Token: {{ token }}</p>
+        }
+        @if (errorMessage(); as errorMessage) {
+          <p class="error-message">{{ errorMessage }}</p>
+        }
+      </div>
+    }
+    <div class="content-details-body">
+      <h3>Details</h3>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span
+          class="badge"
+          [class.success]="agent.status === AgentStatus.ACTIVE"
+          [class.danger]="agent.status === AgentStatus.DISABLED"
+          >{{ agent.status }}</span
+        >
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Last heartbeat</span>
+        <span>{{ (agent.lastHeartbeatAt | date: 'yyyy-MM-dd HH:mm') || 'Not recorded' }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Token active since</span>
+        <span>{{ agent.tokenCreatedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+} @else {
+  <p>Loading...</p>
+}

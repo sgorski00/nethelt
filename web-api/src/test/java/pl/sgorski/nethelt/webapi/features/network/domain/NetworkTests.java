@@ -22,12 +22,13 @@ public class NetworkTests {
   }
 
   @Test
-  void delete_shouldSetDeletedAtToCurrentTime() {
+  void delete_shouldSetDeletedAtToCurrentTimeAndDeleteAgent() {
     var network = TestNetworkFactory.createNetwork();
 
     assertFalse(network.isDeleted());
     network.delete();
     assertTrue(network.isDeleted());
+    assertNull(network.getAgent());
   }
 
   @Test

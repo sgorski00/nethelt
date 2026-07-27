@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
+import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
 @Entity
@@ -31,6 +32,11 @@ public class Network {
 
   @Getter @Nullable private String description;
 
+  @Getter
+  @Nullable
+  @OneToOne(mappedBy = "network", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Agent agent;
+
   @Getter @CreationTimestamp private Instant createdAt;
 
   @UpdateTimestamp private Instant updatedAt;
@@ -45,6 +51,7 @@ public class Network {
 
   public void delete() {
     this.deletedAt = Instant.now();
+    this.agent = null;
   }
 
   public boolean isDeleted() {

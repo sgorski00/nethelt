@@ -1,20 +1,24 @@
 <div class="side-nav">
   <div class="side-nav-header">
-    <h4>Networks</h4>
+    <a routerLink="/networks" class="side-nav-title">Networks</a>
     <button type="button" class="icon-button" (click)="reloadNetworks()" title="Reload networks">
       <i class="fa-solid fa-rotate-right"></i>
     </button>
   </div>
   @if (networks(); as networks) {
     @for (network of networks; track network.id) {
-      <a [routerLink]="[network.id]" class="side-nav-link">{{ network.name }}</a>
+      <a [routerLink]="[network.id]" routerLinkActive="active" class="side-nav-link">{{
+        network.name
+      }}</a>
     } @empty {
       <p>No networks found</p>
     }
   } @else {
     <p>Loading...</p>
   }
-  <a routerLink="create" class="side-nav-link bottom-link">Create Network</a>
+  <a routerLink="create" routerLinkActive="active" class="side-nav-link bottom-link"
+    >Create Network</a
+  >
 </div>
 <div class="content">
   <router-outlet #outlet="outlet"></router-outlet>

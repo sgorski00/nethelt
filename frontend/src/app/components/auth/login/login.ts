@@ -8,6 +8,7 @@ import { IdentityProvider } from '../../../models/user/identity-provider';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { getOAuth2ErrorMessage, OAuth2Error } from '../oauth2-callback/oauth2-errors';
+import { NetworkService } from '../../../services/network-service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ import { getOAuth2ErrorMessage, OAuth2Error } from '../oauth2-callback/oauth2-er
 })
 export class Login implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly networkService = inject(NetworkService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -50,7 +52,10 @@ export class Login implements OnInit {
     const request: LoginRequest = this.loginForm.getRawValue();
 
     this.authService.login(request).subscribe({
-      next: () => this.router.navigateByUrl('/profile'),
+      next: () => {
+        this.networkService.loadNetworks();
+        this.router.navigateByUrl('/profile');
+      },
       error: (err) => this.errorMessage.set(err.error.detail || 'An error occurred during login.'),
     });
   }

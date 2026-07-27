@@ -1,0 +1,9 @@
+<div class="network-selector">
+  <span>Active network:</span>
+  <select class="nav-link" [value]="activeNetwork()?.id ?? ''" (change)="selectNetwork($event)">
+    <option value="" disabled>Select network</option>
+    @for (network of networks(); track network.id) {
+      <option [value]="network.id">{{ network.name }}</option>
+    }
+  </select>
+</div>

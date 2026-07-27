@@ -1,0 +1,24 @@
+<div class="dialog">
+  <h2 class="centered">{{ data.title }}</h2>
+  <p>
+    {{ data.message }}
+  </p>
+  <p>This action cannot be undone.</p>
+  <p>
+    Type <strong>{{ data.confirmText }}</strong> to confirm.
+  </p>
+
+  <input
+    type="text"
+    [ngModel]="confirmation()"
+    (ngModelChange)="confirmation.set($event)"
+    placeholder="Confirmation text"
+  />
+
+  <div class="form-actions">
+    <button type="button" (click)="cancel()">Cancel</button>
+    <button type="button" class="danger" [disabled]="!canConfirm()" (click)="confirm()">
+      Confirm
+    </button>
+  </div>
+</div>

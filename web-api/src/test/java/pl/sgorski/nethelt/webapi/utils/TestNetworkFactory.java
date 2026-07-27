@@ -3,7 +3,7 @@ package pl.sgorski.nethelt.webapi.utils;
 import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
-public class TestNetworkFactory {
+public final class TestNetworkFactory {
 
   public static Network createNetwork() {
     var user = TestUserFactory.createLocalUser();

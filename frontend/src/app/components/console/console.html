@@ -1,0 +1,17 @@
+<div class="side-nav">
+  <div class="side-nav-header">
+    <a routerLink="/console" class="side-nav-title">Console</a>
+  </div>
+  <a routerLink="agent" routerLinkActive="active" class="side-nav-link">Agent</a>
+</div>
+<div class="content">
+  <router-outlet #outlet="outlet"></router-outlet>
+  @if (!outlet.isActivated) {
+    <h2>Select a section from the side navigation panel first.</h2>
+    @if (message(); as message) {
+      <div class="message-box">
+        <p class="neutral-message">{{ message }}</p>
+      </div>
+    }
+  }
+</div>

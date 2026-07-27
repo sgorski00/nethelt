@@ -1,0 +1,12 @@
+:host {
+  width: 100%;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 16px;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}

@@ -4,8 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
-import { ConfirmDeleteNetworkDialog } from './confirm-delete-network-dialog/confirm-delete-network-dialog';
 import { NetworkResponse } from '../../../models/network/network-response';
+import { NetworkContextService } from '../../../services/network-context-service';
+import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-single-network',
@@ -18,6 +19,7 @@ export class NetworkDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly networkService = inject(NetworkService);
+  private readonly networkContext = inject(NetworkContextService);
 
   protected readonly editing = signal(false);
   protected readonly name = signal('');
@@ -25,10 +27,8 @@ export class NetworkDetails implements OnInit {
 
   protected readonly changed = computed(() => {
     const network = this.network();
-    return (
-      network &&
-      (network.name !== this.name() || (network.description ?? '') !== this.description())
-    );
+    if (!network) return false;
+    return network.name !== this.name() || (network.description ?? '') !== this.description();
   });
 
   protected readonly errorMessage = signal('');
@@ -71,16 +71,24 @@ export class NetworkDetails implements OnInit {
 
   protected delete() {
     this.dialog
-      .open(ConfirmDeleteNetworkDialog, {
+      .open(ConfirmDialog, {
         data: {
-          networkName: this.network()!.name,
+          title: 'Delete Network',
+          message:
+            'Are you sure you want to delete this network? All it components will be deleted too.',
+          confirmText: this.network()!.name,
         },
       })
       .closed.subscribe((confirmed) => {
         if (!confirmed) return;
 
         this.networkService.deleteNetwork(this.network()!.id).subscribe({
-          next: () => this.router.navigate(['/networks'], { queryParams: { deleted: true } }),
+          next: () => {
+            if (this.network()!.id === this.networkContext.getActiveNetworkId()) {
+              this.networkContext.clear();
+            }
+            this.router.navigate(['/networks'], { queryParams: { deleted: true } });
+          },
           error: (err) => this.errorMessage.set(`Failed to delete network: ${err.error.detail}`),
         });
       });
