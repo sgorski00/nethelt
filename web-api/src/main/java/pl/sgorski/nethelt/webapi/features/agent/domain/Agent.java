@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.features.agent.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 @Entity
 @Table(name = "network_agents")
 @EqualsAndHashCode(exclude = "network")
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Agent {
 
   @Id

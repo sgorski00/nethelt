@@ -2,11 +2,13 @@ package pl.sgorski.nethelt.webapi.features.network.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.Set;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
+import pl.sgorski.nethelt.webapi.features.device.domain.Device;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
 @Entity
@@ -36,6 +38,9 @@ public class Network {
   @Nullable
   @OneToOne(mappedBy = "network", cascade = CascadeType.ALL, orphanRemoval = true)
   private Agent agent;
+
+  @OneToMany(mappedBy = "network", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Device> devices;
 
   @Getter @CreationTimestamp private Instant createdAt;
 
