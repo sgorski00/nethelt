@@ -3,19 +3,16 @@ package pl.sgorski.nethelt.webapi.features.device.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.UnknownHostException;
 import org.junit.jupiter.api.Test;
-import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
 import pl.sgorski.nethelt.webapi.utils.TestDeviceFactory;
 import pl.sgorski.nethelt.webapi.utils.TestNetworkFactory;
 
 public class DeviceTests {
 
   @Test
-  void constructor_shouldCreateDeviceWithValidParameters() throws UnknownHostException {
+  void constructor_shouldCreateDeviceWithValidParameters() {
     var network = TestNetworkFactory.createNetwork();
-    var ipAddress = Inet4Address.getByName("127.0.0.1");
+    var ipAddress = Inet4Address.ofLiteral("127.0.0.1");
 
     var device = new Device(network, "Device1", ipAddress, DeviceType.LAN_CLIENT);
 
@@ -27,19 +24,9 @@ public class DeviceTests {
   }
 
   @Test
-  void constructor_shouldThrow_whenAddressIsNotIpv4() throws UnknownHostException {
-    var network = TestNetworkFactory.createNetwork();
-    var ipAddress = Inet6Address.getByName("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
-
-    assertThrows(
-        DeviceValidationFailedException.class,
-        () -> new Device(network, "Device1", ipAddress, DeviceType.LAN_CLIENT));
-  }
-
-  @Test
-  void update_shouldUpdateDevice_whenNoNullsPresent() throws UnknownHostException {
+  void update_shouldUpdateDevice_whenNoNullsPresent() {
     var device = TestDeviceFactory.createDevice();
-    var updatedAddress = Inet4Address.getByName("192.168.0.16");
+    var updatedAddress = Inet4Address.ofLiteral("192.168.0.16");
 
     device.update("new-device-name", updatedAddress, DeviceType.NETWORK_DEVICE);
 
@@ -49,7 +36,7 @@ public class DeviceTests {
   }
 
   @Test
-  void update_shouldUpdateDevice_whenOnlyNameIsPresent() throws UnknownHostException {
+  void update_shouldUpdateDevice_whenOnlyNameIsPresent() {
     var device = TestDeviceFactory.createDevice();
 
     device.update("new-device-name", null, null);
@@ -60,9 +47,9 @@ public class DeviceTests {
   }
 
   @Test
-  void update_shouldUpdateDevice_whenOnlyAddressIsPresent() throws UnknownHostException {
+  void update_shouldUpdateDevice_whenOnlyAddressIsPresent() {
     var device = TestDeviceFactory.createDevice();
-    var updatedAddress = Inet4Address.getByName("192.168.0.16");
+    var updatedAddress = Inet4Address.ofLiteral("192.168.0.16");
 
     device.update(null, updatedAddress, null);
 
@@ -72,16 +59,7 @@ public class DeviceTests {
   }
 
   @Test
-  void update_shouldThrow_whenAddressIsNotIpv4() throws UnknownHostException {
-    var device = TestDeviceFactory.createDevice();
-    var updatedAddress = Inet6Address.getByName("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
-
-    assertThrows(
-        DeviceValidationFailedException.class, () -> device.update(null, updatedAddress, null));
-  }
-
-  @Test
-  void update_shouldUpdateDevice_whenOnlyTypeIsPresent() throws UnknownHostException {
+  void update_shouldUpdateDevice_whenOnlyTypeIsPresent() {
     var device = TestDeviceFactory.createDevice();
 
     device.update(null, null, DeviceType.WIFI_CLIENT);
@@ -92,7 +70,7 @@ public class DeviceTests {
   }
 
   @Test
-  void disable_shouldSetIsEnabledToFalse() throws UnknownHostException {
+  void disable_shouldSetIsEnabledToFalse() {
     var device = TestDeviceFactory.createDevice();
 
     assertTrue(device.isEnabled());
@@ -102,7 +80,7 @@ public class DeviceTests {
   }
 
   @Test
-  void enable_shouldSetIsEnabledToTrue() throws UnknownHostException {
+  void enable_shouldSetIsEnabledToTrue() {
     var device = TestDeviceFactory.createDevice();
     device.disable();
 

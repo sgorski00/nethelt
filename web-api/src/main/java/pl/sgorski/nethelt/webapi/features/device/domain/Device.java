@@ -2,7 +2,6 @@ package pl.sgorski.nethelt.webapi.features.device.domain;
 
 import jakarta.persistence.*;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
-import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
 import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 
 @Entity
@@ -38,7 +36,7 @@ public class Device {
   private String name;
 
   @Column(nullable = false, columnDefinition = "inet")
-  private InetAddress ipAddress;
+  private Inet4Address ipAddress;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -55,9 +53,7 @@ public class Device {
   @Column(nullable = false)
   private Instant updatedAt;
 
-  public Device(Network network, String name, InetAddress ipAddress, DeviceType type) {
-    validateIpv4(ipAddress);
-
+  public Device(Network network, String name, Inet4Address ipAddress, DeviceType type) {
     this.network = network;
     this.name = name;
     this.ipAddress = ipAddress;
@@ -65,13 +61,10 @@ public class Device {
   }
 
   public void update(
-      @Nullable String name, @Nullable InetAddress ipAddress, @Nullable DeviceType type) {
+      @Nullable String name, @Nullable Inet4Address ipAddress, @Nullable DeviceType type) {
     if (name != null) this.name = name;
     if (type != null) this.type = type;
-    if (ipAddress != null) {
-      validateIpv4(ipAddress);
-      this.ipAddress = ipAddress;
-    }
+    if (ipAddress != null) this.ipAddress = ipAddress;
   }
 
   public void enable() {
@@ -80,11 +73,5 @@ public class Device {
 
   public void disable() {
     this.isEnabled = false;
-  }
-
-  private static void validateIpv4(InetAddress ipAddress) {
-    if (!(ipAddress instanceof Inet4Address)) {
-      throw new DeviceValidationFailedException("Invalid IPv4 address");
-    }
   }
 }
