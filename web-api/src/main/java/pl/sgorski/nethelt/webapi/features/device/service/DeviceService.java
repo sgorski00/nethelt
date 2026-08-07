@@ -3,6 +3,8 @@ package pl.sgorski.nethelt.webapi.features.device.service;
 import java.net.Inet4Address;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceNotFoundException;
@@ -26,6 +28,10 @@ public class DeviceService {
 
   public Set<Device> getAllDevicesInNetwork(Long networkId) {
     return deviceRepository.findAllByNetworkId(networkId);
+  }
+
+  public Page<Device> getAllDevicesInNetwork(Long networkId, Pageable pageable) {
+    return deviceRepository.findAllByNetworkId(networkId, pageable);
   }
 
   @Transactional

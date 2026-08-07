@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
 import pl.sgorski.nethelt.webapi.exception.domain.network.NetworkNotFoundException;
@@ -47,7 +51,7 @@ public class DeviceServiceTests {
   }
 
   @Test
-  void getAllDevicesInNetwork_shouldReturnDevices() {
+  void getAllDevicesInNetwork_shouldReturnDevices_Set() {
     var devices =
         Set.of(
             TestDeviceFactory.createDevice("test-device-1", "192.168.1.1"),
@@ -57,6 +61,22 @@ public class DeviceServiceTests {
     var result = deviceService.getAllDevicesInNetwork(1L);
 
     assertIterableEquals(devices, result);
+  }
+
+  @Test
+  void getAllDevicesInNetwork_shouldReturnDevices_Page() {
+    var devices =
+        List.of(
+            TestDeviceFactory.createDevice("test-device-1", "192.168.1.1"),
+            TestDeviceFactory.createDevice("test-device-2", "192.168.1.2"));
+    var pageable = PageRequest.of(0, 10);
+    when(deviceRepository.findAllByNetworkId(eq(1L), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(devices));
+
+    var result = deviceService.getAllDevicesInNetwork(1L, pageable);
+
+    assertEquals(devices.size(), result.getTotalElements());
+    assertIterableEquals(devices, result.getContent());
   }
 
   @Test
