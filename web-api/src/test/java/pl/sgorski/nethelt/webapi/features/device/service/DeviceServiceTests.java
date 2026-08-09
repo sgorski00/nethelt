@@ -70,10 +70,11 @@ public class DeviceServiceTests {
             TestDeviceFactory.createDevice("test-device-1", "192.168.1.1"),
             TestDeviceFactory.createDevice("test-device-2", "192.168.1.2"));
     var pageable = PageRequest.of(0, 10);
-    when(deviceRepository.findAllByNetworkId(eq(1L), any(Pageable.class)))
+    when(deviceRepository.findAllByNetworkIdAndType(
+            eq(1L), nullable(DeviceType.class), any(Pageable.class)))
         .thenReturn(new PageImpl<>(devices));
 
-    var result = deviceService.getAllDevicesInNetwork(1L, pageable);
+    var result = deviceService.getAllDevicesInNetwork(1L, null, pageable);
 
     assertEquals(devices.size(), result.getTotalElements());
     assertIterableEquals(devices, result.getContent());

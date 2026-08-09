@@ -1,5 +1,6 @@
 package pl.sgorski.nethelt.webapi.features.device.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
 import pl.sgorski.nethelt.webapi.features.device.dto.request.DeviceCreateRequest;
 import pl.sgorski.nethelt.webapi.features.device.dto.request.DeviceUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.device.dto.response.DeviceResponse;
@@ -28,10 +30,13 @@ public class DeviceController {
   @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
   public ResponseEntity<Page<DeviceResponse>> getAllDevices(
       @P("networkId") @PathVariable("networkId") Long networkId,
+      @RequestParam(name = "type", required = false) @Nullable DeviceType type,
       Pageable pageable,
       Authentication authentication) {
     var devices =
-        deviceService.getAllDevicesInNetwork(networkId, pageable).map(deviceMapper::toResponse);
+        deviceService
+            .getAllDevicesInNetwork(networkId, type, pageable)
+            .map(deviceMapper::toResponse);
     return ResponseEntity.ok(devices);
   }
 

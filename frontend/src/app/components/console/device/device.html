@@ -3,6 +3,29 @@
     <div class="content-details-header">
       <h2>Devices</h2>
       <div class="content-header-actions">
+        <label>
+          Device type:
+          <select [value]="selectedType()" (change)="onTypeChange($event)">
+            <option value="">All types</option>
+            @for (type of deviceTypes; track type) {
+              <option [value]="type">
+                {{ DEVICE_TYPE_LABELS[type] }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Sort by:
+          <select [value]="sort()" (change)="onSortChange($event)">
+            <option value="createdAt,desc">Newest</option>
+            <option value="createdAt,asc">Oldest</option>
+            <option value="name,asc">Name A-Z</option>
+            <option value="name,desc">Name Z-A</option>
+            <option value="ipAddress,asc">IP address</option>
+          </select>
+        </label>
+
         <button type="button" (click)="openCreateDialog()">
           <i class="fa-solid fa-plus"></i> Create
         </button>
@@ -76,6 +99,7 @@
         }
       </div>
     </div>
+    <p>TODO: add pagination</p>
   </div>
 } @else {
   <p>Loading...</p>

@@ -1,5 +1,6 @@
 package pl.sgorski.nethelt.webapi.features.device.service;
 
+import jakarta.annotation.Nullable;
 import java.net.Inet4Address;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
 import pl.sgorski.nethelt.webapi.features.device.domain.Device;
+import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
 import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceCreateCommand;
 import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.device.repository.DeviceRepository;
@@ -30,8 +32,9 @@ public class DeviceService {
     return deviceRepository.findAllByNetworkId(networkId);
   }
 
-  public Page<Device> getAllDevicesInNetwork(Long networkId, Pageable pageable) {
-    return deviceRepository.findAllByNetworkId(networkId, pageable);
+  public Page<Device> getAllDevicesInNetwork(
+      Long networkId, @Nullable DeviceType type, Pageable pageable) {
+    return deviceRepository.findAllByNetworkIdAndType(networkId, type, pageable);
   }
 
   @Transactional

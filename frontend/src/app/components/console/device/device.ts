@@ -5,7 +5,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { CreateDevice } from './create-device/create-device';
 import { switchMap } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { DEVICE_TYPE_LABELS } from '../../../models/device/device-type';
+import { DEVICE_TYPE_LABELS, DeviceType } from '../../../models/device/device-type';
 import { UpdateDevice } from './update-device/update-device';
 import { DeviceResponse } from '../../../models/device/device-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
@@ -20,14 +20,34 @@ export class Device {
   private readonly deviceService = inject(DeviceService);
   private readonly dialog = inject(Dialog);
 
+  protected readonly deviceTypes = Object.values(DeviceType);
   protected readonly DEVICE_TYPE_LABELS = DEVICE_TYPE_LABELS;
 
   private readonly reload = signal(0);
+  protected readonly selectedType = signal<DeviceType | ''>('');
+  protected readonly sort = signal('ipAddress,asc');
+  //todo: add pagination
   protected readonly errorMessage = signal('');
   protected readonly message = signal('');
   protected readonly devices = toSignal(
-    toObservable(this.reload).pipe(switchMap(() => this.deviceService.getDevices())),
+    toObservable(this.reload).pipe(
+      switchMap(() =>
+        this.deviceService.getDevices(this.selectedType() || undefined, this.sort(), 0, 20),
+      ),
+    ),
   );
+
+  protected onTypeChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+
+    this.selectedType.set(value as DeviceType | '');
+    this.reload.update((v) => v + 1);
+  }
+
+  protected onSortChange(event: Event): void {
+    this.sort.set((event.target as HTMLSelectElement).value);
+    this.reload.update((v) => v + 1);
+  }
 
   protected openCreateDialog() {
     const dialogRef = this.dialog.open(CreateDevice);
