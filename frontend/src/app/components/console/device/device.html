@@ -8,49 +8,53 @@
         </button>
       </div>
     </div>
-    <div class="device-cards-container">
-      @for (device of devices.content; track device.id) {
-        <div class="device-card">
-          <div class="device-card-header">
-            <div>
-              <h3>{{ device.name }}</h3>
-              <span class="device-type">{{ device.type }}</span>
+    @if (message()) {
+      <div class="message-box">
+        @if (message(); as message) {
+          <p class="success-message">{{ message }}</p>
+        }
+      </div>
+    }
+    <div class="content-details-body">
+      <div class="device-card-container">
+        @for (device of devices.content; track device.id) {
+          <div class="device-card">
+            <div class="device-card-header">
+              <div>
+                <h3>{{ device.name }}</h3>
+                <span class="device-type">{{ DEVICE_TYPE_LABELS[device.type] }}</span>
+              </div>
+
+              <span
+                class="badge"
+                [class.success]="device.isEnabled"
+                [class.danger]="!device.isEnabled"
+              >
+                {{ device.isEnabled ? 'Enabled' : 'Disabled' }}
+              </span>
             </div>
 
-            <span
-              class="badge"
-              [class.success]="device.isEnabled"
-              [class.danger]="!device.isEnabled"
-            >
-              {{ device.isEnabled ? 'Enabled' : 'Disabled' }}
-            </span>
+            <div class="device-card-body">
+              <div class="detail-row">
+                <span class="detail-label">IP Address</span>
+                <span>{{ device.ipAddress }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Created</span>
+                <span>{{ device.createdAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Updated</span>
+                <span>{{ device.updatedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+              </div>
+            </div>
           </div>
-
-          <div class="device-card-body">
-            <div class="detail-row">
-              <span class="detail-label">ID</span>
-              <span>{{ device.id }}</span>
-            </div>
-
-            <div class="detail-row">
-              <span class="detail-label">IP Address</span>
-              <span>{{ device.ipAddress }}</span>
-            </div>
-
-            <div class="detail-row">
-              <span class="detail-label">Created</span>
-              <span>{{ device.createdAt }}</span>
-            </div>
-
-            <div class="detail-row">
-              <span class="detail-label">Updated</span>
-              <span>{{ device.updatedAt }}</span>
-            </div>
-          </div>
-        </div>
-      } @empty {
-        <p>No devices yet...</p>
-      }
+        } @empty {
+          <p>No devices yet...</p>
+        }
+      </div>
     </div>
   </div>
 } @else {

@@ -10,11 +10,24 @@
     </div>
     <div class="form-group">
       <label for="ipAddress">Address IP</label>
-      <input id="ipAddress" type="text" formControlName="ipAddress" />
+      <input id="ipAddress" type="text" formControlName="ipAddress" placeholder="192.168.1.16" />
+      @if (
+        deviceCreateForm.controls.ipAddress.invalid && deviceCreateForm.controls.ipAddress.touched
+      ) {
+        <small class="error-message">Valid ip address is required.</small>
+      }
     </div>
     <div class="form-group">
       <label for="type">Type</label>
-      <input id="type" type="text" formControlName="type" />
+      <select id="type" formControlName="type">
+        <option value="" disabled>Select device type</option>
+        @for (type of deviceTypes; track type) {
+          <option [value]="type">{{ DEVICE_TYPE_LABELS[type] }}</option>
+        }
+      </select>
+      @if (deviceCreateForm.controls.type.invalid && deviceCreateForm.controls.type.touched) {
+        <small class="error-message">Valid device type must be selected</small>
+      }
     </div>
     <div class="form-actions">
       <button type="reset">Clear</button>

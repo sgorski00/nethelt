@@ -36,7 +36,7 @@ public class DeviceController {
 
   @PostMapping
   public ResponseEntity<DeviceResponse> createDevice(
-      @PathVariable("networkId") Long networkId, @Valid DeviceCreateRequest request) {
+      @PathVariable("networkId") Long networkId, @Valid @RequestBody DeviceCreateRequest request) {
     var command = deviceMapper.toCommand(request, networkId);
     var device = deviceService.createDevice(command);
     return ResponseEntity.status(HttpStatus.CREATED).body(deviceMapper.toResponse(device));

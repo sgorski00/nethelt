@@ -3,8 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DeviceService } from '../../../../services/device-service';
 import { DeviceCreateRequest } from '../../../../models/device/device-request';
-import { DeviceType } from '../../../../models/device/device-type';
+import { DEVICE_TYPE_LABELS, DeviceType } from '../../../../models/device/device-type';
 import { ipv4Validator } from '../../../../shared/validators/ip.validator';
+import { DialogRef } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-create-agent',
@@ -14,8 +15,12 @@ import { ipv4Validator } from '../../../../shared/validators/ip.validator';
 })
 export class CreateDevice {
   private readonly fb = inject(FormBuilder);
+  private readonly dialogRef = inject(DialogRef);
   private readonly deviceService = inject(DeviceService);
   private readonly router = inject(Router);
+
+  protected readonly deviceTypes = Object.values(DeviceType);
+  protected readonly DEVICE_TYPE_LABELS = DEVICE_TYPE_LABELS;
 
   protected readonly errorMessage = signal('');
   protected readonly deviceCreateForm = this.fb.nonNullable.group({
@@ -33,7 +38,7 @@ export class CreateDevice {
     const request: DeviceCreateRequest = this.deviceCreateForm.getRawValue();
 
     this.deviceService.createDevice(request).subscribe({
-      next: () => this.router.navigate(['/console/devices']), //todo: add success query param
+      next: () => this.dialogRef.close({ created: true }),
       error: (err) =>
         this.errorMessage.set(err.error?.detail || 'An error occurred while creating the device.'),
     });

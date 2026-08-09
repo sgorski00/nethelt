@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.features.device.domain;
 
 import jakarta.persistence.*;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -36,7 +37,7 @@ public class Device {
   private String name;
 
   @Column(nullable = false, columnDefinition = "inet")
-  private Inet4Address ipAddress;
+  private InetAddress ipAddress;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
