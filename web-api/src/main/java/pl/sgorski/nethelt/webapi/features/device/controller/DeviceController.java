@@ -54,4 +54,34 @@ public class DeviceController {
     var device = deviceService.updateDevice(id, command);
     return ResponseEntity.ok(deviceMapper.toResponse(device));
   }
+
+  @PatchMapping("/{deviceId}/enable")
+  @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
+  public ResponseEntity<DeviceResponse> enableDevice(
+      @P("networkId") @PathVariable("networkId") Long networkId,
+      @PathVariable("deviceId") Long id,
+      Authentication authentication) {
+    var device = deviceService.enableDevice(id);
+    return ResponseEntity.ok(deviceMapper.toResponse(device));
+  }
+
+  @PatchMapping("/{deviceId}/disable")
+  @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
+  public ResponseEntity<DeviceResponse> disableDevice(
+      @P("networkId") @PathVariable("networkId") Long networkId,
+      @PathVariable("deviceId") Long id,
+      Authentication authentication) {
+    var device = deviceService.disableDevice(id);
+    return ResponseEntity.ok(deviceMapper.toResponse(device));
+  }
+
+  @DeleteMapping("/{deviceId}")
+  @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
+  public ResponseEntity<Void> deleteDevice(
+      @P("networkId") @PathVariable("networkId") Long networkId,
+      @PathVariable("deviceId") Long id,
+      Authentication authentication) {
+    deviceService.deleteDevice(id);
+    return ResponseEntity.noContent().build();
+  }
 }

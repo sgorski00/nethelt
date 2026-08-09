@@ -57,14 +57,18 @@
               </button>
 
               @if (device.isEnabled) {
-                <button type="button" class="action-button danger">
+                <button type="button" class="action-button danger" (click)="disable(device.id)">
                   <i class="fa-solid fa-ban"></i> Disable
                 </button>
               } @else {
-                <button type="button" class="action-button success">
+                <button type="button" class="action-button success" (click)="enable(device.id)">
                   <i class="fa-solid fa-play"></i> Enable
                 </button>
               }
+
+              <button type="button" class="action-button danger" (click)="delete(device)">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
             </div>
           </div>
         } @empty {

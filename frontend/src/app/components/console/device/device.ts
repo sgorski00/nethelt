@@ -8,6 +8,7 @@ import { DatePipe } from '@angular/common';
 import { DEVICE_TYPE_LABELS } from '../../../models/device/device-type';
 import { UpdateDevice } from './update-device/update-device';
 import { DeviceResponse } from '../../../models/device/device-response';
+import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-device',
@@ -22,6 +23,7 @@ export class Device {
   protected readonly DEVICE_TYPE_LABELS = DEVICE_TYPE_LABELS;
 
   private readonly reload = signal(0);
+  protected readonly errorMessage = signal('');
   protected readonly message = signal('');
   protected readonly devices = toSignal(
     toObservable(this.reload).pipe(switchMap(() => this.deviceService.getDevices())),
@@ -49,5 +51,47 @@ export class Device {
         this.reload.update((v) => v + 1);
       }
     });
+  }
+
+  protected disable(id: number) {
+    this.deviceService.disableDevice(id).subscribe({
+      next: () => {
+        this.message.set('Device disabled successfully.');
+        this.reload.update((v) => v + 1);
+      },
+      error: (err) => this.errorMessage.set(`Failed to disable device: ${err.message}`),
+    });
+  }
+
+  protected enable(id: number) {
+    this.deviceService.enableDevice(id).subscribe({
+      next: () => {
+        this.message.set('Device enabled successfully.');
+        this.reload.update((v) => v + 1);
+      },
+      error: (err) => this.errorMessage.set(`Failed to enable device: ${err.message}`),
+    });
+  }
+
+  protected delete(device: DeviceResponse) {
+    this.dialog
+      .open(ConfirmDialog, {
+        data: {
+          title: `Delete ${device.name}`,
+          message: 'Are you sure you want to delete this device?',
+          confirmText: device.name,
+        },
+      })
+      .closed.subscribe((confirmed) => {
+        if (!confirmed) return;
+
+        this.deviceService.deleteDevice(device.id).subscribe({
+          next: () => {
+            this.message.set('Device deleted successfully.');
+            this.reload.update((v) => v + 1);
+          },
+          error: (err) => this.errorMessage.set(`Failed to delete device: ${err.message}`),
+        });
+      });
   }
 }

@@ -30,4 +30,16 @@ export class DeviceService {
   public updateDevice(request: DeviceUpdateRequest, deviceId: number): Observable<DeviceResponse> {
     return this.httpClient.put<DeviceResponse>(`${this.devicesUrl}/${deviceId}`, request);
   }
+
+  public enableDevice(deviceId: number): Observable<void> {
+    return this.httpClient.patch<void>(`${this.devicesUrl}/${deviceId}/enable`, {});
+  }
+
+  public disableDevice(deviceId: number): Observable<void> {
+    return this.httpClient.patch<void>(`${this.devicesUrl}/${deviceId}/disable`, {});
+  }
+
+  public deleteDevice(deviceId: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.devicesUrl}/${deviceId}`);
+  }
 }
