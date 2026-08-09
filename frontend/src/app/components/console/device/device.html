@@ -50,6 +50,22 @@
                 <span>{{ device.updatedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
               </div>
             </div>
+
+            <div class="device-card-actions">
+              <button type="button" class="action-button" (click)="openEditDialog(device)">
+                <i class="fa-solid fa-pen"></i> Edit
+              </button>
+
+              @if (device.isEnabled) {
+                <button type="button" class="action-button danger">
+                  <i class="fa-solid fa-ban"></i> Disable
+                </button>
+              } @else {
+                <button type="button" class="action-button success">
+                  <i class="fa-solid fa-play"></i> Enable
+                </button>
+              }
+            </div>
           </div>
         } @empty {
           <p>No devices yet...</p>

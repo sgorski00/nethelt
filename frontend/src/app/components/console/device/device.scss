@@ -72,4 +72,13 @@
     color: #6b7280;
     font-weight: 600;
   }
+
+  .device-card-actions {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+  }
 }

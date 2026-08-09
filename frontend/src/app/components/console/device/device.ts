@@ -6,6 +6,8 @@ import { CreateDevice } from './create-device/create-device';
 import { switchMap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { DEVICE_TYPE_LABELS } from '../../../models/device/device-type';
+import { UpdateDevice } from './update-device/update-device';
+import { DeviceResponse } from '../../../models/device/device-response';
 
 @Component({
   selector: 'app-device',
@@ -31,6 +33,19 @@ export class Device {
     dialogRef.closed.subscribe((created) => {
       if (created) {
         this.message.set('Device created successfully.');
+        this.reload.update((v) => v + 1);
+      }
+    });
+  }
+
+  protected openEditDialog(device: DeviceResponse) {
+    const dialogRef = this.dialog.open(UpdateDevice, {
+      data: device,
+    });
+
+    dialogRef.closed.subscribe((updated) => {
+      if (updated) {
+        this.message.set('Device updated successfully.');
         this.reload.update((v) => v + 1);
       }
     });

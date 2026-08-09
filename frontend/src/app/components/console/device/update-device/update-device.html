@@ -1,0 +1,40 @@
+<div class="dialog">
+  <h2 class="centered">Update device</h2>
+  <form class="form" [formGroup]="deviceUpdateForm" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+      @if (deviceUpdateForm.controls.name.invalid && deviceUpdateForm.controls.name.touched) {
+        <small class="error-message">Name is required and must be max 100 characters.</small>
+      }
+    </div>
+    <div class="form-group">
+      <label for="ipAddress">Address IP</label>
+      <input id="ipAddress" type="text" formControlName="ipAddress" placeholder="192.168.1.16" />
+      @if (
+        deviceUpdateForm.controls.ipAddress.invalid && deviceUpdateForm.controls.ipAddress.touched
+      ) {
+        <small class="error-message">Valid ip address is required.</small>
+      }
+    </div>
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select id="type" formControlName="type">
+        <option value="" disabled>Select device type</option>
+        @for (type of deviceTypes; track type) {
+          <option [value]="type">{{ DEVICE_TYPE_LABELS[type] }}</option>
+        }
+      </select>
+      @if (deviceUpdateForm.controls.type.invalid && deviceUpdateForm.controls.type.touched) {
+        <small class="error-message">Valid device type must be selected</small>
+      }
+    </div>
+    <div class="form-actions">
+      <button type="reset">Clear</button>
+      <button type="submit">Update</button>
+    </div>
+    @if (errorMessage()) {
+      <p class="error-message centered">{{ errorMessage() }}</p>
+    }
+  </form>
+</div>

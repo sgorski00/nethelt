@@ -5,3 +5,9 @@ export interface DeviceCreateRequest {
   ipAddress: string;
   type: DeviceType;
 }
+
+export interface DeviceUpdateRequest {
+  name: string;
+  ipAddress: string;
+  type: DeviceType;
+}

@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.device.dto.request.DeviceCreateRequest;
+import pl.sgorski.nethelt.webapi.features.device.dto.request.DeviceUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.device.dto.response.DeviceResponse;
 import pl.sgorski.nethelt.webapi.features.device.mapper.DeviceMapper;
 import pl.sgorski.nethelt.webapi.features.device.service.DeviceService;
@@ -40,5 +41,17 @@ public class DeviceController {
     var command = deviceMapper.toCommand(request, networkId);
     var device = deviceService.createDevice(command);
     return ResponseEntity.status(HttpStatus.CREATED).body(deviceMapper.toResponse(device));
+  }
+
+  @PutMapping("/{deviceId}")
+  @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
+  public ResponseEntity<DeviceResponse> updateDevice(
+      @P("networkId") @PathVariable("networkId") Long networkId,
+      @PathVariable("deviceId") Long id,
+      @Valid @RequestBody DeviceUpdateRequest request,
+      Authentication authentication) {
+    var command = deviceMapper.toCommand(request);
+    var device = deviceService.updateDevice(id, command);
+    return ResponseEntity.ok(deviceMapper.toResponse(device));
   }
 }
