@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { DeviceService } from '../../../services/device-service';
 import { Dialog } from '@angular/cdk/dialog';
@@ -9,10 +9,11 @@ import { DEVICE_TYPE_LABELS, DeviceType } from '../../../models/device/device-ty
 import { UpdateDevice } from './update-device/update-device';
 import { DeviceResponse } from '../../../models/device/device-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { Pagination } from '../../shared/pagination/pagination';
 
 @Component({
   selector: 'app-device',
-  imports: [DatePipe],
+  imports: [DatePipe, Pagination],
   templateUrl: './device.html',
   styleUrl: './device.scss',
 })
@@ -22,17 +23,28 @@ export class Device {
 
   protected readonly deviceTypes = Object.values(DeviceType);
   protected readonly DEVICE_TYPE_LABELS = DEVICE_TYPE_LABELS;
+  protected readonly pageSizes = [6, 9, 12, 18, 36, 72];
+
+  protected readonly errorMessage = signal('');
+  protected readonly message = signal('');
 
   private readonly reload = signal(0);
   protected readonly selectedType = signal<DeviceType | ''>('');
   protected readonly sort = signal('ipAddress,asc');
-  //todo: add pagination
-  protected readonly errorMessage = signal('');
-  protected readonly message = signal('');
+  protected readonly page = signal(0);
+  protected readonly pageSize = signal(18);
   protected readonly devices = toSignal(
-    toObservable(this.reload).pipe(
-      switchMap(() =>
-        this.deviceService.getDevices(this.selectedType() || undefined, this.sort(), 0, 20),
+    toObservable(
+      computed(() => ({
+        type: this.selectedType() || undefined,
+        sort: this.sort(),
+        page: this.page(),
+        size: this.pageSize(),
+        reload: this.reload(),
+      })),
+    ).pipe(
+      switchMap(({ type, sort, page, size }) =>
+        this.deviceService.getDevices(type, sort, page, size),
       ),
     ),
   );
@@ -41,12 +53,23 @@ export class Device {
     const value = (event.target as HTMLSelectElement).value;
 
     this.selectedType.set(value as DeviceType | '');
-    this.reload.update((v) => v + 1);
+    this.page.set(0);
   }
 
   protected onSortChange(event: Event): void {
     this.sort.set((event.target as HTMLSelectElement).value);
-    this.reload.update((v) => v + 1);
+    this.page.set(0);
+  }
+
+  protected onPageChange(page: number): void {
+    this.page.set(page);
+  }
+
+  protected onPageSizeChange(event: Event): void {
+    const size = Number((event.target as HTMLSelectElement).value);
+
+    this.pageSize.set(size);
+    this.page.set(0);
   }
 
   protected openCreateDialog() {

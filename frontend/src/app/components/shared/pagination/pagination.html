@@ -1,0 +1,22 @@
+<div class="pagination">
+  <div class="pagination-controls">
+    <button type="button" [disabled]="page() === 0" (click)="previousPage()">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <span>Page {{ page() + 1 }} of {{ totalPages }}</span>
+
+    <button type="button" [disabled]="page() >= totalPages - 1" (click)="nextPage()">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+  <div class="pagination-info">
+    <small>
+      @if (totalElements() > 0) {
+        Showing {{ firstItem }}–{{ lastItem }} of {{ totalElements() }}
+      } @else {
+        No results
+      }
+    </small>
+  </div>
+</div>

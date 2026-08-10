@@ -1,4 +1,4 @@
-@if (devices(); as devices) {
+@if (devices(); as devicePage) {
   <div class="content-details">
     <div class="content-details-header">
       <h2>Devices</h2>
@@ -26,6 +26,15 @@
           </select>
         </label>
 
+        <label>
+          Per page:
+          <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+            @for (size of pageSizes; track size) {
+              <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+            }
+          </select>
+        </label>
+
         <button type="button" (click)="openCreateDialog()">
           <i class="fa-solid fa-plus"></i> Create
         </button>
@@ -40,7 +49,7 @@
     }
     <div class="content-details-body">
       <div class="device-card-container">
-        @for (device of devices.content; track device.id) {
+        @for (device of devicePage.content; track device.id) {
           <div class="device-card">
             <div class="device-card-header">
               <div>
@@ -99,7 +108,12 @@
         }
       </div>
     </div>
-    <p>TODO: add pagination</p>
+    <app-pagination
+      [page]="page()"
+      [pageSize]="pageSize()"
+      [totalElements]="devicePage.totalElements"
+      (pageChange)="onPageChange($event)"
+    />
   </div>
 } @else {
   <p>Loading...</p>
