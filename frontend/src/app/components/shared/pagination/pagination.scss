@@ -1,0 +1,29 @@
+.pagination {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0 1rem;
+
+  border-top: 1px solid #ddd;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  select {
+    margin-left: 0.25rem;
+  }
+
+  button {
+    width: 36px;
+    height: 36px;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
