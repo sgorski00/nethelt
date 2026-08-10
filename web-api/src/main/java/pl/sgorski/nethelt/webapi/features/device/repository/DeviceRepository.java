@@ -1,7 +1,8 @@
 package pl.sgorski.nethelt.webapi.features.device.repository;
 
-import jakarta.annotation.Nullable;
+import java.util.Optional;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,8 @@ import pl.sgorski.nethelt.webapi.features.device.domain.Device;
 import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
+  Optional<Device> findByIdAndNetworkId(Long deviceId, Long networkId);
+
   Set<Device> findAllByNetworkId(Long networkId);
 
   @Query(

@@ -1,9 +1,9 @@
 package pl.sgorski.nethelt.webapi.features.device.service;
 
-import jakarta.annotation.Nullable;
 import java.net.Inet4Address;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,10 @@ public class DeviceService {
   private final DeviceRepository deviceRepository;
   private final NetworkService networkService;
 
-  public Device getDevice(Long id) {
-    return deviceRepository.findById(id).orElseThrow(DeviceNotFoundException::new);
+  public Device getDevice(Long networkId, Long deviceId) {
+    return deviceRepository
+        .findByIdAndNetworkId(deviceId, networkId)
+        .orElseThrow(DeviceNotFoundException::new);
   }
 
   public Set<Device> getAllDevicesInNetwork(Long networkId) {
@@ -46,30 +48,30 @@ public class DeviceService {
   }
 
   @Transactional
-  public Device updateDevice(Long id, DeviceUpdateCommand command) {
-    var device = getDevice(id);
+  public Device updateDevice(Long networkId, Long deviceId, DeviceUpdateCommand command) {
+    var device = getDevice(networkId, deviceId);
     var ipAddress = command.ipAddress() != null ? parse(command.ipAddress()) : null;
     device.update(command.name(), ipAddress, command.type());
     return device;
   }
 
   @Transactional
-  public Device enableDevice(Long id) {
-    var device = getDevice(id);
+  public Device enableDevice(Long networkId, Long deviceId) {
+    var device = getDevice(networkId, deviceId);
     device.enable();
     return device;
   }
 
   @Transactional
-  public Device disableDevice(Long id) {
-    var device = getDevice(id);
+  public Device disableDevice(Long networkId, Long deviceId) {
+    var device = getDevice(networkId, deviceId);
     device.disable();
     return device;
   }
 
   @Transactional
-  public void deleteDevice(Long id) {
-    var device = getDevice(id);
+  public void deleteDevice(Long networkId, Long deviceId) {
+    var device = getDevice(networkId, deviceId);
     deviceRepository.delete(device);
   }
 

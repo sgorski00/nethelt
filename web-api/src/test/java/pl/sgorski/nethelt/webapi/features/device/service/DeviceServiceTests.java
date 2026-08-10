@@ -36,18 +36,18 @@ public class DeviceServiceTests {
   @Test
   void getDevice_shouldReturnDevice_whenDeviceExists() {
     var device = TestDeviceFactory.createDevice();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 999L)).thenReturn(Optional.of(device));
 
-    var result = deviceService.getDevice(1L);
+    var result = deviceService.getDevice(999L, 1L);
 
     assertSame(device, result);
   }
 
   @Test
   void getDevice_shouldThrowException_whenDeviceDoesNotExist() {
-    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.empty());
 
-    assertThrows(DeviceNotFoundException.class, () -> deviceService.getDevice(1L));
+    assertThrows(DeviceNotFoundException.class, () -> deviceService.getDevice(1L, 1L));
   }
 
   @Test
@@ -119,9 +119,9 @@ public class DeviceServiceTests {
   void updateDevice_shouldUpdateDevice_whenValidCommand() {
     var command = new DeviceUpdateCommand("updated-device", "10.0.255.254", DeviceType.WIFI_CLIENT);
     var device = TestDeviceFactory.createDevice();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.of(device));
 
-    var result = deviceService.updateDevice(1L, command);
+    var result = deviceService.updateDevice(1L, 1L, command);
 
     assertSame(device, result);
     assertEquals("updated-device", result.getName());
@@ -135,9 +135,9 @@ public class DeviceServiceTests {
     var device = TestDeviceFactory.createDevice();
     var oldIpAddress = device.getIpAddress();
     var oldType = device.getType();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.of(device));
 
-    var result = deviceService.updateDevice(1L, command);
+    var result = deviceService.updateDevice(1L, 1L, command);
 
     assertEquals("updated-device", result.getName());
     assertEquals(oldIpAddress, result.getIpAddress());
@@ -148,28 +148,28 @@ public class DeviceServiceTests {
   void updateDevice_shouldThrow_whenIpNotValid() {
     var command = new DeviceUpdateCommand(null, "256.256.256.256", null);
     var device = TestDeviceFactory.createDevice();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.of(device));
 
     assertThrows(
-        DeviceValidationFailedException.class, () -> deviceService.updateDevice(1L, command));
+        DeviceValidationFailedException.class, () -> deviceService.updateDevice(1L, 1L, command));
   }
 
   @Test
   void updateDevice_shouldThrow_whenDeviceNotFound() {
     var command = new DeviceUpdateCommand(null, "256.256.256.256", null);
-    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.empty());
 
-    assertThrows(DeviceNotFoundException.class, () -> deviceService.updateDevice(1L, command));
+    assertThrows(DeviceNotFoundException.class, () -> deviceService.updateDevice(1L, 1L, command));
   }
 
   @Test
   void enableDevice_shouldEnableDevice() {
     var device = TestDeviceFactory.createDevice();
     device.disable();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.of(device));
 
     assertFalse(device.isEnabled());
-    var result = deviceService.enableDevice(1L);
+    var result = deviceService.enableDevice(1L, 1L);
 
     assertSame(device, result);
     assertTrue(device.isEnabled());
@@ -177,18 +177,18 @@ public class DeviceServiceTests {
 
   @Test
   void enableDevice_shouldThrow_whenDeviceNotFound() {
-    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.empty());
 
-    assertThrows(DeviceNotFoundException.class, () -> deviceService.enableDevice(1L));
+    assertThrows(DeviceNotFoundException.class, () -> deviceService.enableDevice(1L, 1L));
   }
 
   @Test
   void disableDevice_shouldDisableDevice() {
     var device = TestDeviceFactory.createDevice();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.of(device));
 
     assertTrue(device.isEnabled());
-    var result = deviceService.disableDevice(1L);
+    var result = deviceService.disableDevice(1L, 1L);
 
     assertSame(device, result);
     assertFalse(device.isEnabled());
@@ -196,26 +196,26 @@ public class DeviceServiceTests {
 
   @Test
   void disableDevice_shouldThrow_whenDeviceNotFound() {
-    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.empty());
 
-    assertThrows(DeviceNotFoundException.class, () -> deviceService.disableDevice(1L));
+    assertThrows(DeviceNotFoundException.class, () -> deviceService.disableDevice(1L, 1L));
   }
 
   @Test
   void delete_shouldDeleteDevice() {
     var device = TestDeviceFactory.createDevice();
-    when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.of(device));
 
-    deviceService.deleteDevice(1L);
+    deviceService.deleteDevice(1L, 1L);
 
     verify(deviceRepository).delete(device);
   }
 
   @Test
   void delete_shouldThrow_whenDeviceNotFound() {
-    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.empty());
 
-    assertThrows(DeviceNotFoundException.class, () -> deviceService.deleteDevice(1L));
+    assertThrows(DeviceNotFoundException.class, () -> deviceService.deleteDevice(1L, 1L));
     verify(deviceRepository, never()).delete(any());
   }
 }

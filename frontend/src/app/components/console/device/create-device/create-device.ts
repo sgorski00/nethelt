@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DeviceService } from '../../../../services/device-service';
 import { DeviceCreateRequest } from '../../../../models/device/device-request';
 import { DEVICE_TYPE_LABELS, DeviceType } from '../../../../models/device/device-type';
@@ -8,7 +7,7 @@ import { ipv4Validator } from '../../../../shared/validators/ip.validator';
 import { DialogRef } from '@angular/cdk/dialog';
 
 @Component({
-  selector: 'app-create-agent',
+  selector: 'app-create-device',
   imports: [ReactiveFormsModule],
   templateUrl: './create-device.html',
   styleUrl: './create-device.scss',
@@ -17,7 +16,6 @@ export class CreateDevice {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(DialogRef);
   private readonly deviceService = inject(DeviceService);
-  private readonly router = inject(Router);
 
   protected readonly deviceTypes = Object.values(DeviceType);
   protected readonly DEVICE_TYPE_LABELS = DEVICE_TYPE_LABELS;
