@@ -7,7 +7,7 @@
         <select [value]="selectedDeviceId()" (change)="onDeviceChange($event)">
           <option value="" disabled>Select device</option>
           @for (device of devices(); track device.id) {
-            <option [value]="device.id">{{ device.name }} - {{ device.ipAddress }}</option>
+            <option [value]="device.id">{{ device.name }} [{{ device.ipAddress }}]</option>
           }
         </select>
       </label>
