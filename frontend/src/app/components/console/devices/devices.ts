@@ -14,10 +14,10 @@ import { Pagination } from '../../shared/pagination/pagination';
 @Component({
   selector: 'app-device',
   imports: [DatePipe, Pagination],
-  templateUrl: './device.html',
-  styleUrl: './device.scss',
+  templateUrl: './devices.html',
+  styleUrl: './devices.scss',
 })
-export class Device {
+export class Devices {
   private readonly deviceService = inject(DeviceService);
   private readonly dialog = inject(Dialog);
 
