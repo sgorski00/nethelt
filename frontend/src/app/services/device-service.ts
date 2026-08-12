@@ -35,6 +35,10 @@ export class DeviceService {
     return this.httpClient.get<PageResponse<DeviceResponse>>(this.devicesUrl, { params });
   }
 
+  public getDevicesList(): Observable<DeviceResponse[]> {
+    return this.httpClient.get<DeviceResponse[]>(`${this.devicesUrl}/all`);
+  }
+
   public createDevice(request: DeviceCreateRequest): Observable<DeviceResponse> {
     return this.httpClient.post<DeviceResponse>(this.devicesUrl, request);
   }
