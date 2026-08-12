@@ -1,5 +1,6 @@
 package pl.sgorski.nethelt.webapi.features.monitoring_task.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -7,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskCreateCommand;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskUpdateCommand;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.request.MonitoringTaskCreateRequest;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.request.MonitoringTaskUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.MonitoringTaskResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.mapper.MonitoringTaskMapper;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.service.MonitoringTaskService;
@@ -46,7 +47,8 @@ public class MonitoringTaskController {
   public ResponseEntity<MonitoringTaskResponse> createMonitoringTask(
       @P("networkId") @PathVariable("networkId") Long networkId,
       @PathVariable("deviceId") Long deviceId,
-      @RequestBody MonitoringTaskCreateCommand command) {
+      @RequestBody @Valid MonitoringTaskCreateRequest request) {
+    var command = monitoringTaskMapper.toCommand(request);
     var task = monitoringTaskService.createMonitoringTask(networkId, deviceId, command);
     return ResponseEntity.status(HttpStatus.CREATED).body(monitoringTaskMapper.toResponse(task));
   }
@@ -56,7 +58,8 @@ public class MonitoringTaskController {
       @P("networkId") @PathVariable("networkId") Long networkId,
       @PathVariable("deviceId") Long deviceId,
       @PathVariable("taskId") Long taskId,
-      @RequestBody MonitoringTaskUpdateCommand command) {
+      @RequestBody @Valid MonitoringTaskUpdateRequest request) {
+    var command = monitoringTaskMapper.toCommand(request);
     var task = monitoringTaskService.updateMonitoringTask(networkId, deviceId, taskId, command);
     return ResponseEntity.ok(monitoringTaskMapper.toResponse(task));
   }
