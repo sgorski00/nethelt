@@ -5,7 +5,9 @@ import java.time.Duration;
 import java.time.Instant;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 import pl.sgorski.nethelt.webapi.features.device.domain.Device;
 
 @Entity
@@ -28,6 +30,7 @@ public class MonitoringTask {
   private TaskType type;
 
   @Column(nullable = false)
+  @JdbcTypeCode(SqlTypes.INTERVAL_SECOND)
   private Duration interval;
 
   @Column(nullable = false)
