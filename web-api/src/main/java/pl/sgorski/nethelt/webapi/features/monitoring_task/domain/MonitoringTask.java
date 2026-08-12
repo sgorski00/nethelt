@@ -27,7 +27,6 @@ public class MonitoringTask {
   @Column(nullable = false)
   private TaskType type;
 
-  @Setter
   @Column(nullable = false)
   private Duration interval;
 
@@ -45,6 +44,10 @@ public class MonitoringTask {
   public MonitoringTask(Device device, TaskType type, Duration interval) {
     this.device = device;
     this.type = type;
+    this.interval = interval;
+  }
+
+  public void update(Duration interval) {
     this.interval = interval;
   }
 
