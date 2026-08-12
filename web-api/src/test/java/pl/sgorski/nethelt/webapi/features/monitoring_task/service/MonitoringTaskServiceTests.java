@@ -123,9 +123,10 @@ public class MonitoringTaskServiceTests {
         .thenReturn(Optional.of(monitoringTask));
 
     assertFalse(monitoringTask.isEnabled());
-    monitoringTaskService.enableMonitoringTask(1L, 1L, 1L);
+    var result = monitoringTaskService.enableMonitoringTask(1L, 1L, 1L);
 
     assertTrue(monitoringTask.isEnabled());
+    assertSame(monitoringTask, result);
   }
 
   @Test
@@ -149,9 +150,10 @@ public class MonitoringTaskServiceTests {
         .thenReturn(Optional.of(monitoringTask));
 
     assertTrue(monitoringTask.isEnabled());
-    monitoringTaskService.disableMonitoringTask(1L, 1L, 1L);
+    var result = monitoringTaskService.disableMonitoringTask(1L, 1L, 1L);
 
     assertFalse(monitoringTask.isEnabled());
+    assertSame(monitoringTask, result);
   }
 
   @Test

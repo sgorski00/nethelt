@@ -49,15 +49,18 @@ public class MonitoringTaskService {
   }
 
   @Transactional
-  public void enableMonitoringTask(Long networkId, Long deviceId, Long monitoringTaskId) {
+  public MonitoringTask enableMonitoringTask(Long networkId, Long deviceId, Long monitoringTaskId) {
     var monitoringTask = getMonitoringTask(networkId, deviceId, monitoringTaskId);
     monitoringTask.enable();
+    return monitoringTask;
   }
 
   @Transactional
-  public void disableMonitoringTask(Long networkId, Long deviceId, Long monitoringTaskId) {
+  public MonitoringTask disableMonitoringTask(
+      Long networkId, Long deviceId, Long monitoringTaskId) {
     var monitoringTask = getMonitoringTask(networkId, deviceId, monitoringTaskId);
     monitoringTask.disable();
+    return monitoringTask;
   }
 
   @Transactional
