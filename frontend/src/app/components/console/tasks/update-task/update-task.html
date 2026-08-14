@@ -1,0 +1,34 @@
+<div class="dialog">
+  <h2 class="centered">Update task #{{ data.task.id }}</h2>
+  <form class="form" [formGroup]="taskUpdateForm" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select id="type" disabled>
+        <option>{{ TASK_TYPE_LABELS[data.task.type] }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="intervalSeconds">Enter task interval (seconds)</label>
+      <input
+        id="intervalSeconds"
+        type="number"
+        min="1"
+        max="60"
+        formControlName="intervalSeconds"
+      />
+      @if (
+        taskUpdateForm.controls.intervalSeconds.invalid &&
+        taskUpdateForm.controls.intervalSeconds.touched
+      ) {
+        <small class="error-message">An interval between 1s and 1m must be provided.</small>
+      }
+    </div>
+    <div class="form-actions">
+      <button type="reset">Clear</button>
+      <button type="submit">Update</button>
+    </div>
+    @if (errorMessage()) {
+      <p class="error-message centered">{{ errorMessage() }}</p>
+    }
+  </form>
+</div>

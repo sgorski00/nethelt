@@ -48,13 +48,13 @@
       </div>
     }
     <div class="content-details-body">
-      <div class="device-card-container">
+      <div class="cards-container">
         @for (device of devicePage.content; track device.id) {
-          <div class="device-card">
-            <div class="device-card-header">
+          <div class="card">
+            <div class="card-header">
               <div>
                 <h3>{{ device.name }}</h3>
-                <span class="device-type">{{ DEVICE_TYPE_LABELS[device.type] }}</span>
+                <span class="card-object-type">{{ DEVICE_TYPE_LABELS[device.type] }}</span>
               </div>
 
               <span
@@ -66,7 +66,7 @@
               </span>
             </div>
 
-            <div class="device-card-body">
+            <div class="card-body">
               <div class="detail-row">
                 <span class="detail-label">IP Address</span>
                 <span>{{ device.ipAddress }}</span>
@@ -83,7 +83,7 @@
               </div>
             </div>
 
-            <div class="device-card-actions">
+            <div class="card-actions">
               <button type="button" class="action-button" (click)="openEditDialog(device)">
                 <i class="fa-solid fa-pen"></i> Edit
               </button>
