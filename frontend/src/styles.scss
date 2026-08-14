@@ -394,21 +394,22 @@ h2 {
     .content-details-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .content-header-actions {
       display: flex;
-      align-items: center;
+      align-items: end;
       gap: 10px;
 
       select {
-        width: 180px;
+        min-width: 180px;
         height: 40px;
       }
 
       button {
-        width: 100px;
+        min-width: 100px;
+        height: 40px;
         flex-shrink: 0;
       }
     }
