@@ -22,7 +22,7 @@ public class MonitoringTask {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "deviceId", nullable = false)
+  @JoinColumn(name = "device_id", nullable = false)
   private Device device;
 
   @Enumerated(EnumType.STRING)

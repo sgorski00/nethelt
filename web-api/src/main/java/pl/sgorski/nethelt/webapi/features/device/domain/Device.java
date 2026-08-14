@@ -24,7 +24,7 @@ import pl.sgorski.nethelt.webapi.features.network.domain.Network;
       @UniqueConstraint(columnNames = {"network_id", "ip_address"})
     })
 @Getter
-@EqualsAndHashCode(exclude = "network")
+@EqualsAndHashCode(exclude = {"network", "tasks"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Device {
 

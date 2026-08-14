@@ -49,6 +49,11 @@ export class UpdateTask {
   }
 
   private intervalToSeconds(interval: string): number {
-    return Number(interval.match(/PT(\d+)S/)?.[1] ?? 10);
+    const match = interval.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    if (!match) return 5;
+    const hours = Number(match[1] ?? 0);
+    const minutes = Number(match[2] ?? 0);
+    const seconds = Number(match[3] ?? 0);
+    return hours * 3600 + minutes * 60 + seconds;
   }
 }

@@ -30,7 +30,7 @@ public class MonitoringTaskTests {
   }
 
   @Test
-  void enable_shouldEnableDevice() {
+  void enable_shouldEnableTask() {
     var task = TestMonitoringTaskFactory.createTask();
 
     task.disable();
@@ -41,7 +41,7 @@ public class MonitoringTaskTests {
   }
 
   @Test
-  void disable_shouldDisableDevice() {
+  void disable_shouldDisableTask() {
     var task = TestMonitoringTaskFactory.createTask();
 
     assertTrue(task.isEnabled());

@@ -80,7 +80,8 @@ export class Tasks {
         this.message.set('Monitoring task disabled successfully.');
         this.reload.update((v) => v + 1);
       },
-      error: (err) => this.errorMessage.set(`Failed to disable monitoring task: ${err.message}`),
+      error: (err) =>
+        this.errorMessage.set(`Failed to disable monitoring task: ${err.error?.detail}`),
     });
   }
 
@@ -92,7 +93,8 @@ export class Tasks {
         this.message.set('Monitoring task enabled successfully.');
         this.reload.update((v) => v + 1);
       },
-      error: (err) => this.errorMessage.set(`Failed to enable monitoring task: ${err.message}`),
+      error: (err) =>
+        this.errorMessage.set(`Failed to enable monitoring task: ${err.error?.detail}`),
     });
   }
 
@@ -103,7 +105,7 @@ export class Tasks {
       .open(ConfirmDialog, {
         data: {
           title: `Delete Task #${task.id}`,
-          message: 'Are you sure you want to delete this monitorting task?',
+          message: 'Are you sure you want to delete this monitoring task?',
           confirmText: 'Delete',
         },
       })
@@ -116,7 +118,7 @@ export class Tasks {
             this.reload.update((v) => v + 1);
           },
           error: (err) =>
-            this.errorMessage.set(`Failed to delete monitoring task : ${err.message}`),
+            this.errorMessage.set(`Failed to delete monitoring task : ${err.error?.detail}`),
         });
       });
   }
