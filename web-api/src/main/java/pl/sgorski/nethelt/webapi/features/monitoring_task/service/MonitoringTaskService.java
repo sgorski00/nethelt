@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskNotFoundException;
 import pl.sgorski.nethelt.webapi.features.device.service.DeviceService;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTask;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.configuration.PingTaskConfiguration;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskCreateCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.repository.MonitoringTaskRepository;
@@ -35,8 +36,10 @@ public class MonitoringTaskService {
   public MonitoringTask createMonitoringTask(
       Long networkId, Long deviceId, MonitoringTaskCreateCommand command) {
     var device = deviceService.getDevice(networkId, deviceId);
-    var monitoringTask =
-        new MonitoringTask(device, command.type(), Duration.ofSeconds(command.intervalSeconds()));
+    // todo: replace placeholder with configuration service (a'la factory)
+    var configuration = new PingTaskConfiguration(Duration.ofSeconds(5));
+    var interval = Duration.ofSeconds(command.intervalSeconds());
+    var monitoringTask = new MonitoringTask(device, command.type(), interval, configuration);
     return monitoringTaskRepository.save(monitoringTask);
   }
 
@@ -44,7 +47,8 @@ public class MonitoringTaskService {
   public MonitoringTask updateMonitoringTask(
       Long networkId, Long deviceId, Long monitoringTaskId, MonitoringTaskUpdateCommand command) {
     var monitoringTask = getMonitoringTask(networkId, deviceId, monitoringTaskId);
-    monitoringTask.update(Duration.ofSeconds(command.intervalSeconds()));
+    var interval = Duration.ofSeconds(command.intervalSeconds());
+    monitoringTask.update(interval);
     return monitoringTask;
   }
 
