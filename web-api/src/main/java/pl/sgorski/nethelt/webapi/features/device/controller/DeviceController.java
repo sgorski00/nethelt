@@ -1,6 +1,7 @@
 package pl.sgorski.nethelt.webapi.features.device.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,16 @@ public class DeviceController {
         deviceService
             .getAllDevicesInNetwork(networkId, type, pageable)
             .map(deviceMapper::toResponse);
+    return ResponseEntity.ok(devices);
+  }
+
+  @GetMapping("/all")
+  public ResponseEntity<List<DeviceResponse>> getAllDevices(
+      @P("networkId") @PathVariable("networkId") Long networkId) {
+    var devices =
+        deviceService.getAllDevicesInNetwork(networkId).stream()
+            .map(deviceMapper::toResponse)
+            .toList();
     return ResponseEntity.ok(devices);
   }
 

@@ -18,7 +18,11 @@ export const consoleRoutes: Routes = [
       },
       {
         path: 'devices',
-        loadComponent: () => import('./device/device').then((m) => m.Device),
+        loadComponent: () => import('./devices/devices').then((m) => m.Devices),
+      },
+      {
+        path: 'tasks',
+        loadComponent: () => import('./tasks/tasks').then((m) => m.Tasks),
       },
     ],
   },

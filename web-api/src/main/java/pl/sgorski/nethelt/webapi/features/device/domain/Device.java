@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTask;
 import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 
 @Entity
@@ -21,7 +24,7 @@ import pl.sgorski.nethelt.webapi.features.network.domain.Network;
       @UniqueConstraint(columnNames = {"network_id", "ip_address"})
     })
 @Getter
-@EqualsAndHashCode(exclude = "network")
+@EqualsAndHashCode(exclude = {"network", "tasks"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Device {
 
@@ -45,6 +48,9 @@ public class Device {
 
   @Column(nullable = false)
   private boolean isEnabled = true;
+
+  @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<MonitoringTask> tasks = new HashSet<>();
 
   @CreationTimestamp
   @Column(nullable = false)

@@ -14,10 +14,10 @@ import { Pagination } from '../../shared/pagination/pagination';
 @Component({
   selector: 'app-device',
   imports: [DatePipe, Pagination],
-  templateUrl: './device.html',
-  styleUrl: './device.scss',
+  templateUrl: './devices.html',
+  styleUrl: './devices.scss',
 })
-export class Device {
+export class Devices {
   private readonly deviceService = inject(DeviceService);
   private readonly dialog = inject(Dialog);
 
@@ -102,7 +102,7 @@ export class Device {
         this.message.set('Device disabled successfully.');
         this.reload.update((v) => v + 1);
       },
-      error: (err) => this.errorMessage.set(`Failed to disable device: ${err.message}`),
+      error: (err) => this.errorMessage.set(`Failed to disable device: ${err.error?.detail}`),
     });
   }
 
@@ -112,7 +112,7 @@ export class Device {
         this.message.set('Device enabled successfully.');
         this.reload.update((v) => v + 1);
       },
-      error: (err) => this.errorMessage.set(`Failed to enable device: ${err.message}`),
+      error: (err) => this.errorMessage.set(`Failed to enable device: ${err.error?.detail}`),
     });
   }
 
@@ -133,7 +133,7 @@ export class Device {
             this.message.set('Device deleted successfully.');
             this.reload.update((v) => v + 1);
           },
-          error: (err) => this.errorMessage.set(`Failed to delete device: ${err.message}`),
+          error: (err) => this.errorMessage.set(`Failed to delete device: ${err.error?.detail}`),
         });
       });
   }

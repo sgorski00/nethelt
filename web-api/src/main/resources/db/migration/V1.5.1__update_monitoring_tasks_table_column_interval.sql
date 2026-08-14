@@ -1,0 +1,1 @@
+ALTER TABLE monitoring_tasks RENAME COLUMN duration TO interval;
