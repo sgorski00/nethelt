@@ -4,11 +4,18 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TASK_TYPE_LABELS } from '../../../../models/tasks/task-type';
 import { MonitoringTasksService } from '../../../../services/monitoring-tasks-service';
 import { MonitoringTaskUpdateRequest } from '../../../../models/tasks/monitoring-task-request';
-import { MonitoringTaskResponse } from '../../../../models/tasks/monitoring-task-response';
+import {
+  HttpHealthcheckMonitoringTaskResponse,
+  PingMonitoringTaskResponse,
+  TelnetMonitoringTaskResponse,
+} from '../../../../models/tasks/monitoring-task-response';
 
 interface UpdateTaskDialogData {
   deviceId: number;
-  task: MonitoringTaskResponse;
+  task:
+    | PingMonitoringTaskResponse
+    | TelnetMonitoringTaskResponse
+    | HttpHealthcheckMonitoringTaskResponse;
 }
 
 @Component({
@@ -31,6 +38,11 @@ export class UpdateTask {
       this.intervalToSeconds(this.data.task.interval),
       [Validators.required, Validators.min(1)],
     ],
+    configuration: this.fb.nonNullable.group({
+      port: [23, [Validators.required, Validators.min(1), Validators.max(65535)]],
+      path: ['/health', Validators.required],
+      timeoutMs: [2000, [Validators.required, Validators.min(1)]],
+    }),
   });
 
   protected submit(): void {
@@ -39,7 +51,15 @@ export class UpdateTask {
       return;
     }
 
-    const request: MonitoringTaskUpdateRequest = this.taskUpdateForm.getRawValue();
+    const value = this.taskUpdateForm.getRawValue();
+
+    const request: MonitoringTaskUpdateRequest = {
+      intervalSeconds: value.intervalSeconds,
+      configuration: {
+        type: this.data.task.type,
+        ...value.configuration,
+      },
+    };
 
     this.taskServices.updateTask(this.data.deviceId, request, this.data.task.id).subscribe({
       next: () => this.dialogRef.close({ updated: true }),

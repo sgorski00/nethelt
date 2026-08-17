@@ -1,0 +1,15 @@
+.task-configuration {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+
+  .configuration-header {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .detail-row {
+    margin: 0.25rem 0;
+  }
+}

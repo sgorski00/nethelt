@@ -6,9 +6,14 @@ import { switchMap } from 'rxjs';
 import { CreateTask } from './create-task/create-task';
 import { Dialog } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
-import { TASK_TYPE_LABELS } from '../../../models/tasks/task-type';
+import { TASK_TYPE_LABELS, TaskType } from '../../../models/tasks/task-type';
 import { UpdateTask } from './update-task/update-task';
-import { MonitoringTaskResponse } from '../../../models/tasks/monitoring-task-response';
+import {
+  HttpHealthcheckMonitoringTaskResponse,
+  MonitoringTaskResponse,
+  PingMonitoringTaskResponse,
+  TelnetMonitoringTaskResponse,
+} from '../../../models/tasks/monitoring-task-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
@@ -23,6 +28,7 @@ export class Tasks {
   private readonly dialog = inject(Dialog);
 
   protected readonly TASK_TYPE_LABELS = TASK_TYPE_LABELS;
+  protected readonly TaskType = TaskType;
 
   private readonly reload = signal(0);
   protected readonly message = signal('');
@@ -56,7 +62,12 @@ export class Tasks {
     });
   }
 
-  protected openEditDialog(task: MonitoringTaskResponse) {
+  protected openEditDialog(
+    task:
+      | PingMonitoringTaskResponse
+      | TelnetMonitoringTaskResponse
+      | HttpHealthcheckMonitoringTaskResponse,
+  ) {
     const dialogRef = this.dialog.open(UpdateTask, {
       data: {
         deviceId: this.selectedDeviceId(),

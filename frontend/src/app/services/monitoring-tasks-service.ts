@@ -3,7 +3,12 @@ import { NetworkContextService } from './network-context-service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { MonitoringTaskResponse } from '../models/tasks/monitoring-task-response';
+import {
+  HttpHealthcheckMonitoringTaskResponse,
+  MonitoringTaskResponse,
+  PingMonitoringTaskResponse,
+  TelnetMonitoringTaskResponse,
+} from '../models/tasks/monitoring-task-response';
 import {
   MonitoringTaskCreateRequest,
   MonitoringTaskUpdateRequest,
@@ -21,8 +26,14 @@ export class MonitoringTasksService {
     return `${environment.apiUrl}/networks/${networkId}/devices`;
   }
 
-  public getTasks(deviceId: number): Observable<MonitoringTaskResponse[]> {
-    return this.httpClient.get<MonitoringTaskResponse[]>(`${this.devicesUrl}/${deviceId}/tasks`);
+  public getTasks(deviceId: number) {
+    return this.httpClient.get<
+      (
+        | PingMonitoringTaskResponse
+        | TelnetMonitoringTaskResponse
+        | HttpHealthcheckMonitoringTaskResponse
+      )[]
+    >(`${this.devicesUrl}/${deviceId}/tasks`);
   }
 
   public createTask(

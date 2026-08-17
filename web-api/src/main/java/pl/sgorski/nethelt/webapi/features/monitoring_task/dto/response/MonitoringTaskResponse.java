@@ -9,5 +9,6 @@ public record MonitoringTaskResponse(
     TaskType type,
     Duration interval,
     boolean isEnabled,
+    MonitoringTaskConfigurationResponse configuration,
     Instant createdAt,
     Instant updatedAt) {}

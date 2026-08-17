@@ -21,9 +21,15 @@ export class CreateTask {
   protected readonly TASK_TYPE_LABELS = TASK_TYPE_LABELS;
 
   protected readonly errorMessage = signal('');
+
   protected readonly taskCreateForm = this.fb.nonNullable.group({
     intervalSeconds: [5, [Validators.required, Validators.min(1)]],
     type: [TaskType.PING, Validators.required],
+    configuration: this.fb.nonNullable.group({
+      port: [23, [Validators.required, Validators.min(1), Validators.max(65535)]],
+      path: ['/health', Validators.required],
+      timeoutMs: [2000, [Validators.required, Validators.min(1)]],
+    }),
   });
 
   protected submit(): void {
@@ -32,7 +38,16 @@ export class CreateTask {
       return;
     }
 
-    const request: MonitoringTaskCreateRequest = this.taskCreateForm.getRawValue();
+    const value = this.taskCreateForm.getRawValue();
+
+    const request: MonitoringTaskCreateRequest = {
+      type: value.type,
+      intervalSeconds: value.intervalSeconds,
+      configuration: {
+        type: value.type,
+        ...value.configuration,
+      },
+    };
 
     this.tasksService.createTask(this.data.deviceId, request).subscribe({
       next: () => this.dialogRef.close({ created: true }),
