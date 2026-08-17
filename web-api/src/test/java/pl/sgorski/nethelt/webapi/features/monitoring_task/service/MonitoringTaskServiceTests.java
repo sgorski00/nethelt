@@ -13,10 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskNotFoundException;
+import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskValidationFailedException;
 import pl.sgorski.nethelt.webapi.features.device.service.DeviceService;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.TaskType;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskCreateCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskUpdateCommand;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.configuration.HttpHealthcheckTaskConfigurationCommand;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.configuration.PingTaskConfigurationCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.repository.MonitoringTaskRepository;
 import pl.sgorski.nethelt.webapi.utils.TestDeviceFactory;
 import pl.sgorski.nethelt.webapi.utils.TestMonitoringTaskFactory;
@@ -25,6 +28,7 @@ import pl.sgorski.nethelt.webapi.utils.TestMonitoringTaskFactory;
 public class MonitoringTaskServiceTests {
 
   @Mock private MonitoringTaskRepository monitoringTaskRepository;
+  @Mock private MonitoringTaskConfigurationService monitoringTaskConfigurationService;
   @Mock private DeviceService deviceService;
   @InjectMocks private MonitoringTaskService monitoringTaskService;
 
@@ -71,8 +75,12 @@ public class MonitoringTaskServiceTests {
   @Test
   void createMonitoringTask_shouldCreateMonitoringTask_whenValidCommand() {
     var device = TestDeviceFactory.createDevice();
-    var command = new MonitoringTaskCreateCommand(TaskType.HTTP_HEALTHCHECK, 30L);
+    var configuration = new HttpHealthcheckTaskConfigurationCommand(8080, "/health", 5000L);
+    var command = new MonitoringTaskCreateCommand(TaskType.HTTP_HEALTHCHECK, 30L, configuration);
     when(deviceService.getDevice(1L, 1L)).thenReturn(device);
+    when(monitoringTaskConfigurationService.createConfiguration(
+            command.type(), command.configuration()))
+        .thenReturn(TestMonitoringTaskFactory.createConfiguration(command.type()));
     when(monitoringTaskRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     var result = monitoringTaskService.createMonitoringTask(1L, 1L, command);
@@ -85,12 +93,32 @@ public class MonitoringTaskServiceTests {
   }
 
   @Test
+  void createMonitoringTask_shouldThrow_whenConfigNotValid() {
+    var device = TestDeviceFactory.createDevice();
+    var configuration = new HttpHealthcheckTaskConfigurationCommand(8080, "/health", 5000L);
+    var command = new MonitoringTaskCreateCommand(TaskType.HTTP_HEALTHCHECK, 30L, configuration);
+    when(deviceService.getDevice(1L, 1L)).thenReturn(device);
+    when(monitoringTaskConfigurationService.createConfiguration(
+            command.type(), command.configuration()))
+        .thenThrow(new MonitoringTaskValidationFailedException("Invalid configuration"));
+
+    assertThrows(
+        MonitoringTaskValidationFailedException.class,
+        () -> monitoringTaskService.createMonitoringTask(1L, 1L, command));
+    verify(monitoringTaskRepository, never()).save(any());
+  }
+
+  @Test
   void updateMonitoringTask_shouldUpdateMonitoringTask_whenValidCommand() {
     var device = TestDeviceFactory.createDevice();
     var monitoringTask =
         TestMonitoringTaskFactory.createTask(device, TaskType.PING, Duration.ofSeconds(10));
-    var command = new MonitoringTaskUpdateCommand(45L);
+    var configuration = new PingTaskConfigurationCommand(5000L);
+    var command = new MonitoringTaskUpdateCommand(45L, configuration);
     when(deviceService.getDevice(1L, 1L)).thenReturn(device);
+    when(monitoringTaskConfigurationService.createConfiguration(
+            monitoringTask.getType(), command.configuration()))
+        .thenReturn(TestMonitoringTaskFactory.createConfiguration(monitoringTask.getType()));
     when(monitoringTaskRepository.findByDeviceAndId(device, 1L))
         .thenReturn(Optional.of(monitoringTask));
 
@@ -101,9 +129,29 @@ public class MonitoringTaskServiceTests {
   }
 
   @Test
+  void updateMonitoringTask_shouldThrow_whenConfigNotValid() {
+    var device = TestDeviceFactory.createDevice();
+    var monitoringTask =
+        TestMonitoringTaskFactory.createTask(device, TaskType.PING, Duration.ofSeconds(10));
+    var configuration = new PingTaskConfigurationCommand(-1L);
+    var command = new MonitoringTaskUpdateCommand(45L, configuration);
+    when(deviceService.getDevice(1L, 1L)).thenReturn(device);
+    when(monitoringTaskRepository.findByDeviceAndId(device, 1L))
+        .thenReturn(Optional.of(monitoringTask));
+    when(monitoringTaskConfigurationService.createConfiguration(
+            monitoringTask.getType(), command.configuration()))
+        .thenThrow(new MonitoringTaskValidationFailedException("Invalid configuration"));
+
+    assertThrows(
+        MonitoringTaskValidationFailedException.class,
+        () -> monitoringTaskService.updateMonitoringTask(1L, 1L, 1L, command));
+  }
+
+  @Test
   void updateMonitoringTask_shouldThrowException_whenMonitoringTaskDoesNotExist() {
     var device = TestDeviceFactory.createDevice();
-    var command = new MonitoringTaskUpdateCommand(45L);
+    var configuration = new PingTaskConfigurationCommand(5000L);
+    var command = new MonitoringTaskUpdateCommand(45L, configuration);
     when(deviceService.getDevice(1L, 1L)).thenReturn(device);
     when(monitoringTaskRepository.findByDeviceAndId(device, 1L)).thenReturn(Optional.empty());
 

@@ -56,8 +56,9 @@ public class MonitoringTask {
     this.configuration = configuration;
   }
 
-  public void update(Duration interval) {
+  public void update(Duration interval, MonitoringTaskConfiguration configuration) {
     this.interval = interval;
+    this.configuration = configuration;
   }
 
   public void enable() {

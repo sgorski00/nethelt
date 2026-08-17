@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskNotFoundException;
 import pl.sgorski.nethelt.webapi.features.device.service.DeviceService;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTask;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.configuration.PingTaskConfiguration;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskCreateCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.repository.MonitoringTaskRepository;
@@ -18,6 +17,7 @@ import pl.sgorski.nethelt.webapi.features.monitoring_task.repository.MonitoringT
 public class MonitoringTaskService {
 
   private final MonitoringTaskRepository monitoringTaskRepository;
+  private final MonitoringTaskConfigurationService monitoringTaskConfigurationService;
   private final DeviceService deviceService;
 
   public MonitoringTask getMonitoringTask(Long networkId, Long deviceId, Long monitoringTaskId) {
@@ -36,8 +36,9 @@ public class MonitoringTaskService {
   public MonitoringTask createMonitoringTask(
       Long networkId, Long deviceId, MonitoringTaskCreateCommand command) {
     var device = deviceService.getDevice(networkId, deviceId);
-    // todo: replace placeholder with configuration service (a'la factory)
-    var configuration = new PingTaskConfiguration(Duration.ofSeconds(5));
+    var configuration =
+        monitoringTaskConfigurationService.createConfiguration(
+            command.type(), command.configuration());
     var interval = Duration.ofSeconds(command.intervalSeconds());
     var monitoringTask = new MonitoringTask(device, command.type(), interval, configuration);
     return monitoringTaskRepository.save(monitoringTask);
@@ -48,7 +49,10 @@ public class MonitoringTaskService {
       Long networkId, Long deviceId, Long monitoringTaskId, MonitoringTaskUpdateCommand command) {
     var monitoringTask = getMonitoringTask(networkId, deviceId, monitoringTaskId);
     var interval = Duration.ofSeconds(command.intervalSeconds());
-    monitoringTask.update(interval);
+    var configuration =
+        monitoringTaskConfigurationService.createConfiguration(
+            monitoringTask.getType(), command.configuration());
+    monitoringTask.update(interval, configuration);
     return monitoringTask;
   }
 

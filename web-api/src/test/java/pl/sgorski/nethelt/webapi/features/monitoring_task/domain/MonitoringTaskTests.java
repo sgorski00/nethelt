@@ -26,9 +26,11 @@ public class MonitoringTaskTests {
   @Test
   void update_shouldUpdateInterval() {
     var task = TestMonitoringTaskFactory.createTask(TaskType.PING, Duration.ofMinutes(5));
+    var configuration = new PingTaskConfiguration(Duration.ofSeconds(10));
 
-    task.update(Duration.ofSeconds(30));
+    task.update(Duration.ofSeconds(30), configuration);
 
+    assertSame(configuration, task.getConfiguration());
     assertEquals(Duration.ofSeconds(30), task.getInterval());
   }
 
