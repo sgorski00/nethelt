@@ -36,8 +36,8 @@ public class MonitoringTask {
   @Column(nullable = false)
   private boolean isEnabled = true;
 
-  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "configuration_id")
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+  @JoinColumn(name = "configuration_id", nullable = false, unique = true)
   private MonitoringTaskConfiguration configuration;
 
   @CreationTimestamp

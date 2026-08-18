@@ -41,9 +41,15 @@ export class UpdateTask {
       [Validators.required, Validators.min(1)],
     ],
     configuration: this.fb.nonNullable.group({
-      port: [23, [Validators.required, Validators.min(1), Validators.max(65535)]],
-      path: ['/health', Validators.required],
-      timeoutSeconds: [2.0, [Validators.required, Validators.min(0.5), Validators.max(5)]],
+      port: [
+        this.getConfigurationDefaults().port,
+        [Validators.required, Validators.min(1), Validators.max(65535)],
+      ],
+      path: [this.getConfigurationDefaults().path, Validators.required],
+      timeoutSeconds: [
+        this.getConfigurationDefaults().timeoutSeconds,
+        [Validators.required, Validators.min(0.5), Validators.max(5)],
+      ],
     }),
   });
 
@@ -95,11 +101,38 @@ export class UpdateTask {
   }
 
   private intervalToSeconds(interval: string): number {
-    const match = interval.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    const match = interval.match(
+      /^PT(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?$/,
+    );
     if (!match) return 5;
     const hours = Number(match[1] ?? 0);
     const minutes = Number(match[2] ?? 0);
     const seconds = Number(match[3] ?? 0);
     return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  private getConfigurationDefaults() {
+    switch (this.data.task.type) {
+      case TaskType.PING:
+        return {
+          port: 23,
+          path: '/health',
+          timeoutSeconds: this.intervalToSeconds(this.data.task.configuration.timeout),
+        };
+
+      case TaskType.TELNET:
+        return {
+          port: this.data.task.configuration.port,
+          path: '/health',
+          timeoutSeconds: this.intervalToSeconds(this.data.task.configuration.timeout),
+        };
+
+      case TaskType.HTTP_HEALTHCHECK:
+        return {
+          port: this.data.task.configuration.port,
+          path: this.data.task.configuration.path,
+          timeoutSeconds: this.intervalToSeconds(this.data.task.configuration.timeout),
+        };
+    }
   }
 }
