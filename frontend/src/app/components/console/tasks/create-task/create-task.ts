@@ -18,12 +18,19 @@ export class CreateTask {
   private readonly data = inject<{ deviceId: number }>(DIALOG_DATA);
 
   protected readonly taskTypes = Object.values(TaskType);
+  protected readonly TaskType = TaskType;
   protected readonly TASK_TYPE_LABELS = TASK_TYPE_LABELS;
 
   protected readonly errorMessage = signal('');
+
   protected readonly taskCreateForm = this.fb.nonNullable.group({
     intervalSeconds: [5, [Validators.required, Validators.min(1)]],
     type: [TaskType.PING, Validators.required],
+    configuration: this.fb.nonNullable.group({
+      port: [23, [Validators.required, Validators.min(1), Validators.max(65535)]],
+      path: ['/health', Validators.required],
+      timeoutSeconds: [2.0, [Validators.required, Validators.min(0.5), Validators.max(5)]],
+    }),
   });
 
   protected submit(): void {
@@ -32,7 +39,40 @@ export class CreateTask {
       return;
     }
 
-    const request: MonitoringTaskCreateRequest = this.taskCreateForm.getRawValue();
+    const value = this.taskCreateForm.getRawValue();
+
+    let configuration;
+    switch (value.type) {
+      case TaskType.PING:
+        configuration = {
+          type: value.type,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+
+      case TaskType.TELNET:
+        configuration = {
+          type: value.type,
+          port: value.configuration.port,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+
+      case TaskType.HTTP_HEALTHCHECK:
+        configuration = {
+          type: value.type,
+          port: value.configuration.port,
+          path: value.configuration.path,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+    }
+
+    const request: MonitoringTaskCreateRequest = {
+      type: value.type,
+      intervalSeconds: value.intervalSeconds,
+      configuration,
+    };
 
     this.tasksService.createTask(this.data.deviceId, request).subscribe({
       next: () => this.dialogRef.close({ created: true }),

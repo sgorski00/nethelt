@@ -13,7 +13,7 @@ import pl.sgorski.nethelt.webapi.features.device.domain.Device;
 @Entity
 @Getter
 @Table(name = "monitoring_tasks")
-@EqualsAndHashCode(exclude = "device")
+@EqualsAndHashCode(exclude = {"device", "configuration"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MonitoringTask {
 
@@ -36,6 +36,10 @@ public class MonitoringTask {
   @Column(nullable = false)
   private boolean isEnabled = true;
 
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+  @JoinColumn(name = "configuration_id", nullable = false, unique = true)
+  private MonitoringTaskConfiguration configuration;
+
   @CreationTimestamp
   @Column(nullable = false)
   private Instant createdAt;
@@ -44,14 +48,17 @@ public class MonitoringTask {
   @Column(nullable = false)
   private Instant updatedAt;
 
-  public MonitoringTask(Device device, TaskType type, Duration interval) {
+  public MonitoringTask(
+      Device device, TaskType type, Duration interval, MonitoringTaskConfiguration configuration) {
     this.device = device;
     this.type = type;
     this.interval = interval;
+    this.configuration = configuration;
   }
 
-  public void update(Duration interval) {
+  public void update(Duration interval, MonitoringTaskConfiguration configuration) {
     this.interval = interval;
+    this.configuration = configuration;
   }
 
   public void enable() {

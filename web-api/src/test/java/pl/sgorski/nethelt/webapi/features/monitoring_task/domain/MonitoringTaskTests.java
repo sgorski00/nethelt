@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.configuration.PingTaskConfiguration;
 import pl.sgorski.nethelt.webapi.utils.TestDeviceFactory;
 import pl.sgorski.nethelt.webapi.utils.TestMonitoringTaskFactory;
 
@@ -12,9 +13,11 @@ public class MonitoringTaskTests {
   @Test
   void constructor_shouldCreateCorrectObject() {
     var device = TestDeviceFactory.createDevice();
-    var task = new MonitoringTask(device, TaskType.PING, Duration.ofMinutes(5));
+    var configuration = new PingTaskConfiguration(Duration.ofSeconds(5));
+    var task = new MonitoringTask(device, TaskType.PING, Duration.ofMinutes(5), configuration);
 
     assertSame(device, task.getDevice());
+    assertSame(configuration, task.getConfiguration());
     assertEquals(TaskType.PING, task.getType());
     assertEquals(Duration.ofMinutes(5), task.getInterval());
     assertTrue(task.isEnabled());
@@ -23,9 +26,11 @@ public class MonitoringTaskTests {
   @Test
   void update_shouldUpdateInterval() {
     var task = TestMonitoringTaskFactory.createTask(TaskType.PING, Duration.ofMinutes(5));
+    var configuration = new PingTaskConfiguration(Duration.ofSeconds(10));
 
-    task.update(Duration.ofSeconds(30));
+    task.update(Duration.ofSeconds(30), configuration);
 
+    assertSame(configuration, task.getConfiguration());
     assertEquals(Duration.ofSeconds(30), task.getInterval());
   }
 

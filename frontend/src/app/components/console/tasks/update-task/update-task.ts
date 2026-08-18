@@ -1,14 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { TASK_TYPE_LABELS } from '../../../../models/tasks/task-type';
+import { TASK_TYPE_LABELS, TaskType } from '../../../../models/tasks/task-type';
 import { MonitoringTasksService } from '../../../../services/monitoring-tasks-service';
 import { MonitoringTaskUpdateRequest } from '../../../../models/tasks/monitoring-task-request';
-import { MonitoringTaskResponse } from '../../../../models/tasks/monitoring-task-response';
+import {
+  HttpHealthcheckMonitoringTaskResponse,
+  PingMonitoringTaskResponse,
+  TelnetMonitoringTaskResponse,
+} from '../../../../models/tasks/monitoring-task-response';
 
 interface UpdateTaskDialogData {
   deviceId: number;
-  task: MonitoringTaskResponse;
+  task:
+    | PingMonitoringTaskResponse
+    | TelnetMonitoringTaskResponse
+    | HttpHealthcheckMonitoringTaskResponse;
 }
 
 @Component({
@@ -23,6 +30,8 @@ export class UpdateTask {
   private readonly taskServices = inject(MonitoringTasksService);
 
   protected readonly data = inject<UpdateTaskDialogData>(DIALOG_DATA);
+
+  protected readonly TaskType = TaskType;
   protected readonly TASK_TYPE_LABELS = TASK_TYPE_LABELS;
 
   protected readonly errorMessage = signal('');
@@ -31,6 +40,17 @@ export class UpdateTask {
       this.intervalToSeconds(this.data.task.interval),
       [Validators.required, Validators.min(1)],
     ],
+    configuration: this.fb.nonNullable.group({
+      port: [
+        this.getConfigurationDefaults().port,
+        [Validators.required, Validators.min(1), Validators.max(65535)],
+      ],
+      path: [this.getConfigurationDefaults().path, Validators.required],
+      timeoutSeconds: [
+        this.getConfigurationDefaults().timeoutSeconds,
+        [Validators.required, Validators.min(0.5), Validators.max(5)],
+      ],
+    }),
   });
 
   protected submit(): void {
@@ -39,7 +59,39 @@ export class UpdateTask {
       return;
     }
 
-    const request: MonitoringTaskUpdateRequest = this.taskUpdateForm.getRawValue();
+    const value = this.taskUpdateForm.getRawValue();
+
+    let configuration;
+    switch (this.data.task.type) {
+      case TaskType.PING:
+        configuration = {
+          type: this.data.task.type,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+
+      case TaskType.TELNET:
+        configuration = {
+          type: this.data.task.type,
+          port: value.configuration.port,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+
+      case TaskType.HTTP_HEALTHCHECK:
+        configuration = {
+          type: this.data.task.type,
+          port: value.configuration.port,
+          path: value.configuration.path,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+    }
+
+    const request: MonitoringTaskUpdateRequest = {
+      intervalSeconds: value.intervalSeconds,
+      configuration,
+    };
 
     this.taskServices.updateTask(this.data.deviceId, request, this.data.task.id).subscribe({
       next: () => this.dialogRef.close({ updated: true }),
@@ -49,11 +101,38 @@ export class UpdateTask {
   }
 
   private intervalToSeconds(interval: string): number {
-    const match = interval.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    const match = interval.match(
+      /^PT(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?$/,
+    );
     if (!match) return 5;
     const hours = Number(match[1] ?? 0);
     const minutes = Number(match[2] ?? 0);
     const seconds = Number(match[3] ?? 0);
     return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  private getConfigurationDefaults() {
+    switch (this.data.task.type) {
+      case TaskType.PING:
+        return {
+          port: 23,
+          path: '/health',
+          timeoutSeconds: this.intervalToSeconds(this.data.task.configuration.timeout),
+        };
+
+      case TaskType.TELNET:
+        return {
+          port: this.data.task.configuration.port,
+          path: '/health',
+          timeoutSeconds: this.intervalToSeconds(this.data.task.configuration.timeout),
+        };
+
+      case TaskType.HTTP_HEALTHCHECK:
+        return {
+          port: this.data.task.configuration.port,
+          path: this.data.task.configuration.path,
+          timeoutSeconds: this.intervalToSeconds(this.data.task.configuration.timeout),
+        };
+    }
   }
 }

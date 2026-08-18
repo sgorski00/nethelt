@@ -52,6 +52,43 @@
                 <span class="detail-label">Interval</span>
                 <span>{{ task.interval.replace('PT', '') }}</span>
               </div>
+              @switch (task.type) {
+                @case (TaskType.PING) {
+                  <div class="detail-row">
+                    <span class="detail-label">Timeout</span>
+                    <span>{{ task.configuration.timeout.replace('PT', '') }}</span>
+                  </div>
+                }
+
+                @case (TaskType.TELNET) {
+                  <div class="detail-row">
+                    <span class="detail-label">Port</span>
+                    <span>{{ task.configuration.port }}</span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">Timeout</span>
+                    <span>{{ task.configuration.timeout.replace('PT', '') }}</span>
+                  </div>
+                }
+
+                @case (TaskType.HTTP_HEALTHCHECK) {
+                  <div class="detail-row">
+                    <span class="detail-label">Port</span>
+                    <span>{{ task.configuration.port }}</span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">Path</span>
+                    <span>{{ task.configuration.path }}</span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">Timeout</span>
+                    <span>{{ task.configuration.timeout.replace('PT', '') }}</span>
+                  </div>
+                }
+              }
 
               <div class="detail-row">
                 <span class="detail-label">Created</span>

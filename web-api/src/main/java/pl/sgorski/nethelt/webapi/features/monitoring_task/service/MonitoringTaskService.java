@@ -17,6 +17,7 @@ import pl.sgorski.nethelt.webapi.features.monitoring_task.repository.MonitoringT
 public class MonitoringTaskService {
 
   private final MonitoringTaskRepository monitoringTaskRepository;
+  private final MonitoringTaskConfigurationService monitoringTaskConfigurationService;
   private final DeviceService deviceService;
 
   public MonitoringTask getMonitoringTask(Long networkId, Long deviceId, Long monitoringTaskId) {
@@ -35,8 +36,11 @@ public class MonitoringTaskService {
   public MonitoringTask createMonitoringTask(
       Long networkId, Long deviceId, MonitoringTaskCreateCommand command) {
     var device = deviceService.getDevice(networkId, deviceId);
-    var monitoringTask =
-        new MonitoringTask(device, command.type(), Duration.ofSeconds(command.intervalSeconds()));
+    var configuration =
+        monitoringTaskConfigurationService.createConfiguration(
+            command.type(), command.configuration());
+    var interval = Duration.ofSeconds(command.intervalSeconds());
+    var monitoringTask = new MonitoringTask(device, command.type(), interval, configuration);
     return monitoringTaskRepository.save(monitoringTask);
   }
 
@@ -44,7 +48,11 @@ public class MonitoringTaskService {
   public MonitoringTask updateMonitoringTask(
       Long networkId, Long deviceId, Long monitoringTaskId, MonitoringTaskUpdateCommand command) {
     var monitoringTask = getMonitoringTask(networkId, deviceId, monitoringTaskId);
-    monitoringTask.update(Duration.ofSeconds(command.intervalSeconds()));
+    var interval = Duration.ofSeconds(command.intervalSeconds());
+    var configuration =
+        monitoringTaskConfigurationService.createConfiguration(
+            monitoringTask.getType(), command.configuration());
+    monitoringTask.update(interval, configuration);
     return monitoringTask;
   }
 

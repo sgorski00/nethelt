@@ -140,12 +140,20 @@ a.danger:hover {
   }
 }
 
-.form {
+.form,
+.subform {
   display: flex;
   flex-direction: column;
   gap: 15px;
+}
+
+.form {
   width: 300px;
   padding: 25px;
+}
+
+.subform {
+  width: 100%;
 }
 
 .form-group {
