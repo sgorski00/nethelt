@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { TASK_TYPE_LABELS } from '../../../../models/tasks/task-type';
+import { TASK_TYPE_LABELS, TaskType } from '../../../../models/tasks/task-type';
 import { MonitoringTasksService } from '../../../../services/monitoring-tasks-service';
 import { MonitoringTaskUpdateRequest } from '../../../../models/tasks/monitoring-task-request';
 import {
@@ -30,6 +30,8 @@ export class UpdateTask {
   private readonly taskServices = inject(MonitoringTasksService);
 
   protected readonly data = inject<UpdateTaskDialogData>(DIALOG_DATA);
+
+  protected readonly TaskType = TaskType;
   protected readonly TASK_TYPE_LABELS = TASK_TYPE_LABELS;
 
   protected readonly errorMessage = signal('');
@@ -41,7 +43,7 @@ export class UpdateTask {
     configuration: this.fb.nonNullable.group({
       port: [23, [Validators.required, Validators.min(1), Validators.max(65535)]],
       path: ['/health', Validators.required],
-      timeoutMs: [2000, [Validators.required, Validators.min(1)]],
+      timeoutSeconds: [2.0, [Validators.required, Validators.min(0.5), Validators.max(5)]],
     }),
   });
 
@@ -53,12 +55,36 @@ export class UpdateTask {
 
     const value = this.taskUpdateForm.getRawValue();
 
+    let configuration;
+    switch (this.data.task.type) {
+      case TaskType.PING:
+        configuration = {
+          type: this.data.task.type,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+
+      case TaskType.TELNET:
+        configuration = {
+          type: this.data.task.type,
+          port: value.configuration.port,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+
+      case TaskType.HTTP_HEALTHCHECK:
+        configuration = {
+          type: this.data.task.type,
+          port: value.configuration.port,
+          path: value.configuration.path,
+          timeoutMs: value.configuration.timeoutSeconds * 1000,
+        };
+        break;
+    }
+
     const request: MonitoringTaskUpdateRequest = {
       intervalSeconds: value.intervalSeconds,
-      configuration: {
-        type: this.data.task.type,
-        ...value.configuration,
-      },
+      configuration,
     };
 
     this.taskServices.updateTask(this.data.deviceId, request, this.data.task.id).subscribe({

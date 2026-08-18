@@ -71,7 +71,7 @@ export class CreateTask {
     const request: MonitoringTaskCreateRequest = {
       type: value.type,
       intervalSeconds: value.intervalSeconds,
-      configuration
+      configuration,
     };
 
     this.tasksService.createTask(this.data.deviceId, request).subscribe({

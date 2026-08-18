@@ -23,6 +23,108 @@
         <small class="error-message">An interval between 1s and 1m must be provided.</small>
       }
     </div>
+    <div class="subform" formGroupName="configuration">
+      @switch (data.task.type) {
+        @case (TaskType.PING) {
+          <div class="form-group">
+            <label for="timeoutSeconds">Enter acceptable timeout (seconds)</label>
+            <input
+              id="timeoutSeconds"
+              type="number"
+              min="0.5"
+              max="5"
+              step="0.5"
+              formControlName="timeoutSeconds"
+            />
+
+            @if (
+              taskUpdateForm.controls.configuration.controls.timeoutSeconds.invalid &&
+              taskUpdateForm.controls.configuration.controls.timeoutSeconds.touched
+            ) {
+              <small class="error-message">A timeout between 0.5s and 5s must be provided.</small>
+            }
+          </div>
+        }
+
+        @case (TaskType.TELNET) {
+          <div class="form-group">
+            <label for="port">Port</label>
+            <input id="port" type="number" min="1" max="65535" formControlName="port" />
+
+            @if (
+              taskUpdateForm.controls.configuration.controls.port.invalid &&
+              taskUpdateForm.controls.configuration.controls.port.touched
+            ) {
+              <small class="error-message">Port must be between 1 and 65535.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="timeoutSeconds">Enter acceptable timeout (seconds)</label>
+            <input
+              id="timeoutSeconds"
+              type="number"
+              min="0.5"
+              max="5"
+              step="0.5"
+              formControlName="timeoutSeconds"
+            />
+
+            @if (
+              taskUpdateForm.controls.configuration.controls.timeoutSeconds.invalid &&
+              taskUpdateForm.controls.configuration.controls.timeoutSeconds.touched
+            ) {
+              <small class="error-message">A timeout between 0.5s and 5s must be provided.</small>
+            }
+          </div>
+        }
+
+        @case (TaskType.HTTP_HEALTHCHECK) {
+          <div class="form-group">
+            <label for="path">Path</label>
+            <input id="path" type="text" formControlName="path" placeholder="/health" />
+
+            @if (
+              taskUpdateForm.controls.configuration.controls.path.invalid &&
+              taskUpdateForm.controls.configuration.controls.path.touched
+            ) {
+              <small class="error-message">Path is required.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="port">Port</label>
+            <input id="port" type="number" min="1" max="65535" formControlName="port" />
+
+            @if (
+              taskUpdateForm.controls.configuration.controls.port.invalid &&
+              taskUpdateForm.controls.configuration.controls.port.touched
+            ) {
+              <small class="error-message">Port must be between 1 and 65535.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="timeoutSeconds">Enter acceptable timeout (seconds)</label>
+            <input
+              id="timeoutSeconds"
+              type="number"
+              min="0.5"
+              max="5"
+              step="0.5"
+              formControlName="timeoutSeconds"
+            />
+
+            @if (
+              taskUpdateForm.controls.configuration.controls.timeoutSeconds.invalid &&
+              taskUpdateForm.controls.configuration.controls.timeoutSeconds.touched
+            ) {
+              <small class="error-message">A timeout between 0.5s and 5s must be provided.</small>
+            }
+          </div>
+        }
+      }
+    </div>
     <div class="form-actions">
       <button type="reset">Clear</button>
       <button type="submit">Update</button>
