@@ -56,12 +56,12 @@
             </dependency>
             <dependency>
                 <groupId>pl.sgorski.nethelt</groupId>
-                <artifactId>client-common</artifactId>
+                <artifactId>client-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>pl.sgorski.nethelt</groupId>
-                <artifactId>bg-client</artifactId>
+                <artifactId>client-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>client-common</artifactId>
+  <artifactId>client-core</artifactId>
   <packaging>jar</packaging>
   <name>NetHelt Client - Agent Commons</name>
   <description>${project.name}</description>

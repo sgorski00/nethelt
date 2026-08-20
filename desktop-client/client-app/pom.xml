@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>bg-client</artifactId>
+  <artifactId>client-app</artifactId>
   <packaging>jar</packaging>
   <name>NetHelt Client - Agent Background WebClient</name>
   <description>${project.name}</description>
@@ -26,7 +26,7 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>client-common</artifactId>
+      <artifactId>client-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
