@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,7 @@ import pl.sgorski.nethelt.model.PingResult;
 import pl.sgorski.nethelt.model.TelnetResult;
 
 @ExtendWith(MockitoExtension.class)
-public class ResultProviderTests {
+public class MonitoringExecutorTests {
 
   @Mock private PingOperation ping;
   @Mock private TelnetOperation telnet;
@@ -30,7 +29,7 @@ public class ResultProviderTests {
     var device = new Device();
     var pingResult = mock(PingResult.class);
 
-    when(ping.executeAsync(device)).thenReturn(CompletableFuture.completedFuture(pingResult));
+    when(ping.execute(device)).thenReturn(pingResult);
 
     var results = MonitoringExecutor.getPingResults(Collections.singleton(device));
 
@@ -44,8 +43,7 @@ public class ResultProviderTests {
     deviceWithPort.setPort(22);
     var telnetResult = mock(TelnetResult.class);
 
-    when(telnet.executeAsync(deviceWithPort))
-        .thenReturn(CompletableFuture.completedFuture(telnetResult));
+    when(telnet.execute(deviceWithPort)).thenReturn(telnetResult);
 
     var results = MonitoringExecutor.getTelnetResults(Collections.singleton(deviceWithPort));
 
@@ -61,8 +59,7 @@ public class ResultProviderTests {
     var devices = Set.of(deviceWithoutPort, deviceWithPort);
 
     var telnetResult = mock(TelnetResult.class);
-    when(telnet.executeAsync(deviceWithPort))
-        .thenReturn(CompletableFuture.completedFuture(telnetResult));
+    when(telnet.execute(deviceWithPort)).thenReturn(telnetResult);
 
     var results = MonitoringExecutor.getTelnetResults(devices);
 

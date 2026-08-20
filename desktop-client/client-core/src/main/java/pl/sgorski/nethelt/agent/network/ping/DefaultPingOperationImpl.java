@@ -1,7 +1,7 @@
 package pl.sgorski.nethelt.agent.network.ping;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.service.PingOperation;
@@ -18,20 +18,15 @@ public class DefaultPingOperationImpl implements PingOperation {
   @Override
   public PingResult execute(Device device) throws NetworkException {
     log.info("Pinging device: {}", device.getName());
-    var startTimes = System.nanoTime();
+    var startTime = System.nanoTime();
     try {
       var pingResult = device.getAddress().isReachable(PING_TIMEOUT_MS);
-      var responseTime = getElapsedTimeInMs(startTimes);
+      var responseTime = Duration.ofNanos(System.nanoTime() - startTime).toMillis();
       var message = pingResult ? "Ping successful" : "Timeout after " + responseTime + " ms";
       log.info("Pinging {} result: {}", device.getName(), message);
       return new PingResult(device, pingResult, message, responseTime);
     } catch (IOException e) {
       throw new NetworkException("Ping failed for device " + device.getName(), e);
     }
-  }
-
-  @Override
-  public CompletableFuture<PingResult> executeAsync(Device device) throws NetworkException {
-    return CompletableFuture.supplyAsync(() -> execute(device));
   }
 }

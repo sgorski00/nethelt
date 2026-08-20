@@ -5,8 +5,8 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
+import java.time.Duration;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import javax.net.SocketFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
     log.info("Checking port {} of device: {}", device.getPort(), device.getName());
     var startTime = System.nanoTime();
     var isPortOpen = checkIfPortIsOpen(device);
-    var responseTime = getElapsedTimeInMs(startTime);
+    var responseTime = Duration.ofNanos(System.nanoTime() - startTime).toMillis();
     var message =
         isPortOpen
             ? "Port " + device.getPort() + " is open in device " + device.getName()
@@ -65,10 +65,5 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
       throw new NetworkException(
           "Invalid port number for device " + device.getName() + ": " + device.getPort(), e);
     }
-  }
-
-  @Override
-  public CompletableFuture<TelnetResult> executeAsync(Device device) throws NetworkException {
-    return CompletableFuture.supplyAsync(() -> execute(device));
   }
 }

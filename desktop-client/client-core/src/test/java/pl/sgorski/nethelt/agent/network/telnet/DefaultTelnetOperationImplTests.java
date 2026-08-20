@@ -117,19 +117,4 @@ public class DefaultTelnetOperationImplTests {
 
     assertThrows(IllegalArgumentException.class, () -> telnetOperation.execute(device));
   }
-
-  @Test
-  void executeAsync_SuccessfulTelnet() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
-    when(socketFactory.createSocket()).thenReturn(socket);
-
-    var futureResult = telnetOperation.executeAsync(device);
-    var result = futureResult.get();
-
-    assertTrue(result.isSuccess());
-    assertTrue(result.isPortOpen());
-    assertEquals("Port 80 is open in device Device", result.getMessage());
-    assertEquals(device, result.getDevice());
-  }
 }

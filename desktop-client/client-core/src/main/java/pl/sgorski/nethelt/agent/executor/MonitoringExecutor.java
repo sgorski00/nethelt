@@ -20,7 +20,10 @@ public class MonitoringExecutor {
   private final TelnetOperation telnet;
 
   public Set<PingResult> getPingResults(Set<Device> devices) {
-    var futures = devices.stream().map(ping::executeAsync).collect(Collectors.toSet());
+    var futures =
+        devices.stream()
+            .map(device -> CompletableFuture.supplyAsync(() -> ping.execute(device)))
+            .collect(Collectors.toSet());
     return waitForAll(futures);
   }
 
@@ -28,7 +31,7 @@ public class MonitoringExecutor {
     var futures =
         devices.stream()
             .filter(device -> Objects.nonNull(device.getPort()))
-            .map(telnet::executeAsync)
+            .map(device -> CompletableFuture.supplyAsync(() -> telnet.execute(device)))
             .collect(Collectors.toSet());
     return waitForAll(futures);
   }
