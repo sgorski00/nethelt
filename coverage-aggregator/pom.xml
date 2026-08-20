@@ -20,10 +20,6 @@
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
-      <groupId>pl.sgorski.nethelt.network</groupId>
-      <artifactId>network</artifactId>
-    </dependency>
-    <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
       <artifactId>client-common</artifactId>
     </dependency>

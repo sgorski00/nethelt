@@ -18,9 +18,7 @@
 	<properties>
 		<version.native.maven.plugin>0.11.1</version.native.maven.plugin>
 		<version.swagger-ui>3.0.3</version.swagger-ui>
-		<version.mapstruct>1.6.3</version.mapstruct>
 		<version.flyway>12.0.3</version.flyway>
-		<version.lombok>1.18.42</version.lombok>
 		<version.jjwt>0.13.0</version.jjwt>
 		<version.h2>2.4.240</version.h2>
 		<version.commons.codec>1.22.0</version.commons.codec>
@@ -73,7 +71,6 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${version.mapstruct}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -130,7 +127,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${version.lombok}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -146,21 +142,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${version.maven.compiler}</version>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>${version.lombok}</version>
-						</path>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>${version.mapstruct}</version>
-						</path>
-					</annotationProcessorPaths>
-					<release>${java.version}</release>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>

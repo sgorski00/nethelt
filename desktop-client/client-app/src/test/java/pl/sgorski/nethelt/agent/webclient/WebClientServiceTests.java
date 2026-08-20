@@ -5,17 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Set;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -23,262 +15,243 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import pl.sgorski.nethelt.agent.config.WebClientSingleton;
-import pl.sgorski.nethelt.agent.serialization.SerializationController;
-import pl.sgorski.nethelt.exception.SerializationException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.exception.WebClientException;
-import pl.sgorski.nethelt.model.NetworkConfig;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.Result;
-import pl.sgorski.nethelt.model.TelnetResult;
+import pl.sgorski.nethelt.model.*;
+import tools.jackson.databind.json.JsonMapper;
 
 @SuppressWarnings("resource")
-public class WebClientServiceTests {
+@ExtendWith(MockitoExtension.class)
+class WebClientServiceTests {
 
-  private OkHttpClient webServerClient;
-  private Call call;
-  private Response response;
-  private SerializationController serializer;
+  @Mock private OkHttpClient webServerClient;
+
+  @Mock private Call call;
+
+  @Mock private Response response;
+
+  private final JsonMapper jsonMapper = JsonMapper.builder().build();
+
   private WebClientService webClientService;
 
   @BeforeEach
-  void setUp() throws Exception {
-    webServerClient = mock(OkHttpClient.class);
-    call = mock(Call.class);
-    response = mock(Response.class);
-    when(webServerClient.newCall(any())).thenReturn(call);
-    when(call.execute()).thenReturn(response);
-    serializer = mock(SerializationController.class);
-    try (MockedStatic<?> webClient = mockStatic(WebClientSingleton.class)) {
-      webClient.when(WebClientSingleton::getInstance).thenReturn(webServerClient);
-      webClientService = new WebClientService(serializer);
-    }
+  void setUp() {
+    webClientService = new WebClientService(webServerClient, jsonMapper);
   }
 
   @Test
   void sendResult_Success_PingResult() throws Exception {
-    Set<PingResult> results = Set.of(new PingResult());
-    when(serializer.serialize(anySet())).thenReturn("[{}]");
+    mockSuccessfulPost();
+
+    var results = Set.of(new PingResult());
 
     webClientService.sendResult(results, PingResult.class);
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(response, times(1)).close();
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
+    verify(response).close();
   }
 
   @Test
   void sendResult_Success_TelnetResult() throws Exception {
-    Set<TelnetResult> results = Set.of(new TelnetResult());
-    when(serializer.serialize(anySet())).thenReturn("[{}]");
+    mockSuccessfulPost();
+
+    var results = Set.of(new TelnetResult());
 
     webClientService.sendResult(results, TelnetResult.class);
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(response, times(1)).close();
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
+    verify(response).close();
   }
 
   @Test
-  void sendResult_EmptySet_ShouldNotPost() throws Exception {
-    Set<PingResult> results = Set.of();
+  void sendResult_EmptySet_ShouldNotPost() {
+    var results = Set.<PingResult>of();
 
     webClientService.sendResult(results, PingResult.class);
 
     verify(webServerClient, never()).newCall(any());
-    verify(call, never()).execute();
-    verify(response, never()).close();
+    verifyNoInteractions(call, response);
   }
 
   @Test
-  void sendResult_SerializationException_ShouldThrow() throws Exception {
-    Set<PingResult> results = Set.of(new PingResult());
-    when(serializer.serialize(anySet()))
-        .thenThrow(new SerializationException("Serialization Exception"));
-
-    assertThrows(
-        SerializationException.class, () -> webClientService.sendResult(results, PingResult.class));
-
-    verify(webServerClient, never()).newCall(any());
-    verify(call, never()).execute();
-    verify(response, never()).close();
-  }
-
-  @Test
-  void sendResult_IllegalEndpoint_ShouldThrow() throws Exception {
-    Set<NotConfiguredResult> results = Set.of(new NotConfiguredResult());
-    when(serializer.serialize(anySet())).thenReturn("[{}]");
+  void sendResult_IllegalEndpoint_ShouldThrow() {
+    var results = Set.of(new NotConfiguredResult());
 
     assertThrows(
         IllegalArgumentException.class,
         () -> webClientService.sendResult(results, NotConfiguredResult.class));
 
     verify(webServerClient, never()).newCall(any());
-    verify(call, never()).execute();
-    verify(response, never()).close();
+    verifyNoInteractions(call, response);
   }
 
   @Test
   void sendResult_IOException_ShouldThrow() throws Exception {
-    Set<PingResult> results = Set.of(new PingResult());
-    when(serializer.serialize(anySet())).thenReturn("[{}]");
+    when(webServerClient.newCall(any())).thenReturn(call);
     when(call.execute()).thenThrow(new IOException("IO Exception"));
+
+    var results = Set.of(new PingResult());
 
     assertThrows(
         WebClientException.class, () -> webClientService.sendResult(results, PingResult.class));
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
     verify(response, never()).close();
   }
 
   @Test
   void fetchNetworkConfig_Success() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
-    Set<NetworkConfig> expectedSet = Set.of(new NetworkConfig());
+    var responseBody = mock(ResponseBody.class);
 
-    when(response.isSuccessful()).thenReturn(true);
-    when(response.body()).thenReturn(responseBody);
+    mockSuccessfulGet(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any()))
-        .thenReturn(Collections.singleton(expectedSet));
 
-    Set<?> result = webClientService.fetchNetworkConfig();
+    var result = webClientService.fetchNetworkConfig();
 
     assertNotNull(result);
     assertFalse(result.isEmpty());
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, times(1)).deserializeToSet(anyString(), any());
+    assertTrue(result.iterator().next() instanceof NetworkConfig);
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchNetworkConfig_IOException_ShouldThrow() throws Exception {
+    when(webServerClient.newCall(any())).thenReturn(call);
     when(call.execute()).thenThrow(new IOException("IO Exception"));
 
     assertThrows(WebClientException.class, () -> webClientService.fetchNetworkConfig());
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, never()).deserializeToSet(anyString(), any());
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
-  void fetchNetworkConfig_DeserializationException_ShouldThrow() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
-    when(response.isSuccessful()).thenReturn(true);
-    when(response.body()).thenReturn(responseBody);
-    when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any()))
-        .thenThrow(new SerializationException("Deserialization Exception"));
+  void fetchNetworkConfig_InvalidJson_ShouldThrow() throws Exception {
+    var responseBody = mock(ResponseBody.class);
 
-    assertThrows(SerializationException.class, () -> webClientService.fetchNetworkConfig());
+    mockSuccessfulGet(responseBody);
+    when(responseBody.string()).thenReturn("invalid-json");
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, times(1)).deserializeToSet(anyString(), any());
+    assertThrows(Exception.class, () -> webClientService.fetchNetworkConfig());
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchNetworkConfig_NullResponseBody_ShouldReturnEmptySet() throws Exception {
-    when(response.isSuccessful()).thenReturn(true);
-    when(response.body()).thenReturn(null);
+    mockSuccessfulGet(null);
 
-    Set<?> result = webClientService.fetchNetworkConfig();
+    var result = webClientService.fetchNetworkConfig();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, never()).deserializeToSet(anyString(), any());
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchNetworkConfig_NotSuccessfulCall_ShouldReturnEmptySet() throws Exception {
+    when(webServerClient.newCall(any())).thenReturn(call);
+    when(call.execute()).thenReturn(response);
     when(response.isSuccessful()).thenReturn(false);
 
-    Set<?> result = webClientService.fetchNetworkConfig();
+    var result = webClientService.fetchNetworkConfig();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, never()).deserializeToSet(anyString(), any());
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchDevices_Success() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
-    Set<NetworkConfig> expectedSet = Set.of(new NetworkConfig());
+    var responseBody = mock(ResponseBody.class);
 
-    when(response.isSuccessful()).thenReturn(true);
-    when(response.body()).thenReturn(responseBody);
+    mockSuccessfulGet(responseBody);
     when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any()))
-        .thenReturn(Collections.singleton(expectedSet));
 
-    Set<?> result = webClientService.fetchDevices();
+    var result = webClientService.fetchDevices();
 
     assertNotNull(result);
     assertFalse(result.isEmpty());
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, times(1)).deserializeToSet(anyString(), any());
+    assertTrue(result.iterator().next() instanceof Device);
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchDevices_IOException_ShouldThrow() throws Exception {
+    when(webServerClient.newCall(any())).thenReturn(call);
     when(call.execute()).thenThrow(new IOException("IO Exception"));
 
     assertThrows(WebClientException.class, () -> webClientService.fetchDevices());
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, never()).deserializeToSet(anyString(), any());
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
-  void fetchDevices_DeserializationException_ShouldThrow() throws Exception {
-    ResponseBody responseBody = mock(ResponseBody.class);
-    when(response.isSuccessful()).thenReturn(true);
-    when(response.body()).thenReturn(responseBody);
-    when(responseBody.string()).thenReturn("[{}]");
-    when(serializer.deserializeToSet(anyString(), any()))
-        .thenThrow(new SerializationException("Deserialization Exception"));
+  void fetchDevices_InvalidJson_ShouldThrow() throws Exception {
+    var responseBody = mock(ResponseBody.class);
 
-    assertThrows(SerializationException.class, () -> webClientService.fetchDevices());
+    mockSuccessfulGet(responseBody);
+    when(responseBody.string()).thenReturn("invalid-json");
 
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, times(1)).deserializeToSet(anyString(), any());
+    assertThrows(Exception.class, () -> webClientService.fetchDevices());
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchDevices_NullResponseBody_ShouldReturnEmptySet() throws Exception {
-    when(response.isSuccessful()).thenReturn(true);
-    when(response.body()).thenReturn(null);
+    mockSuccessfulGet(null);
 
-    Set<?> result = webClientService.fetchDevices();
+    var result = webClientService.fetchDevices();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, never()).deserializeToSet(anyString(), any());
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
   }
 
   @Test
   void fetchDevices_NotSuccessfulCall_ShouldReturnEmptySet() throws Exception {
+    when(webServerClient.newCall(any())).thenReturn(call);
+    when(call.execute()).thenReturn(response);
     when(response.isSuccessful()).thenReturn(false);
 
-    Set<?> result = webClientService.fetchDevices();
+    var result = webClientService.fetchDevices();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
-    verify(webServerClient, times(1)).newCall(any());
-    verify(call, times(1)).execute();
-    verify(serializer, never()).deserializeToSet(anyString(), any());
+
+    verify(webServerClient).newCall(any());
+    verify(call).execute();
+  }
+
+  private void mockSuccessfulPost() throws Exception {
+    when(webServerClient.newCall(any())).thenReturn(call);
+    when(call.execute()).thenReturn(response);
+  }
+
+  private void mockSuccessfulGet(ResponseBody responseBody) throws Exception {
+    when(webServerClient.newCall(any())).thenReturn(call);
+    when(call.execute()).thenReturn(response);
+    when(response.isSuccessful()).thenReturn(true);
+    when(response.body()).thenReturn(responseBody);
   }
 
   private static class NotConfiguredResult extends Result {}

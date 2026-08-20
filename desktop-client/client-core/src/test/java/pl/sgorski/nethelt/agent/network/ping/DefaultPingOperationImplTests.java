@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.network.ping;
+package pl.sgorski.nethelt.agent.network.ping;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,11 +14,11 @@ import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.agent.service.PingOperation;
 import pl.sgorski.nethelt.exception.NetworkException;
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.PingResult;
 import pl.sgorski.nethelt.model.Result;
-import pl.sgorski.nethelt.service.PingOperation;
 
 public class DefaultPingOperationImplTests {
 

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.network.telnet;
+package pl.sgorski.nethelt.agent.network.telnet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,10 +18,10 @@ import java.nio.channels.IllegalBlockingModeException;
 import java.util.concurrent.CompletableFuture;
 import javax.net.SocketFactory;
 import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.agent.service.TelnetOperation;
 import pl.sgorski.nethelt.exception.NetworkException;
 import pl.sgorski.nethelt.model.Device;
 import pl.sgorski.nethelt.model.TelnetResult;
-import pl.sgorski.nethelt.service.TelnetOperation;
 
 public class DefaultTelnetOperationImplTests {
 
