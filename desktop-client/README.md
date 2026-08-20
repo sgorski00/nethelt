@@ -9,7 +9,6 @@ Desktop application for network health monitoring. Contains background service a
 | `client-core` | Shared code for background and GUI clients (scheduler, serialization, executor) |
 | `client-app`  | Background service that periodically checks network devices and sends results to web-api |
 | `gui-client`  | Desktop GUI application (planned) |
-| `network`     | Network operations implementation (ping, telnet) |
 
 ## Building
 
@@ -19,7 +18,7 @@ mvn clean install -pl desktop-client -am
 
 ## Building and running background client
 
-Tho build background client, you can run:
+To build background client, you can run:
 
 ```bash
 mvn clean install -pl :client-app -am

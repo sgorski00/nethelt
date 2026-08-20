@@ -3,7 +3,6 @@ package pl.sgorski.nethelt.agent.network.telnet;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
 import java.util.Objects;
@@ -25,10 +24,10 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
   private final SocketFactory socketFactory;
 
   public DefaultTelnetOperationImpl() {
-    this(SocketFactory.getDefault());
+    this.socketFactory = SocketFactory.getDefault();
   }
 
-  public DefaultTelnetOperationImpl(SocketFactory socketFactory) {
+  protected DefaultTelnetOperationImpl(SocketFactory socketFactory) {
     this.socketFactory = socketFactory;
   }
 
@@ -46,12 +45,6 @@ public class DefaultTelnetOperationImpl implements TelnetOperation {
     return new TelnetResult(device, true, message, responseTime, isPortOpen);
   }
 
-  /**
-   * Check if the specified port on the device is open using {@link Socket} class
-   *
-   * @throws NetworkException when connection fails due to IO issues
-   * @return true if the port is open, false otherwise
-   */
   private boolean checkIfPortIsOpen(Device device) {
     if (Objects.isNull(device.getPort())) {
       throw new IllegalArgumentException(
