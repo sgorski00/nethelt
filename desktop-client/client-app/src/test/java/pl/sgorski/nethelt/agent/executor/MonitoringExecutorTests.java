@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +24,13 @@ public class MonitoringExecutorTests {
 
   @Mock private PingOperation ping;
   @Mock private TelnetOperation telnet;
-  @InjectMocks private MonitoringExecutor MonitoringExecutor;
+  @InjectMocks private MonitoringExecutor monitoringExecutor;
+
+  @BeforeEach
+  void setUp() {
+    monitoringExecutor =
+        new MonitoringExecutor(ping, telnet, Executors.newVirtualThreadPerTaskExecutor());
+  }
 
   @Test
   void getPingResults_ShouldReturnResults() {
@@ -31,7 +39,7 @@ public class MonitoringExecutorTests {
 
     when(ping.execute(device)).thenReturn(pingResult);
 
-    var results = MonitoringExecutor.getPingResults(Collections.singleton(device));
+    var results = monitoringExecutor.getPingResults(Collections.singleton(device));
 
     assertEquals(1, results.size());
     assertEquals(pingResult, results.iterator().next());
@@ -45,7 +53,7 @@ public class MonitoringExecutorTests {
 
     when(telnet.execute(deviceWithPort)).thenReturn(telnetResult);
 
-    var results = MonitoringExecutor.getTelnetResults(Collections.singleton(deviceWithPort));
+    var results = monitoringExecutor.getTelnetResults(Collections.singleton(deviceWithPort));
 
     assertEquals(1, results.size());
     assertEquals(telnetResult, results.iterator().next());
@@ -61,7 +69,7 @@ public class MonitoringExecutorTests {
     var telnetResult = mock(TelnetResult.class);
     when(telnet.execute(deviceWithPort)).thenReturn(telnetResult);
 
-    var results = MonitoringExecutor.getTelnetResults(devices);
+    var results = monitoringExecutor.getTelnetResults(devices);
 
     assertEquals(1, results.size());
     assertEquals(telnetResult, results.iterator().next());
