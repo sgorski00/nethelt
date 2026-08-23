@@ -8,9 +8,8 @@ COPY pom.xml .
 COPY core/pom.xml ./core/
 COPY web-api/pom.xml ./web-api/
 COPY desktop-client/pom.xml ./desktop-client/
-COPY desktop-client/network/pom.xml ./desktop-client/network/
-COPY desktop-client/client-common/pom.xml ./desktop-client/client-common/
-COPY desktop-client/bg-client/pom.xml ./desktop-client/bg-client/
+COPY desktop-client/client-core/pom.xml ./desktop-client/client-core/
+COPY desktop-client/client-app/pom.xml ./desktop-client/client-app/
 COPY desktop-client/gui-client/pom.xml ./desktop-client/gui-client/
 
 RUN mvn dependency:go-offline -pl web-api -am -B
