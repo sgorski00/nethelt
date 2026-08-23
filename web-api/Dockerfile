@@ -5,7 +5,6 @@ WORKDIR /app
 
 # Copy all pom.xml files (Maven needs full project structure)
 COPY pom.xml .
-COPY core/pom.xml ./core/
 COPY web-api/pom.xml ./web-api/
 COPY desktop-client/pom.xml ./desktop-client/
 COPY desktop-client/client-core/pom.xml ./desktop-client/client-core/
@@ -14,8 +13,6 @@ COPY desktop-client/gui-client/pom.xml ./desktop-client/gui-client/
 
 RUN mvn dependency:go-offline -pl web-api -am -B
 
-# Copy only sources needed for web-api
-COPY core/src core/src
 COPY web-api/src web-api/src
 
 RUN mvn clean package -pl web-api -am -DskipTests -B

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.model;
+package pl.sgorski.nethelt.agent.model;
 
 public class NetworkConfig {
   private Operation operation;

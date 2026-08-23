@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.exception.WebClientException;
-import pl.sgorski.nethelt.model.*;
+import pl.sgorski.nethelt.agent.exception.WebClientException;
+import pl.sgorski.nethelt.agent.model.*;
 import tools.jackson.databind.json.JsonMapper;
 
 @SuppressWarnings("resource")

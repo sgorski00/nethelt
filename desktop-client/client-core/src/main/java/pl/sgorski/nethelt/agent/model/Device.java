@@ -1,9 +1,9 @@
-package pl.sgorski.nethelt.model;
+package pl.sgorski.nethelt.agent.model;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
-import pl.sgorski.nethelt.exception.NetworkException;
+import pl.sgorski.nethelt.agent.exception.NetworkException;
 
 public class Device {
 

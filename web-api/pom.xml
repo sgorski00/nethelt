@@ -97,12 +97,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>pl.sgorski.nethelt</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${version.swagger-ui}</version>

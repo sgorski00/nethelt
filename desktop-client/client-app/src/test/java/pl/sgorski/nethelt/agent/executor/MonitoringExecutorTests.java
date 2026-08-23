@@ -13,11 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.PingResult;
+import pl.sgorski.nethelt.agent.model.TelnetResult;
 import pl.sgorski.nethelt.agent.service.PingOperation;
 import pl.sgorski.nethelt.agent.service.TelnetOperation;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.TelnetResult;
 
 @ExtendWith(MockitoExtension.class)
 public class MonitoringExecutorTests {

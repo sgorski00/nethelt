@@ -10,10 +10,10 @@ import java.util.Objects;
 import javax.net.SocketFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.exception.NetworkException;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.TelnetResult;
 import pl.sgorski.nethelt.agent.service.TelnetOperation;
-import pl.sgorski.nethelt.exception.NetworkException;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.TelnetResult;
 
 @Slf4j
 @Component

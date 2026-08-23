@@ -20,8 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.exception.NetworkException;
-import pl.sgorski.nethelt.model.Device;
+import pl.sgorski.nethelt.agent.exception.NetworkException;
+import pl.sgorski.nethelt.agent.model.Device;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultTelnetOperationImplTests {

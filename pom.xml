@@ -24,7 +24,6 @@
     </properties>
 
     <modules>
-        <module>core</module>
         <module>desktop-client</module>
         <module>web-api</module>
     </modules>
@@ -39,11 +38,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>pl.sgorski.nethelt</groupId>
-                <artifactId>core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>pl.sgorski.nethelt</groupId>
                 <artifactId>client-core</artifactId>

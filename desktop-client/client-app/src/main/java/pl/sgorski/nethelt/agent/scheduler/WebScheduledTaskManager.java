@@ -11,11 +11,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.executor.MonitoringExecutor;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.NetworkConfig;
+import pl.sgorski.nethelt.agent.model.PingResult;
+import pl.sgorski.nethelt.agent.model.TelnetResult;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.NetworkConfig;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.TelnetResult;
 
 @Slf4j
 @Component

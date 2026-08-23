@@ -15,8 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.TaskScheduler;
 import pl.sgorski.nethelt.agent.executor.MonitoringExecutor;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.NetworkConfig;
+import pl.sgorski.nethelt.agent.model.Operation;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
-import pl.sgorski.nethelt.model.*;
 
 @ExtendWith(MockitoExtension.class)
 class WebScheduledTaskManagerTests {

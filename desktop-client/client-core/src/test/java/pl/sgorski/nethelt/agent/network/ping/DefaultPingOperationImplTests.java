@@ -12,11 +12,11 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.net.InetAddress;
 import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.agent.exception.NetworkException;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.PingResult;
+import pl.sgorski.nethelt.agent.model.Result;
 import pl.sgorski.nethelt.agent.service.PingOperation;
-import pl.sgorski.nethelt.exception.NetworkException;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.Result;
 
 public class DefaultPingOperationImplTests {
 

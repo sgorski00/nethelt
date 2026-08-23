@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.model;
+package pl.sgorski.nethelt.agent.model;
 
 import java.time.Instant;
 

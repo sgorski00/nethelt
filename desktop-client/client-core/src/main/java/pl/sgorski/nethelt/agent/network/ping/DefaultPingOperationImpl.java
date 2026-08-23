@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.exception.NetworkException;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.PingResult;
 import pl.sgorski.nethelt.agent.service.PingOperation;
-import pl.sgorski.nethelt.exception.NetworkException;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.PingResult;
 
 @Slf4j
 @Component

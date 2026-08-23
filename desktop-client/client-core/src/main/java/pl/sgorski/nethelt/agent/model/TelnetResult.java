@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.model;
+package pl.sgorski.nethelt.agent.model;
 
 /**
  * Represents the result of a telnet operation on a network device. Extends the generic {@link

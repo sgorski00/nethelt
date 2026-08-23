@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.exception.NetworkException;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.PingResult;
+import pl.sgorski.nethelt.agent.model.TelnetResult;
 import pl.sgorski.nethelt.agent.service.PingOperation;
 import pl.sgorski.nethelt.agent.service.TelnetOperation;
-import pl.sgorski.nethelt.exception.NetworkException;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.PingResult;
-import pl.sgorski.nethelt.model.TelnetResult;
 
 @Slf4j
 @Component

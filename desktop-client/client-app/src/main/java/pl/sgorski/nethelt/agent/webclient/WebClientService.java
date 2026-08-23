@@ -10,11 +10,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.springframework.stereotype.Service;
-import pl.sgorski.nethelt.exception.WebClientException;
-import pl.sgorski.nethelt.model.Device;
-import pl.sgorski.nethelt.model.NetworkConfig;
-import pl.sgorski.nethelt.model.Result;
-import pl.sgorski.nethelt.utils.CollectionUtils;
+import org.springframework.util.CollectionUtils;
+import pl.sgorski.nethelt.agent.exception.WebClientException;
+import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.NetworkConfig;
+import pl.sgorski.nethelt.agent.model.Result;
 import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.exception;
+package pl.sgorski.nethelt.agent.exception;
 
 public class NetworkException extends RuntimeException {
 
