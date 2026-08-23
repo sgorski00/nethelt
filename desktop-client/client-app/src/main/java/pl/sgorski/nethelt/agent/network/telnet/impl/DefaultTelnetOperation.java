@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.agent.network.telnet;
+package pl.sgorski.nethelt.agent.network.telnet.impl;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -13,21 +13,21 @@ import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.TelnetResult;
-import pl.sgorski.nethelt.agent.service.TelnetOperation;
+import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 
 @Slf4j
 @Component
-public class DefaultTelnetOperationImpl implements TelnetOperation {
+public class DefaultTelnetOperation implements TelnetOperation {
 
   private static final int TELNET_TIMEOUT_MS = 5_000;
 
   private final SocketFactory socketFactory;
 
-  public DefaultTelnetOperationImpl() {
+  public DefaultTelnetOperation() {
     this.socketFactory = SocketFactory.getDefault();
   }
 
-  protected DefaultTelnetOperationImpl(SocketFactory socketFactory) {
+  protected DefaultTelnetOperation(SocketFactory socketFactory) {
     this.socketFactory = socketFactory;
   }
 

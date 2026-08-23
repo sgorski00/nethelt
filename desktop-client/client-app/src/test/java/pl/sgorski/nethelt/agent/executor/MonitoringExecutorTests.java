@@ -13,11 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.PingResult;
 import pl.sgorski.nethelt.agent.model.TelnetResult;
-import pl.sgorski.nethelt.agent.service.PingOperation;
-import pl.sgorski.nethelt.agent.service.TelnetOperation;
+import pl.sgorski.nethelt.agent.network.ping.PingOperation;
+import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
+import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class MonitoringExecutorTests {
@@ -34,7 +34,7 @@ public class MonitoringExecutorTests {
 
   @Test
   void getPingResults_ShouldReturnResults() {
-    var device = new Device();
+    var device = TestDeviceFactory.createDeviceWithoutPort();
     var pingResult = mock(PingResult.class);
 
     when(ping.execute(device)).thenReturn(pingResult);
@@ -47,8 +47,7 @@ public class MonitoringExecutorTests {
 
   @Test
   void getTelnetResults_ShouldReturnResults_DevicesWithPort() {
-    var deviceWithPort = new Device();
-    deviceWithPort.setPort(22);
+    var deviceWithPort = TestDeviceFactory.createDeviceWithPort(22);
     var telnetResult = mock(TelnetResult.class);
 
     when(telnet.execute(deviceWithPort)).thenReturn(telnetResult);
@@ -61,9 +60,8 @@ public class MonitoringExecutorTests {
 
   @Test
   void getTelnetResults_ShouldFilterDevicesWithoutPort() {
-    var deviceWithoutPort = new Device();
-    var deviceWithPort = new Device();
-    deviceWithPort.setPort(23);
+    var deviceWithoutPort = TestDeviceFactory.createDeviceWithoutPort();
+    var deviceWithPort = TestDeviceFactory.createDeviceWithPort(23);
     var devices = Set.of(deviceWithoutPort, deviceWithPort);
 
     var telnetResult = mock(TelnetResult.class);

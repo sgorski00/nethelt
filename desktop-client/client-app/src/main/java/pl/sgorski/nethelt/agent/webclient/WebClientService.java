@@ -20,7 +20,7 @@ import tools.jackson.databind.json.JsonMapper;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WebClientService {
+public final class WebClientService {
 
   private static final String BASE_URL = "http://localhost:8080/api";
   private static final String DEVICES_ENDPOINT = BASE_URL + "/devices";

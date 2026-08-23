@@ -22,14 +22,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.network.telnet.impl.DefaultTelnetOperation;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultTelnetOperationImplTests {
+public class DefaultTelnetOperationTests {
 
   @Mock private Device device;
   @Mock private Socket socket;
   @Mock private SocketFactory socketFactory;
-  @InjectMocks private DefaultTelnetOperationImpl telnetOperation;
+  @InjectMocks private DefaultTelnetOperation telnetOperation;
 
   @Test
   void execute_SuccessfulTelnet() throws Exception {

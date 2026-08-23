@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.agent.service;
+package pl.sgorski.nethelt.agent.network;
 
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;

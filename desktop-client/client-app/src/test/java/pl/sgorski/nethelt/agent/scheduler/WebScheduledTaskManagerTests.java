@@ -18,6 +18,7 @@ import pl.sgorski.nethelt.agent.executor.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
+import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +35,7 @@ class WebScheduledTaskManagerTests {
   void updateTasks_ShouldSchedulePing_WhenEnabled() {
     var cfg = new NetworkConfig(Operation.PING, true, 10);
 
-    mockConfigAndDevices(cfg, new Device());
+    mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithoutPort());
     mockScheduledTask();
 
     manager.updateTasks();
@@ -48,7 +49,7 @@ class WebScheduledTaskManagerTests {
   void updateTasks_ShouldNotSchedulePing_WhenDisabled() {
     var cfg = new NetworkConfig(Operation.PING, false, 10);
 
-    mockConfigAndDevices(cfg, new Device());
+    mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithoutPort());
 
     manager.updateTasks();
 
@@ -60,7 +61,7 @@ class WebScheduledTaskManagerTests {
   void updateTasks_ShouldNotReschedulePing_WhenConfigurationUnchanged() {
     var cfg = new NetworkConfig(Operation.PING, true, 5);
 
-    mockConfigAndDevices(cfg, new Device());
+    mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithoutPort());
     mockScheduledTask();
 
     manager.updateTasks();
@@ -78,7 +79,7 @@ class WebScheduledTaskManagerTests {
     var enabledCfg = new NetworkConfig(Operation.PING, true, 5);
     var disabledCfg = new NetworkConfig(Operation.PING, false, 5);
 
-    mockConfigAndDevices(enabledCfg, new Device());
+    mockConfigAndDevices(enabledCfg, TestDeviceFactory.createDeviceWithoutPort());
     mockScheduledTask();
 
     manager.updateTasks();
@@ -86,7 +87,7 @@ class WebScheduledTaskManagerTests {
     verify(scheduler)
         .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), eq(Duration.ofSeconds(5)));
 
-    mockConfigAndDevices(disabledCfg, new Device());
+    mockConfigAndDevices(disabledCfg, TestDeviceFactory.createDeviceWithoutPort());
 
     manager.updateTasks();
 
@@ -99,8 +100,7 @@ class WebScheduledTaskManagerTests {
   @Test
   void updateTasks_ShouldScheduleTelnet_WhenEnabled() {
     var cfg = new NetworkConfig(Operation.TELNET, true, 5);
-    var device = new Device();
-    device.setPort(22);
+    var device = TestDeviceFactory.createDeviceWithPort(22);
 
     mockConfigAndDevices(cfg, device);
     mockScheduledTask();
@@ -115,7 +115,7 @@ class WebScheduledTaskManagerTests {
   void updateTasks_ShouldNotScheduleTelnet_WhenDisabled() {
     var cfg = new NetworkConfig(Operation.TELNET, false, 5);
 
-    mockConfigAndDevices(cfg, new Device());
+    mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithPort());
 
     manager.updateTasks();
 
@@ -126,8 +126,7 @@ class WebScheduledTaskManagerTests {
   @Test
   void updateTasks_ShouldNotRescheduleTelnet_WhenConfigurationUnchanged() {
     var cfg = new NetworkConfig(Operation.TELNET, true, 5);
-    var device = new Device();
-    device.setPort(22);
+    var device = TestDeviceFactory.createDeviceWithPort(22);
 
     mockConfigAndDevices(cfg, device);
     mockScheduledTask();
@@ -147,7 +146,7 @@ class WebScheduledTaskManagerTests {
     var enabledCfg = new NetworkConfig(Operation.TELNET, true, 5);
     var disabledCfg = new NetworkConfig(Operation.TELNET, false, 5);
 
-    mockConfigAndDevices(enabledCfg, new Device());
+    mockConfigAndDevices(enabledCfg, TestDeviceFactory.createDeviceWithPort());
     mockScheduledTask();
 
     manager.updateTasks();
@@ -155,7 +154,7 @@ class WebScheduledTaskManagerTests {
     verify(scheduler)
         .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), eq(Duration.ofSeconds(5)));
 
-    mockConfigAndDevices(disabledCfg, new Device());
+    mockConfigAndDevices(disabledCfg, TestDeviceFactory.createDeviceWithPort());
 
     manager.updateTasks();
 
@@ -169,7 +168,7 @@ class WebScheduledTaskManagerTests {
   void updateTasks_ShouldNotSchedule_WhenOperationIsNull() {
     var cfg = new NetworkConfig(null, true, 5);
 
-    mockConfigAndDevices(cfg, new Device());
+    mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithPort());
 
     assertDoesNotThrow(manager::updateTasks);
 

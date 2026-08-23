@@ -11,13 +11,13 @@ import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.PingResult;
 import pl.sgorski.nethelt.agent.model.TelnetResult;
-import pl.sgorski.nethelt.agent.service.PingOperation;
-import pl.sgorski.nethelt.agent.service.TelnetOperation;
+import pl.sgorski.nethelt.agent.network.ping.PingOperation;
+import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MonitoringExecutor {
+public final class MonitoringExecutor {
 
   private final PingOperation ping;
   private final TelnetOperation telnet;
@@ -48,7 +48,7 @@ public class MonitoringExecutor {
   }
 
   private <T> T getResult(Future<T> future) {
-    //todo: return a result except of resturning null when an exception happens
+    // todo: return a result except of resturning null when an exception happens
     try {
       return future.get();
     } catch (InterruptedException e) {

@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.agent.network.ping;
+package pl.sgorski.nethelt.agent.network.ping.impl;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.PingResult;
-import pl.sgorski.nethelt.agent.service.PingOperation;
+import pl.sgorski.nethelt.agent.network.ping.PingOperation;
 
 @Slf4j
 @Component
-public class DefaultPingOperationImpl implements PingOperation {
+public class DefaultPingOperation implements PingOperation {
 
   private static final int PING_TIMEOUT_MS = 5_000;
 

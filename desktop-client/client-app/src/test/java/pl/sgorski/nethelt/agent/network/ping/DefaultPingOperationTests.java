@@ -16,13 +16,13 @@ import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.PingResult;
 import pl.sgorski.nethelt.agent.model.Result;
-import pl.sgorski.nethelt.agent.service.PingOperation;
+import pl.sgorski.nethelt.agent.network.ping.impl.DefaultPingOperation;
 
-public class DefaultPingOperationImplTests {
+public class DefaultPingOperationTests {
 
   private final Device device = mock(Device.class);
   private final InetAddress address = mock(InetAddress.class);
-  private final PingOperation pingOperation = new DefaultPingOperationImpl();
+  private final PingOperation pingOperation = new DefaultPingOperation();
 
   @Test
   void execute_SuccessfulPing() throws Exception {

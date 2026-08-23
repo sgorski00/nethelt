@@ -20,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.model.*;
+import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
+import pl.sgorski.nethelt.agent.test_utils.TestResultFactory;
 import tools.jackson.databind.json.JsonMapper;
 
 @SuppressWarnings("resource")
@@ -45,7 +47,7 @@ class WebClientServiceTests {
   void sendResult_Success_PingResult() throws Exception {
     mockSuccessfulPost();
 
-    var results = Set.of(new PingResult());
+    var results = Set.of(TestResultFactory.createPingResult(true));
 
     webClientService.sendResult(results, PingResult.class);
 
@@ -58,7 +60,8 @@ class WebClientServiceTests {
   void sendResult_Success_TelnetResult() throws Exception {
     mockSuccessfulPost();
 
-    var results = Set.of(new TelnetResult());
+    var device = new Device("Device1", "192.168.1.2");
+    var results = Set.of(new TelnetResult(device, true, "Message", 100L, true));
 
     webClientService.sendResult(results, TelnetResult.class);
 
@@ -79,7 +82,10 @@ class WebClientServiceTests {
 
   @Test
   void sendResult_IllegalEndpoint_ShouldThrow() {
-    var results = Set.of(new NotConfiguredResult());
+    var results =
+        Set.of(
+            new NotConfiguredResult(
+                TestDeviceFactory.createDeviceWithoutPort(), true, "message", 999));
 
     assertThrows(
         IllegalArgumentException.class,
@@ -94,7 +100,7 @@ class WebClientServiceTests {
     when(webServerClient.newCall(any())).thenReturn(call);
     when(call.execute()).thenThrow(new IOException("IO Exception"));
 
-    var results = Set.of(new PingResult());
+    var results = Set.of(TestResultFactory.createPingResult(true));
 
     assertThrows(
         WebClientException.class, () -> webClientService.sendResult(results, PingResult.class));
@@ -254,5 +260,11 @@ class WebClientServiceTests {
     when(response.body()).thenReturn(responseBody);
   }
 
-  private static class NotConfiguredResult extends Result {}
+  private static class NotConfiguredResult extends Result {
+
+    protected NotConfiguredResult(
+        Device device, boolean success, String message, long responseTimeMs) {
+      super(device, success, message, responseTimeMs);
+    }
+  }
 }

@@ -20,7 +20,7 @@ import pl.sgorski.nethelt.agent.webclient.WebClientService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class WebScheduledTaskManager {
+public final class WebScheduledTaskManager {
 
   private static final int CONFIG_UPDATE_INTERVAL_SEC = 60;
 

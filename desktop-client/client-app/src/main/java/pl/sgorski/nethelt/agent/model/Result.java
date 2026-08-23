@@ -1,11 +1,9 @@
 package pl.sgorski.nethelt.agent.model;
 
 import java.time.Instant;
+import lombok.Getter;
 
-/**
- * Abstract base class representing the result of a network operation on a device. Contains common
- * fields such as device information, timestamp, success status, message, and response time.
- */
+@Getter
 public abstract class Result {
   private Device device;
   private final Instant timestamp = Instant.now();
@@ -18,60 +16,5 @@ public abstract class Result {
     this.success = success;
     this.message = message;
     this.responseTimeMs = responseTimeMs;
-  }
-
-  public Result() {} // empty constructor for deserializing - DO NOT REMOVE
-
-  public Instant getTimestamp() {
-    return timestamp;
-  }
-
-  public boolean isSuccess() {
-    return success;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public Device getDevice() {
-    return device;
-  }
-
-  public long getResponseTimeMs() {
-    return responseTimeMs;
-  }
-
-  public void setDevice(Device device) {
-    this.device = device;
-  }
-
-  public void setSuccess(boolean success) {
-    this.success = success;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public void setResponseTimeMs(long responseTimeMs) {
-    this.responseTimeMs = responseTimeMs;
-  }
-
-  @Override
-  public String toString() {
-    return "Result{"
-        + "device="
-        + device
-        + ", timestamp="
-        + timestamp
-        + ", success="
-        + success
-        + ", message='"
-        + message
-        + '\''
-        + ", responseTimeMs="
-        + responseTimeMs
-        + '}';
   }
 }
