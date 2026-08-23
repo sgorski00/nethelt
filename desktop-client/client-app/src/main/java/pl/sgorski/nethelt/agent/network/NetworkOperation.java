@@ -4,6 +4,8 @@ import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.Result;
 
-public interface NetworkOperation<I extends Device, O extends Result> {
-  O execute(I device) throws NetworkException;
+public interface NetworkOperation<R extends Result> {
+  R execute(Device device) throws NetworkException;
+
+  R error(Device device);
 }

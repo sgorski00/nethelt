@@ -66,4 +66,9 @@ public class DefaultTelnetOperation implements TelnetOperation {
           "Invalid port number for device " + device.getName() + ": " + device.getPort(), e);
     }
   }
+
+  @Override
+  public TelnetResult error(Device device) {
+    return new TelnetResult(device, false, "Telnet check failed", -1, false);
+  }
 }

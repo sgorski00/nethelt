@@ -29,4 +29,9 @@ public class DefaultPingOperation implements PingOperation {
       throw new NetworkException("Ping failed for device " + device.getName(), e);
     }
   }
+
+  @Override
+  public PingResult error(Device device) {
+    return new PingResult(device, false, "Ping failed", -1);
+  }
 }

@@ -3,13 +3,15 @@ package pl.sgorski.nethelt.agent.executor;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import pl.sgorski.nethelt.agent.exception.NetworkException;
+import pl.sgorski.nethelt.agent.dto.MonitoringTask;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.PingResult;
+import pl.sgorski.nethelt.agent.model.Result;
 import pl.sgorski.nethelt.agent.model.TelnetResult;
 import pl.sgorski.nethelt.agent.network.ping.PingOperation;
 import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
@@ -24,47 +26,43 @@ public final class MonitoringExecutor {
   private final ExecutorService executor;
 
   public Set<PingResult> getPingResults(Set<Device> devices) {
-    var futures =
+    var tasks =
         devices.stream()
-            .map(device -> executor.submit(() -> ping.execute(device)))
+            .map(
+                device -> new MonitoringTask<>(device, executor.submit(() -> ping.execute(device))))
             .collect(Collectors.toSet());
-    return collectResults(futures);
+    return collectResults(tasks, ping::error);
   }
 
   public Set<TelnetResult> getTelnetResults(Set<Device> devices) {
-    var futures =
+    var tasks =
         devices.stream()
             .filter(device -> Objects.nonNull(device.getPort()))
-            .map(device -> executor.submit(() -> telnet.execute(device)))
+            .map(
+                device ->
+                    new MonitoringTask<>(device, executor.submit(() -> telnet.execute(device))))
             .collect(Collectors.toSet());
-    return collectResults(futures);
+    return collectResults(tasks, telnet::error);
   }
 
-  private <T> Set<T> collectResults(Set<Future<T>> futures) {
-    return futures.stream()
-        .map(this::getResult)
-        .filter(Objects::nonNull)
+  private <T extends Result> Set<T> collectResults(
+      Set<MonitoringTask<T>> tasks, Function<Device, T> errorResultFactory) {
+    return tasks.stream()
+        .map(task -> getResult(task, errorResultFactory))
         .collect(Collectors.toSet());
   }
 
-  private <T> T getResult(Future<T> future) {
-    // todo: return a result except of resturning null when an exception happens
+  private <T extends Result> T getResult(
+      MonitoringTask<T> task, Function<Device, T> errorResultFactory) {
     try {
-      return future.get();
+      return task.future().get();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       log.warn("Monitoring task interrupted.");
-      return null;
+      return errorResultFactory.apply(task.device());
     } catch (ExecutionException e) {
-      var cause = e.getCause();
-
-      if (cause instanceof NetworkException) {
-        log.warn("Network monitoring failed: {}", cause.getMessage());
-      } else {
-        log.error("Unexpected error during network monitoring.", cause);
-      }
-
-      return null;
+      log.error("Monitoring task failed for {}", task.device().getName(), e.getCause());
+      return errorResultFactory.apply(task.device());
     }
   }
 }
