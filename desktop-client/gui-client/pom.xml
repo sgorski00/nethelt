@@ -17,7 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>client-core</artifactId>
+      <artifactId>client-app</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -48,6 +48,7 @@ public class MonitoringExecutor {
   }
 
   private <T> T getResult(Future<T> future) {
+    //todo: return a result except of resturning null when an exception happens
     try {
       return future.get();
     } catch (InterruptedException e) {

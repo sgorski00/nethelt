@@ -7,7 +7,6 @@ WORKDIR /app
 COPY pom.xml .
 COPY web-api/pom.xml ./web-api/
 COPY desktop-client/pom.xml ./desktop-client/
-COPY desktop-client/client-core/pom.xml ./desktop-client/client-core/
 COPY desktop-client/client-app/pom.xml ./desktop-client/client-app/
 COPY desktop-client/gui-client/pom.xml ./desktop-client/gui-client/
 

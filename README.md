@@ -8,7 +8,6 @@ Network monitoring platform consisting of a Spring Boot backend, Angular web app
 
 | Directory | Description |
 |-----------|-------------|
-| `core` | Shared models and interfaces used by `web-api` and `desktop-client` (Device, Result, NetworkOperation) |
 | `web-api` | Spring Boot backend exposing the REST API, managing users, devices, notifications, and receiving health check results from clients |
 | `desktop-client` | Desktop application with background service (bg-client) and GUI (gui-client) |
 | `ai-model` | Python module for network anomaly detection using Isolation Forest |
@@ -60,14 +59,13 @@ ng serve
 
 ## Status
 
-| Module | Status         |
-|--------|----------------|
-| core | Stable         |
-| bg-client | In development |
-| web-api | In development    |
-| ai-model | In development    |
+| Module     | Status         |
+|------------|----------------|
+| client-app | In development |
+| web-api    | In development    |
+| ai-model   | In development    |
 | gui-client | Planned        |
-| frontend | In development    |
+| frontend   | In development    |
 
 ## Author
 

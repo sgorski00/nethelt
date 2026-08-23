@@ -15,7 +15,6 @@
   <description>${project.name}</description>
 
   <modules>
-    <module>client-core</module>
     <module>client-app</module>
     <module>gui-client</module>
   </modules>
@@ -27,16 +26,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>pl.sgorski.nethelt</groupId>
-        <artifactId>core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>pl.sgorski.nethelt</groupId>
-        <artifactId>client-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
