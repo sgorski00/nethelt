@@ -4,45 +4,52 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.scheduling.TaskScheduler;
-import pl.sgorski.nethelt.agent.executor.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
+import pl.sgorski.nethelt.agent.scheduler.task.PingTaskHandler;
+import pl.sgorski.nethelt.agent.scheduler.task.TelnetTaskHandler;
 import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 import pl.sgorski.nethelt.agent.webclient.WebClientService;
 
 @ExtendWith(MockitoExtension.class)
-class WebScheduledTaskManagerTests {
+class MonitoringSchedulerTests {
 
   @Mock private WebClientService webClientService;
-  @Mock private MonitoringExecutor monitoringExecutor;
-  @Mock private TaskScheduler scheduler;
+  @Mock private MonitoringTaskScheduler monitoringTaskScheduler;
+  @Mock private PingTaskHandler pingTaskHandler;
+  @Mock private TelnetTaskHandler telnetTaskHandler;
   @Mock private ScheduledFuture scheduledFuture;
 
-  @InjectMocks private WebScheduledTaskManager manager;
+  private MonitoringScheduler scheduler;
+
+  @BeforeEach
+  void setUp() {
+    this.scheduler =
+        new MonitoringScheduler(
+            webClientService, monitoringTaskScheduler, List.of(pingTaskHandler, telnetTaskHandler));
+  }
 
   @Test
   void updateTasks_ShouldSchedulePing_WhenEnabled() {
+    mockHandlers(Operation.PING);
     var cfg = new NetworkConfig(Operation.PING, true, 10);
 
     mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithoutPort());
     mockScheduledTask();
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler)
-        .scheduleWithFixedDelay(
-            any(Runnable.class), any(Instant.class), eq(Duration.ofSeconds(10)));
+    verify(monitoringTaskScheduler).schedule(eq(10), any(Runnable.class));
   }
 
   @Test
@@ -51,64 +58,62 @@ class WebScheduledTaskManagerTests {
 
     mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithoutPort());
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler, never())
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, never()).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
   void updateTasks_ShouldNotReschedulePing_WhenConfigurationUnchanged() {
+    mockHandlers(Operation.PING);
     var cfg = new NetworkConfig(Operation.PING, true, 5);
 
     mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithoutPort());
     mockScheduledTask();
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    clearInvocations(scheduler);
+    clearInvocations(monitoringTaskScheduler);
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler, never())
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, never()).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
   void updateTasks_ShouldCancelPing_WhenDisabledAfterEnabled() {
+    mockHandlers(Operation.PING);
     var enabledCfg = new NetworkConfig(Operation.PING, true, 5);
     var disabledCfg = new NetworkConfig(Operation.PING, false, 5);
 
     mockConfigAndDevices(enabledCfg, TestDeviceFactory.createDeviceWithoutPort());
     mockScheduledTask();
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler)
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), eq(Duration.ofSeconds(5)));
+    verify(monitoringTaskScheduler).schedule(eq(5), any(Runnable.class));
 
     mockConfigAndDevices(disabledCfg, TestDeviceFactory.createDeviceWithoutPort());
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduledFuture).cancel(false);
+    verify(monitoringTaskScheduler).close(any());
 
-    verify(scheduler, times(1))
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, times(1)).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
   void updateTasks_ShouldScheduleTelnet_WhenEnabled() {
+    mockHandlers(Operation.TELNET);
     var cfg = new NetworkConfig(Operation.TELNET, true, 5);
     var device = TestDeviceFactory.createDeviceWithPort(22);
 
     mockConfigAndDevices(cfg, device);
     mockScheduledTask();
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler)
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), eq(Duration.ofSeconds(5)));
+    verify(monitoringTaskScheduler).schedule(eq(5), any(Runnable.class));
   }
 
   @Test
@@ -117,51 +122,49 @@ class WebScheduledTaskManagerTests {
 
     mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithPort());
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler, never())
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, never()).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
   void updateTasks_ShouldNotRescheduleTelnet_WhenConfigurationUnchanged() {
+    mockHandlers(Operation.TELNET);
     var cfg = new NetworkConfig(Operation.TELNET, true, 5);
     var device = TestDeviceFactory.createDeviceWithPort(22);
 
     mockConfigAndDevices(cfg, device);
     mockScheduledTask();
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    clearInvocations(scheduler);
+    clearInvocations(monitoringTaskScheduler);
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler, never())
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, never()).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
   void updateTasks_ShouldCancelTelnet_WhenDisabledAfterEnabled() {
+    mockHandlers(Operation.TELNET);
     var enabledCfg = new NetworkConfig(Operation.TELNET, true, 5);
     var disabledCfg = new NetworkConfig(Operation.TELNET, false, 5);
 
     mockConfigAndDevices(enabledCfg, TestDeviceFactory.createDeviceWithPort());
     mockScheduledTask();
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduler)
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), eq(Duration.ofSeconds(5)));
+    verify(monitoringTaskScheduler).schedule(eq(5), any(Runnable.class));
 
     mockConfigAndDevices(disabledCfg, TestDeviceFactory.createDeviceWithPort());
 
-    manager.updateTasks();
+    scheduler.updateTasks();
 
-    verify(scheduledFuture).cancel(false);
+    verify(monitoringTaskScheduler).close(any());
 
-    verify(scheduler, times(1))
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, times(1)).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
@@ -170,10 +173,9 @@ class WebScheduledTaskManagerTests {
 
     mockConfigAndDevices(cfg, TestDeviceFactory.createDeviceWithPort());
 
-    assertDoesNotThrow(manager::updateTasks);
+    assertDoesNotThrow(scheduler::updateTasks);
 
-    verify(scheduler, never())
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, never()).schedule(anyInt(), any(Runnable.class));
   }
 
   @Test
@@ -181,31 +183,27 @@ class WebScheduledTaskManagerTests {
     when(webClientService.fetchNetworkConfig())
         .thenThrow(new RuntimeException("Server unavailable"));
 
-    assertDoesNotThrow(manager::updateTasks);
+    assertDoesNotThrow(scheduler::updateTasks);
 
-    verify(webClientService, never()).fetchDevices();
-    verify(scheduler, never())
-        .scheduleWithFixedDelay(any(Runnable.class), any(Instant.class), any(Duration.class));
+    verify(monitoringTaskScheduler, never()).schedule(anyInt(), any(Runnable.class));
   }
 
-  @Test
-  void updateTasks_ShouldNotFetchDevices_WhenConfigurationFetchFails() {
-    when(webClientService.fetchNetworkConfig())
-        .thenThrow(new RuntimeException("Server unavailable"));
-
-    manager.updateTasks();
-
-    verify(webClientService, never()).fetchDevices();
+  private void mockHandlers(Operation... operations) {
+    var operationsList = Arrays.stream(operations).toList();
+    if (operationsList.contains(Operation.PING)) {
+      when(pingTaskHandler.getOperation()).thenReturn(Operation.PING);
+    }
+    if (operationsList.contains(Operation.TELNET)) {
+      when(telnetTaskHandler.getOperation()).thenReturn(Operation.TELNET);
+    }
   }
 
   private void mockScheduledTask() {
-    when(scheduler.scheduleWithFixedDelay(
-            any(Runnable.class), any(Instant.class), any(Duration.class)))
+    when(monitoringTaskScheduler.schedule(anyInt(), any(Runnable.class)))
         .thenReturn(scheduledFuture);
   }
 
   private void mockConfigAndDevices(NetworkConfig cfg, Device device) {
     when(webClientService.fetchNetworkConfig()).thenReturn(Set.of(cfg));
-    when(webClientService.fetchDevices()).thenReturn(Set.of(device));
   }
 }
