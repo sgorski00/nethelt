@@ -1,9 +1,6 @@
 package pl.sgorski.nethelt.agent.network.telnet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
@@ -23,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.network.telnet.impl.DefaultTelnetOperation;
+import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultTelnetOperationTests {
@@ -40,6 +38,7 @@ public class DefaultTelnetOperationTests {
 
     var result = telnetOperation.execute(device);
 
+    assertSame(device, result.getDevice());
     assertTrue(result.isSuccess());
     assertTrue(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
@@ -55,6 +54,7 @@ public class DefaultTelnetOperationTests {
 
     var result = telnetOperation.execute(device);
 
+    assertSame(device, result.getDevice());
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
@@ -70,6 +70,7 @@ public class DefaultTelnetOperationTests {
 
     var result = telnetOperation.execute(device);
 
+    assertSame(device, result.getDevice());
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
@@ -85,6 +86,7 @@ public class DefaultTelnetOperationTests {
 
     var result = telnetOperation.execute(device);
 
+    assertSame(device, result.getDevice());
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
@@ -117,5 +119,18 @@ public class DefaultTelnetOperationTests {
     when(device.getPort()).thenReturn(null);
 
     assertThrows(IllegalArgumentException.class, () -> telnetOperation.execute(device));
+  }
+
+  @Test
+  void error_shouldReturnErrorPingResult() {
+    var device = TestDeviceFactory.createDeviceWithPort();
+
+    var result = telnetOperation.error(device);
+
+    assertSame(device, result.getDevice());
+    assertFalse(result.isSuccess());
+    assertFalse(result.isPortOpen());
+    assertEquals("Telnet check failed", result.getMessage());
+    assertEquals(-1, result.getResponseTimeMs());
   }
 }
