@@ -13,6 +13,7 @@ import pl.sgorski.nethelt.agent.network.ping.PingOperation;
 @Component
 public class DefaultPingOperation implements PingOperation {
 
+  // it will be taken from monitoringtask config
   private static final int PING_TIMEOUT_MS = 5_000;
 
   @Override

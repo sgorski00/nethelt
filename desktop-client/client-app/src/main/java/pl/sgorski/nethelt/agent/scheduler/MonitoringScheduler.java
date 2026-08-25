@@ -19,8 +19,6 @@ import pl.sgorski.nethelt.agent.webclient.WebClientService;
 @RequiredArgsConstructor
 public final class MonitoringScheduler {
 
-  private static final int CONFIG_UPDATE_INTERVAL_SEC = 60;
-
   private final WebClientService webClientService;
   private final MonitoringTaskScheduler scheduler;
   private final List<MonitoringTaskHandler> handlers;
@@ -30,7 +28,7 @@ public final class MonitoringScheduler {
   // todo: replace networkconfig with monitoring tasks
   private final Map<Operation, NetworkConfig> currentConfigs = new EnumMap<>(Operation.class);
 
-  @Scheduled(fixedDelay = CONFIG_UPDATE_INTERVAL_SEC, timeUnit = TimeUnit.SECONDS)
+  @Scheduled(fixedDelayString = "${scheduler.update-interval-seconds}", timeUnit = TimeUnit.SECONDS)
   void updateTasks() {
     try {
       var configs = webClientService.fetchNetworkConfig();
@@ -75,7 +73,7 @@ public final class MonitoringScheduler {
   private void cancel(Operation operation) {
     var task = scheduledTasks.remove(operation);
     if (task != null) {
-      scheduler.close(task);
+      scheduler.cancel(task);
     }
   }
 }

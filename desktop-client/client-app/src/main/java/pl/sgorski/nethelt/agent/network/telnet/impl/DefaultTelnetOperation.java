@@ -19,6 +19,7 @@ import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 @Component
 public class DefaultTelnetOperation implements TelnetOperation {
 
+  // it will be taken from monitoringtask config
   private static final int TELNET_TIMEOUT_MS = 5_000;
 
   private final SocketFactory socketFactory;

@@ -18,8 +18,8 @@ public class MonitoringTaskScheduler {
         task, Instant.now(), Duration.ofSeconds(intervalSeconds));
   }
 
-  public void close(ScheduledFuture<?> task) {
-    if (task != null && task.isCancelled()) {
+  public void cancel(ScheduledFuture<?> task) {
+    if (task != null && !task.isCancelled()) {
       task.cancel(false);
     }
   }

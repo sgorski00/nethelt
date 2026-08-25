@@ -97,7 +97,7 @@ class MonitoringSchedulerTests {
 
     scheduler.updateTasks();
 
-    verify(monitoringTaskScheduler).close(any());
+    verify(monitoringTaskScheduler).cancel(any());
 
     verify(monitoringTaskScheduler, times(1)).schedule(anyInt(), any(Runnable.class));
   }
@@ -162,7 +162,7 @@ class MonitoringSchedulerTests {
 
     scheduler.updateTasks();
 
-    verify(monitoringTaskScheduler).close(any());
+    verify(monitoringTaskScheduler).cancel(any());
 
     verify(monitoringTaskScheduler, times(1)).schedule(anyInt(), any(Runnable.class));
   }
