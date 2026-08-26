@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
 import pl.sgorski.nethelt.agent.scheduler.task.MonitoringTaskHandler;
-import pl.sgorski.nethelt.agent.webclient.service.WebClientService;
+import pl.sgorski.nethelt.agent.webclient.api.NetworkConfigClient;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public final class MonitoringScheduler {
 
-  private final WebClientService webClientService;
+  private final NetworkConfigClient networkConfigClient;
   private final MonitoringTaskScheduler scheduler;
   private final List<MonitoringTaskHandler> handlers;
 
@@ -31,7 +31,7 @@ public final class MonitoringScheduler {
   @Scheduled(fixedDelayString = "${scheduler.update-interval-seconds}", timeUnit = TimeUnit.SECONDS)
   void updateTasks() {
     try {
-      var configs = webClientService.fetchNetworkConfig();
+      var configs = networkConfigClient.getNetworkConfigs();
       for (var config : configs) {
         updateTask(config);
       }
