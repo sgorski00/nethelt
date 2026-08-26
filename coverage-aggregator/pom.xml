@@ -17,19 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pl.sgorski.nethelt.network</groupId>
-      <artifactId>network</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>client-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>pl.sgorski.nethelt</groupId>
-      <artifactId>bg-client</artifactId>
+      <artifactId>client-app</artifactId>
     </dependency>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
