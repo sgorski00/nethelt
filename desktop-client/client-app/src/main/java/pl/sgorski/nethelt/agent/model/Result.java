@@ -4,7 +4,7 @@ import java.time.Instant;
 import lombok.Getter;
 
 @Getter
-public abstract class Result {
+public abstract sealed class Result permits PingResult, TelnetResult {
   private Device device;
   private final Instant timestamp = Instant.now();
   private boolean success;

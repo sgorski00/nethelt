@@ -1,24 +1,13 @@
 package pl.sgorski.nethelt.agent.webclient.config;
 
-import java.time.Duration;
-import okhttp3.OkHttpClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.service.registry.ImportHttpServices;
+import pl.sgorski.nethelt.agent.webclient.api.DeviceClient;
+import pl.sgorski.nethelt.agent.webclient.api.MonitoringResultClient;
+import pl.sgorski.nethelt.agent.webclient.api.NetworkConfigClient;
 
 @Configuration
-public class HttpClientConfig {
-
-  private static final Duration CALL_TIMEOUT = Duration.ofSeconds(5);
-  private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(5);
-  private static final Duration READ_TIMEOUT = Duration.ofSeconds(5);
-
-  @Bean
-  public OkHttpClient webServerClient() {
-    return new OkHttpClient()
-        .newBuilder()
-        .callTimeout(CALL_TIMEOUT)
-        .connectTimeout(CONNECT_TIMEOUT)
-        .readTimeout(READ_TIMEOUT)
-        .build();
-  }
-}
+@ImportHttpServices(
+    group = "web-api",
+    types = {DeviceClient.class, NetworkConfigClient.class, MonitoringResultClient.class})
+public class HttpClientConfig {}

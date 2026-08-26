@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.executor.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.model.Operation;
-import pl.sgorski.nethelt.agent.model.PingResult;
-import pl.sgorski.nethelt.agent.webclient.WebClientService;
+import pl.sgorski.nethelt.agent.webclient.service.WebClientService;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +22,6 @@ public final class PingTaskHandler implements MonitoringTaskHandler {
   public void execute() {
     var devices = webClientService.fetchDevices();
     var results = monitoringExecutor.getPingResults(devices);
-    webClientService.sendResult(results, PingResult.class);
+    webClientService.sendPingResults(results);
   }
 }

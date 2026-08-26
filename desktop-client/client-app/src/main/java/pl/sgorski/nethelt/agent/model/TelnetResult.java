@@ -3,7 +3,7 @@ package pl.sgorski.nethelt.agent.model;
 import lombok.*;
 
 @Getter
-public class TelnetResult extends Result {
+public final class TelnetResult extends Result {
 
   private boolean portOpen;
 
