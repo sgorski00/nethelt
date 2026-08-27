@@ -17,6 +17,10 @@
   <dependencies>
     <dependency>
       <groupId>pl.sgorski.nethelt</groupId>
+      <artifactId>client-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pl.sgorski.nethelt</groupId>
       <artifactId>client-app</artifactId>
     </dependency>
     <dependency>

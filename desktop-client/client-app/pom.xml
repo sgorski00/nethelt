@@ -11,7 +11,7 @@
 
   <artifactId>client-app</artifactId>
   <packaging>jar</packaging>
-  <name>NetHelt Client - Agent Background WebClient</name>
+  <name>Nethelt Desktop Client - Background Service</name>
   <description>${project.name}</description>
 
   <properties>
@@ -24,6 +24,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>pl.sgorski.nethelt</groupId>
+      <artifactId>client-core</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
