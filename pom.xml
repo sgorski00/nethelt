@@ -50,6 +50,11 @@
             </dependency>
             <dependency>
                 <groupId>pl.sgorski.nethelt</groupId>
+                <artifactId>cli-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.sgorski.nethelt</groupId>
                 <artifactId>gui-client</artifactId>
                 <version>${project.version}</version>
             </dependency>

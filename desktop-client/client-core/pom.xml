@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>client-core</artifactId>
-    <name>Nethelt Desktop Client - CLI</name>
+    <name>Nethelt Desktop Client - Core</name>
     <description>${project.name}</description>
 
     <properties>

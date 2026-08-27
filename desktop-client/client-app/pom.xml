@@ -15,7 +15,6 @@
   <description>${project.name}</description>
 
   <properties>
-    <version.assembly.plugin>3.7.1</version.assembly.plugin>
     <app.name>NHClient</app.name>
     <app.package.dir>${project.build.directory}/packed</app.package.dir>
     <app.fatjar.dir>${app.package.dir}/jar</app.fatjar.dir>

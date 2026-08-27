@@ -14,21 +14,16 @@
   <name>Nethelt Desktop Client - BOM</name>
   <description>${project.name}</description>
 
+  <properties>
+    <version.assembly.plugin>3.7.1</version.assembly.plugin>
+  </properties>
+
   <modules>
+    <module>client-core</module>
     <module>client-app</module>
     <module>gui-client</module>
-    <module>client-core</module>
+    <module>cli-client</module>
   </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>pl.sgorski.nethelt.agent</groupId>
-        <artifactId>client-core</artifactId>
-        <version>1.0-SNAPSHOT</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <pluginManagement>
