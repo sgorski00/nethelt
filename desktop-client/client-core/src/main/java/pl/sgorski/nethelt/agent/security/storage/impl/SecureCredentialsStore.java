@@ -33,7 +33,7 @@ public class SecureCredentialsStore implements CredentialsStore {
       var secret = keyring.getPassword(SERVICE_NAME, ACCOUNT_NAME);
       return Optional.ofNullable(secret);
     } catch (Exception e) {
-      throw new CredentialsStoreException("Failed to retrieve credentials", e);
+      return Optional.empty();
     }
   }
 

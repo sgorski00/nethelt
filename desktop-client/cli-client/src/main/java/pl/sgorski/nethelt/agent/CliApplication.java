@@ -8,11 +8,12 @@ import picocli.CommandLine;
 import picocli.spring.PicocliSpringFactory;
 import pl.sgorski.nethelt.agent.command.NetheltCommand;
 
-@SpringBootApplication(scanBasePackages = {
-  "pl.sgorski.nethelt.agent.command",
-  "pl.sgorski.nethelt.agent.security.storage",
-  "pl.sgorski.nethelt.agent.security.provider"
-})
+@SpringBootApplication(
+    scanBasePackages = {
+      "pl.sgorski.nethelt.agent.command",
+      "pl.sgorski.nethelt.agent.security.storage",
+      "pl.sgorski.nethelt.agent.security.provider"
+    })
 public class CliApplication implements CommandLineRunner {
 
   private final ApplicationContext context;

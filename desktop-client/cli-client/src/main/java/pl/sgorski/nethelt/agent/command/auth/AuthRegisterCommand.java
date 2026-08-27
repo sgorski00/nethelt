@@ -18,6 +18,12 @@ public final class AuthRegisterCommand implements Runnable {
 
   @Override
   public void run() {
+    if (credentialsStore.get().isPresent()) {
+      System.out.println(
+          "A Personal Access Token is already registered. Use 'remove' command to delete it first.");
+      return;
+    }
+
     var console = System.console();
     if (console == null) {
       throw new IllegalStateException("Interactive console is not available.");

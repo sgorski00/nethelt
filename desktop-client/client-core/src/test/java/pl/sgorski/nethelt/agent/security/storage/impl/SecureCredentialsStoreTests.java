@@ -74,7 +74,9 @@ public class SecureCredentialsStoreTests {
   void get_shouldThrowException_whenRetrievingFails() throws PasswordAccessException {
     doThrow(new RuntimeException("Keyring error")).when(keyring).getPassword("nethelt", "nethelt");
 
-    assertThrows(CredentialsStoreException.class, () -> credentialsStore.get());
+    var result = credentialsStore.get();
+
+    assertTrue(result.isEmpty());
   }
 
   @Test

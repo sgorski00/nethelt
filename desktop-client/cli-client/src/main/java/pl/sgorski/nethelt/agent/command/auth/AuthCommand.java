@@ -6,7 +6,8 @@ import picocli.CommandLine.Command;
 @Component
 @Command(
     name = "auth",
-    subcommands = {AuthRegisterCommand.class})
+    description = "Authentication commands",
+    subcommands = {AuthRegisterCommand.class, AuthRemoveCommand.class, AuthStatusCommand.class})
 public final class AuthCommand implements Runnable {
 
   @Override
