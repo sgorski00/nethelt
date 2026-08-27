@@ -7,7 +7,7 @@ import pl.sgorski.nethelt.agent.security.provider.KeyringProvider;
 import pl.sgorski.nethelt.agent.security.storage.CredentialsStore;
 
 @Component
-public class SecureCredentialsStore implements CredentialsStore {
+public final class SecureCredentialsStore implements CredentialsStore {
 
   private static final String SERVICE_NAME = "nethelt";
   private static final String ACCOUNT_NAME = "nethelt";

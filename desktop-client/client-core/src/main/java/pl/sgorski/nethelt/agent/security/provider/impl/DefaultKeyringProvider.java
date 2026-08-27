@@ -6,7 +6,7 @@ import pl.sgorski.nethelt.agent.exception.CredentialsStoreException;
 import pl.sgorski.nethelt.agent.security.provider.KeyringProvider;
 
 @Component
-public class DefaultKeyringProvider implements KeyringProvider {
+public final class DefaultKeyringProvider implements KeyringProvider {
   @Override
   public Keyring create() {
     try {
