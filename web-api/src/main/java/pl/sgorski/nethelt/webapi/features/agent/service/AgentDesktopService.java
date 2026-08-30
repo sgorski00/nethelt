@@ -11,6 +11,19 @@ import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
 public class AgentDesktopService {
 
   private final AgentRepository agentRepository;
+  private final AgentTokenService agentTokenService;
+  private final AgentAccessTokenService agentAccessTokenService;
+
+  @Transactional(readOnly = true)
+  public String authenticateAndGenerateToken(String pat) {
+    var hashedPat = agentTokenService.hashToken(pat);
+    var agent =
+        agentRepository.findByHashedToken(hashedPat).orElseThrow(AgentNotFoundException::new);
+    if (agent.isActive()) {
+      throw new AgentNotFoundException();
+    }
+    return agentAccessTokenService.generateAccessToken(agent);
+  }
 
   @Transactional
   public void heartbeat(Long agentId) {

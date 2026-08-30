@@ -138,7 +138,7 @@ public class AgentWebServiceTests {
     var result = agentWebService.changeStatus(1L, AgentStatus.ACTIVE);
 
     assertSame(agent, result);
-    assertEquals(AgentStatus.ACTIVE, agent.getStatus());
+    assertTrue(agent.isActive());
   }
 
   @Test
@@ -149,7 +149,7 @@ public class AgentWebServiceTests {
     var result = agentWebService.changeStatus(1L, AgentStatus.DISABLED);
 
     assertSame(agent, result);
-    assertEquals(AgentStatus.DISABLED, agent.getStatus());
+    assertFalse(agent.isActive());
   }
 
   @Test
