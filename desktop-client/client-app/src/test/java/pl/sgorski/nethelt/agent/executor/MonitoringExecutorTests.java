@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.sgorski.nethelt.agent.executor.service.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.network.ping.PingOperation;
 import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;

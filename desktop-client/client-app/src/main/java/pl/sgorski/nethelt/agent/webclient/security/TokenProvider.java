@@ -9,7 +9,7 @@ import pl.sgorski.nethelt.agent.webclient.dto.request.AgentAuthRequest;
 
 @Component
 @RequiredArgsConstructor
-public class TokenProvider {
+public final class TokenProvider {
 
   private final CredentialsStore credentialsStore;
   private final AgentAuthClient agentClient;

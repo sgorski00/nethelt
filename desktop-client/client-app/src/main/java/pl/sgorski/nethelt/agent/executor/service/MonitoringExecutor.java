@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.agent.executor;
+package pl.sgorski.nethelt.agent.executor.service;
 
 import java.util.Set;
 import java.util.concurrent.*;

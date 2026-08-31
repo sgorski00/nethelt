@@ -9,18 +9,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.executor.handler.MonitoringTaskHandler;
 import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
-import pl.sgorski.nethelt.agent.scheduler.task.MonitoringTaskHandler;
 import pl.sgorski.nethelt.agent.webclient.api.web.NetworkConfigClient;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public final class MonitoringScheduler {
+public final class TaskUpdateScheduler {
 
   private final NetworkConfigClient networkConfigClient;
-  private final MonitoringTaskScheduler scheduler;
+  private final ScheduledTaskManager scheduler;
   private final List<MonitoringTaskHandler> handlers;
 
   private final Map<Operation, ScheduledFuture<?>> scheduledTasks = new EnumMap<>(Operation.class);

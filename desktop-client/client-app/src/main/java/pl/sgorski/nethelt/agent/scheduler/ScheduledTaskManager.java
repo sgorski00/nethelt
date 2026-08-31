@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MonitoringTaskScheduler {
+public final class ScheduledTaskManager {
 
   private final TaskScheduler scheduler;
 

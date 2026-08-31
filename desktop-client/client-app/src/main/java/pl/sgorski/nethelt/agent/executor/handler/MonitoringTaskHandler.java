@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.agent.scheduler.task;
+package pl.sgorski.nethelt.agent.executor.handler;
 
 import pl.sgorski.nethelt.agent.model.Operation;
 
