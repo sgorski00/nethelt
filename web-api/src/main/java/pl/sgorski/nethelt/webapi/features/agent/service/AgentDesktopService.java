@@ -19,7 +19,7 @@ public class AgentDesktopService {
     var hashedPat = agentTokenService.hashToken(pat);
     var agent =
         agentRepository.findByHashedToken(hashedPat).orElseThrow(AgentNotFoundException::new);
-    if (agent.isActive()) {
+    if (!agent.isActive()) {
       throw new AgentNotFoundException();
     }
     return agentAccessTokenService.generateAccessToken(agent);
