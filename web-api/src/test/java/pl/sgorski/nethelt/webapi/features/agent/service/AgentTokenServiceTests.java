@@ -34,23 +34,4 @@ public class AgentTokenServiceTests {
     assertEquals(64, hashed.length());
     assertEquals(DigestUtils.sha256Hex(token), hashed);
   }
-
-  @Test
-  void verifyToken_shouldReturnTrue_whenTokenIsEqual() {
-    var token = "test-token-123";
-    var hashed = DigestUtils.sha256Hex(token);
-
-    var result = agentTokenService.verifyToken(token, hashed);
-
-    assertTrue(result);
-  }
-
-  @Test
-  void verifyToken_shouldReturnFalse_whenTokenIsNotEqual() {
-    var hashed = DigestUtils.sha256Hex("test-token-123");
-
-    var result = agentTokenService.verifyToken("some-other-token", hashed);
-
-    assertFalse(result);
-  }
 }

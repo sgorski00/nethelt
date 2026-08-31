@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import pl.sgorski.nethelt.webapi.security.agent.AgentAccessTokenAuthenticationFilter;
 import pl.sgorski.nethelt.webapi.security.local.AccessTokenAuthenticationFilter;
 import pl.sgorski.nethelt.webapi.security.oauth2.OAuth2AuthorizationRequestRepository;
 
@@ -46,6 +47,7 @@ public class SecurityConfig {
   private final AuthenticationFailureHandler oauth2FailureHandler;
   private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
   private final OAuth2AuthorizationRequestRepository authorizationRequestRepository;
+  private final AgentAccessTokenAuthenticationFilter agentAccessTokenAuthenticationFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) {
@@ -64,6 +66,8 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/profile/**", "/identities/**", "/notifications/**", "/networks/**")
                     .authenticated()
+                    .requestMatchers("/agent/**")
+                    .hasAuthority("AGENT")
                     .anyRequest()
                     .denyAll())
         .sessionManagement(
@@ -80,6 +84,8 @@ public class SecurityConfig {
         .userDetailsService(userDetailsService)
         .addFilterBefore(
             accessTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
+            agentAccessTokenAuthenticationFilter, AccessTokenAuthenticationFilter.class)
         .exceptionHandling(
             ex ->
                 ex.accessDeniedHandler(accessDeniedHandler)

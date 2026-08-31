@@ -14,8 +14,4 @@ public class AgentTokenService {
   public String hashToken(String token) {
     return DigestUtils.sha256Hex(token);
   }
-
-  public boolean verifyToken(String rawToken, String hashedToken) {
-    return hashToken(rawToken).equals(hashedToken);
-  }
 }
