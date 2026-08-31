@@ -38,16 +38,19 @@ public final class AgentAccessTokenAuthenticationFilter extends OncePerRequestFi
       return;
     }
 
-    var agentId = accessTokenService.getAgentId(token);
-    var agent = agentRepository.findById(agentId).orElse(null);
-    if (agent == null || !agent.isActive()) {
-      filterChain.doFilter(request, response);
-      return;
-    }
+    var securityContext = SecurityContextHolder.getContext();
+    if (securityContext.getAuthentication() == null) {
+      var agentId = accessTokenService.getAgentId(token);
+      var agent = agentRepository.findById(agentId).orElse(null);
+      if (agent == null || !agent.isActive()) {
+        filterChain.doFilter(request, response);
+        return;
+      }
 
-    var principal = new AgentPrincipal(agentId, agent.getNetwork().getId());
-    var authentication = new AgentAuthentication(principal);
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+      var principal = new AgentPrincipal(agentId, agent.getNetwork().getId());
+      var authentication = new AgentAuthentication(principal);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
     filterChain.doFilter(request, response);
   }
 }
