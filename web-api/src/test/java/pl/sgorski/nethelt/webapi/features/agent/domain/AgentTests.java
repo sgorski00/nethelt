@@ -18,7 +18,7 @@ public class AgentTests {
     assertEquals("AgentName", agent.getName());
     assertEquals("hashedToken123", agent.getHashedToken());
     assertNotNull(agent.getTokenCreatedAt());
-    assertEquals(AgentStatus.ACTIVE, agent.getStatus());
+    assertTrue(agent.isActive());
   }
 
   @Test
@@ -56,7 +56,7 @@ public class AgentTests {
 
     agent.deactivate();
 
-    assertEquals(AgentStatus.DISABLED, agent.getStatus());
+    assertFalse(agent.isActive());
   }
 
   @Test
@@ -66,6 +66,6 @@ public class AgentTests {
 
     agent.activate();
 
-    assertEquals(AgentStatus.ACTIVE, agent.getStatus());
+    assertTrue(agent.isActive());
   }
 }

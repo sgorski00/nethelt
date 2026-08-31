@@ -17,7 +17,7 @@ import org.springframework.scheduling.TaskScheduler;
 public class MonitoringTaskSchedulerTests {
 
   @Mock private TaskScheduler scheduler;
-  @InjectMocks private MonitoringTaskScheduler monitoringTaskScheduler;
+  @InjectMocks private ScheduledTaskManager monitoringTaskScheduler;
 
   @Test
   void schedule_shouldScheduleTaskWithFixedDelay() {

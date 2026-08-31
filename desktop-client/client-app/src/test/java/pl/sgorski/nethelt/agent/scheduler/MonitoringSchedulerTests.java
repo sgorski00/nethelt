@@ -14,27 +14,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
+import pl.sgorski.nethelt.agent.executor.handler.impl.PingTaskHandler;
+import pl.sgorski.nethelt.agent.executor.handler.impl.TelnetTaskHandler;
 import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
-import pl.sgorski.nethelt.agent.scheduler.task.PingTaskHandler;
-import pl.sgorski.nethelt.agent.scheduler.task.TelnetTaskHandler;
-import pl.sgorski.nethelt.agent.webclient.api.NetworkConfigClient;
+import pl.sgorski.nethelt.agent.webclient.api.web.NetworkConfigClient;
 
 @ExtendWith(MockitoExtension.class)
 class MonitoringSchedulerTests {
 
   @Mock private NetworkConfigClient networkConfigClient;
-  @Mock private MonitoringTaskScheduler monitoringTaskScheduler;
+  @Mock private ScheduledTaskManager monitoringTaskScheduler;
   @Mock private PingTaskHandler pingTaskHandler;
   @Mock private TelnetTaskHandler telnetTaskHandler;
   @Mock private ScheduledFuture scheduledFuture;
 
-  private MonitoringScheduler scheduler;
+  private TaskUpdateScheduler scheduler;
 
   @BeforeEach
   void setUp() {
     this.scheduler =
-        new MonitoringScheduler(
+        new TaskUpdateScheduler(
             networkConfigClient,
             monitoringTaskScheduler,
             List.of(pingTaskHandler, telnetTaskHandler));

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 
+@Getter
 @Entity
 @Table(name = "network_agents")
 @EqualsAndHashCode(exclude = "network")
@@ -16,35 +17,24 @@ import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 public class Agent {
 
   @Id
-  @Getter
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Getter
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "network_id", nullable = false, unique = true)
   private Network network;
 
-  @Getter
   @Column(nullable = false)
   private String name;
 
-  // todo:
-  // client should connect everyday with token and get generated jwt to authenticate every request
-  // in jwt there should be agent context including:
-  // - agent id
-  // - network id
-  @Getter
   @Column(nullable = false, unique = true)
   private String hashedToken;
 
-  @Getter
   @Column(nullable = false)
   private Instant tokenCreatedAt;
 
-  @Getter @Nullable private Instant lastHeartbeatAt;
+  @Nullable private Instant lastHeartbeatAt;
 
-  @Getter
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private AgentStatus status = AgentStatus.ACTIVE;
@@ -75,5 +65,9 @@ public class Agent {
 
   public void activate() {
     this.status = AgentStatus.ACTIVE;
+  }
+
+  public boolean isActive() {
+    return this.status == AgentStatus.ACTIVE;
   }
 }

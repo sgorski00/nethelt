@@ -12,7 +12,7 @@
 
 	<artifactId>web-api</artifactId>
 	<packaging>jar</packaging>
-	<name>NetHelt - Web App - Backend</name>
+	<name>Nethelt - Web API</name>
 	<description>${project.name}</description>
 
 	<properties>

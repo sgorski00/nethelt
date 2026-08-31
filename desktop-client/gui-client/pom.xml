@@ -11,7 +11,7 @@
 
   <artifactId>gui-client</artifactId>
   <packaging>jar</packaging>
-  <name>NetHelt Client - Agent GUI</name>
+  <name>Nethelt Desktop Client - GUI app</name>
   <description>${project.name}</description>
 
   <dependencies>
