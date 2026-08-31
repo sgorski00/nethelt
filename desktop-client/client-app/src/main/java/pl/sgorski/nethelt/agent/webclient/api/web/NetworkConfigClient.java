@@ -1,4 +1,4 @@
-package pl.sgorski.nethelt.agent.webclient.api;
+package pl.sgorski.nethelt.agent.webclient.api.web;
 
 import java.util.Set;
 import org.springframework.web.service.annotation.GetExchange;

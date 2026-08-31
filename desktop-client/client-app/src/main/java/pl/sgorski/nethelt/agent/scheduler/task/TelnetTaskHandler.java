@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.executor.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.model.Operation;
-import pl.sgorski.nethelt.agent.webclient.api.DeviceClient;
-import pl.sgorski.nethelt.agent.webclient.api.MonitoringResultClient;
+import pl.sgorski.nethelt.agent.webclient.api.web.DeviceClient;
+import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
 
 @Component
 @RequiredArgsConstructor

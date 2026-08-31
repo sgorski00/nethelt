@@ -58,7 +58,8 @@ public class SecurityConfig {
                         "/auth/refresh",
                         "/auth/logout",
                         "/oauth2/**",
-                        "/login/oauth2/**")
+                        "/login/oauth2/**",
+                        "/agent/authenticate")
                     .permitAll()
                     .requestMatchers("/auth/**")
                     .not()

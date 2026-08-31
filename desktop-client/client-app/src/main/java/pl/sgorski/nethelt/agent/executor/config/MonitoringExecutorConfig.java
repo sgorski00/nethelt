@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class MonitoringExecutorConfig {
 
   @Bean
-  public ExecutorService monitoringExecutor() {
+  public ExecutorService monitoringExecutorService() {
     return Executors.newVirtualThreadPerTaskExecutor();
   }
 }

@@ -18,7 +18,7 @@ import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
 import pl.sgorski.nethelt.agent.scheduler.task.PingTaskHandler;
 import pl.sgorski.nethelt.agent.scheduler.task.TelnetTaskHandler;
-import pl.sgorski.nethelt.agent.webclient.api.NetworkConfigClient;
+import pl.sgorski.nethelt.agent.webclient.api.web.NetworkConfigClient;
 
 @ExtendWith(MockitoExtension.class)
 class MonitoringSchedulerTests {

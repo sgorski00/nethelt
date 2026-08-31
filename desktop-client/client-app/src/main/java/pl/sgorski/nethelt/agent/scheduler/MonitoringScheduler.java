@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.model.NetworkConfig;
 import pl.sgorski.nethelt.agent.model.Operation;
 import pl.sgorski.nethelt.agent.scheduler.task.MonitoringTaskHandler;
-import pl.sgorski.nethelt.agent.webclient.api.NetworkConfigClient;
+import pl.sgorski.nethelt.agent.webclient.api.web.NetworkConfigClient;
 
 @Slf4j
 @Component

@@ -4,7 +4,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.security.storage.CredentialsStore;
-import pl.sgorski.nethelt.agent.webclient.api.AgentClient;
+import pl.sgorski.nethelt.agent.webclient.api.auth.AgentAuthClient;
 import pl.sgorski.nethelt.agent.webclient.dto.request.AgentAuthRequest;
 
 @Component
@@ -12,7 +12,7 @@ import pl.sgorski.nethelt.agent.webclient.dto.request.AgentAuthRequest;
 public class TokenProvider {
 
   private final CredentialsStore credentialsStore;
-  private final AgentClient agentClient;
+  private final AgentAuthClient agentClient;
 
   public Optional<String> getToken() {
     return credentialsStore
