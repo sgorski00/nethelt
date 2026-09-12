@@ -8,7 +8,7 @@ COPY pom.xml .
 COPY web-api/pom.xml ./web-api/
 COPY desktop-client/pom.xml ./desktop-client/
 COPY desktop-client/client-core/pom.xml ./desktop-client/client-core/
-COPY desktop-client/client-app/pom.xml ./desktop-client/client-app/
+COPY desktop-client/bg-client/pom.xml ./desktop-client/bg-client/
 COPY desktop-client/cli-client/pom.xml ./desktop-client/cli-client/
 COPY desktop-client/gui-client/pom.xml ./desktop-client/gui-client/
 

@@ -3,10 +3,11 @@ package pl.sgorski.nethelt.agent.webclient.api.web;
 import java.util.Set;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
-import pl.sgorski.nethelt.agent.model.Device;
+import pl.sgorski.nethelt.agent.model.NetworkConfig;
 
-@HttpExchange(url = "/devices")
-public interface DeviceClient {
+@Deprecated
+@HttpExchange(url = "/configs")
+public interface NetworkConfigClient {
   @GetExchange
-  Set<Device> getDevices();
+  Set<NetworkConfig> getNetworkConfigs();
 }

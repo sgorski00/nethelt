@@ -7,7 +7,7 @@ import org.springframework.web.service.annotation.PostExchange;
 import pl.sgorski.nethelt.agent.webclient.dto.request.AgentAuthRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.response.AgentAuthResponse;
 
-@HttpExchange(url = "/agent")
+@HttpExchange(url = "/client/agent")
 public interface AgentAuthClient {
   @PostExchange("/authenticate")
   AgentAuthResponse authenticate(@Valid @RequestBody AgentAuthRequest request);

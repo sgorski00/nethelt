@@ -19,6 +19,7 @@ import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.request.Monitoring
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.request.configuration.HttpHealthcheckTaskConfigurationRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.request.configuration.PingTaskConfigurationRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.request.configuration.TelnetTaskConfigurationRequest;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.MonitoringTaskClientResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.MonitoringTaskConfigurationResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.MonitoringTaskResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.configuration.HttpHealthcheckTaskConfigurationResponse;
@@ -30,6 +31,10 @@ public interface MonitoringTaskMapper {
   @Mapping(target = "isEnabled", source = "enabled")
   @Mapping(target = "configuration", source = "configuration")
   MonitoringTaskResponse toResponse(MonitoringTask monitoringTask);
+
+  @Mapping(target = "isEnabled", source = "enabled")
+  @Mapping(target = "configuration", source = "configuration")
+  MonitoringTaskClientResponse toClientResponse(MonitoringTask monitoringTask);
 
   MonitoringTaskUpdateCommand toCommand(MonitoringTaskUpdateRequest request);
 

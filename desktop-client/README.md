@@ -6,7 +6,7 @@ Desktop application for network health monitoring. Contains background service a
 
 | Module       | Description |
 |--------------|-------------|
-| `client-app` | Background service that periodically checks network devices and sends results to web-api |
+| `bg-client` | Background service that periodically checks network devices and sends results to web-api |
 | `gui-client` | Desktop GUI application (planned) |
 
 ## Building
@@ -20,9 +20,9 @@ mvn clean install -pl desktop-client -am
 To build background client, you can run:
 
 ```bash
-mvn clean install -pl :client-app -am
+mvn clean install -pl :bg-client -am
 ```
 
-This command will generate your os-type specific executable in `client-app/target/packed/exe` directory. You can run it directly from there.
+This command will generate your os-type specific executable in `bg-client/target/packed/exe` directory. You can run it directly from there.
 
 On Windows application will be built as a `.exe` service.

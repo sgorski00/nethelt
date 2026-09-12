@@ -76,4 +76,8 @@ public class MonitoringTaskService {
     var monitoringTask = getMonitoringTask(networkId, deviceId, monitoringTaskId);
     monitoringTaskRepository.delete(monitoringTask);
   }
+
+  public Set<MonitoringTask> getActiveMonitoringTasks(Long networkId) {
+    return monitoringTaskRepository.findAllActiveByNetworkId(networkId);
+  }
 }

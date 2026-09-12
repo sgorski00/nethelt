@@ -18,7 +18,7 @@ import pl.sgorski.nethelt.webapi.features.agent.service.AgentWebService;
 @RequestMapping(value = "/networks/{networkId}/agent", version = "1")
 @RequiredArgsConstructor
 @PreAuthorize("@networkAuthorization.isOwner(authentication, #networkId)")
-public class AgentWebController {
+public class AgentController {
 
   private final AgentWebService agentWebService;
   private final AgentMapper agentMapper;

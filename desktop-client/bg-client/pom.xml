@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>client-app</artifactId>
+  <artifactId>bg-client</artifactId>
   <packaging>jar</packaging>
   <name>Nethelt Desktop Client - Background Service</name>
   <description>${project.name}</description>

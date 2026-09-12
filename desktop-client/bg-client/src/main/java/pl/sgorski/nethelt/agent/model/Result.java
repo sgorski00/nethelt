@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 public abstract sealed class Result permits PingResult, TelnetResult {
-  private Device device;
+  private final Device device;
   private final Instant timestamp = Instant.now();
-  private boolean success;
-  private String message;
-  private long responseTimeMs;
+  private final boolean success;
+  private final String message;
+  private final long responseTimeMs;
 
   protected Result(Device device, boolean success, String message, long responseTimeMs) {
     this.device = device;
