@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
-import pl.sgorski.nethelt.agent.model.PingResult;
+import pl.sgorski.nethelt.agent.model.monitoring_result.PingResult;
 import pl.sgorski.nethelt.agent.network.ping.impl.DefaultPingOperation;
 import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 

@@ -3,6 +3,7 @@ package pl.sgorski.nethelt.agent.model;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.agent.model.monitoring_result.PingResult;
 import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 
 public class PingResultTests {

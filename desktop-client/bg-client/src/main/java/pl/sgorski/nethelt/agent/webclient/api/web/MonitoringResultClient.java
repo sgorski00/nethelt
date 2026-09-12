@@ -4,8 +4,8 @@ import java.util.Set;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.HttpExchange;
-import pl.sgorski.nethelt.agent.model.PingResult;
-import pl.sgorski.nethelt.agent.model.TelnetResult;
+import pl.sgorski.nethelt.agent.model.monitoring_result.PingResult;
+import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
 
 @Deprecated
 @HttpExchange(url = "/monitoring/results")

@@ -1,6 +1,7 @@
-package pl.sgorski.nethelt.agent.model;
+package pl.sgorski.nethelt.agent.model.monitoring_result;
 
 import lombok.*;
+import pl.sgorski.nethelt.agent.model.Device;
 
 @Getter
 public final class TelnetResult extends Result {

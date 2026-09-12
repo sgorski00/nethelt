@@ -1,10 +1,7 @@
-package pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response;
+package pl.sgorski.nethelt.agent.webclient.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.configuration.HttpHealthcheckTaskConfigurationResponse;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.configuration.PingTaskConfigurationResponse;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.configuration.TelnetTaskConfigurationResponse;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -17,4 +14,7 @@ import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response.configura
       value = HttpHealthcheckTaskConfigurationResponse.class,
       name = "HTTP_HEALTHCHECK")
 })
-public interface MonitoringTaskConfigurationResponse {}
+public sealed interface MonitoringTaskConfigurationResponse
+    permits PingTaskConfigurationResponse,
+        TelnetTaskConfigurationResponse,
+        HttpHealthcheckTaskConfigurationResponse {}

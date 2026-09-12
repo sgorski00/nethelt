@@ -13,7 +13,7 @@ public final class ScheduledTaskManager {
 
   private final TaskScheduler scheduler;
 
-  public ScheduledFuture<?> schedule(int intervalSeconds, Runnable task) {
+  public ScheduledFuture<?> schedule(long intervalSeconds, Runnable task) {
     return scheduler.scheduleWithFixedDelay(
         task, Instant.now(), Duration.ofSeconds(intervalSeconds));
   }

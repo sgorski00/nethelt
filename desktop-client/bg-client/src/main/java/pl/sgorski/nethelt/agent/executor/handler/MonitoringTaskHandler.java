@@ -1,9 +1,10 @@
 package pl.sgorski.nethelt.agent.executor.handler;
 
-import pl.sgorski.nethelt.agent.model.Operation;
+import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
+import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
 
 public interface MonitoringTaskHandler {
-  Operation getOperation();
+  TaskType getOperation();
 
-  void execute();
+  void execute(MonitoringTask task);
 }

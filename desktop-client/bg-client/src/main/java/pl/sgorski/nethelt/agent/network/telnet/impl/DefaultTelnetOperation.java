@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
-import pl.sgorski.nethelt.agent.model.TelnetResult;
+import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
 import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 
 @Slf4j

@@ -8,7 +8,7 @@ import pl.sgorski.nethelt.agent.webclient.api.auth.AgentAuthClient;
 import pl.sgorski.nethelt.agent.webclient.api.web.AgentClient;
 import pl.sgorski.nethelt.agent.webclient.api.web.DeviceClient;
 import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
-import pl.sgorski.nethelt.agent.webclient.api.web.NetworkConfigClient;
+import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringTaskClient;
 
 @Configuration
 @ImportHttpServices(
@@ -17,7 +17,7 @@ import pl.sgorski.nethelt.agent.webclient.api.web.NetworkConfigClient;
       AgentAuthClient.class,
       AgentClient.class,
       DeviceClient.class,
-      NetworkConfigClient.class,
+      MonitoringTaskClient.class,
       MonitoringResultClient.class
     })
 public class HttpClientConfig {

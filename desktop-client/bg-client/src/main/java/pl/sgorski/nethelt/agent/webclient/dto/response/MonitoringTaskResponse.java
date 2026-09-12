@@ -1,10 +1,10 @@
-package pl.sgorski.nethelt.webapi.features.monitoring_task.dto.response;
+package pl.sgorski.nethelt.agent.webclient.dto.response;
 
 import java.time.Duration;
 import java.time.Instant;
-import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.TaskType;
+import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
 
-public record MonitoringTaskClientResponse(
+public record MonitoringTaskResponse(
     Long id,
     TaskType type,
     Long deviceId,

@@ -34,6 +34,10 @@ public interface MonitoringTaskMapper {
 
   @Mapping(target = "isEnabled", source = "enabled")
   @Mapping(target = "configuration", source = "configuration")
+  @Mapping(target = "deviceId", source = "device.id")
+  @Mapping(
+      target = "deviceIp",
+      expression = "java(monitoringTask.getDevice().getIpAddress().getHostAddress())")
   MonitoringTaskClientResponse toClientResponse(MonitoringTask monitoringTask);
 
   MonitoringTaskUpdateCommand toCommand(MonitoringTaskUpdateRequest request);

@@ -1,7 +1,8 @@
-package pl.sgorski.nethelt.agent.model;
+package pl.sgorski.nethelt.agent.model.monitoring_result;
 
 import java.time.Instant;
 import lombok.Getter;
+import pl.sgorski.nethelt.agent.model.Device;
 
 @Getter
 public abstract sealed class Result permits PingResult, TelnetResult {

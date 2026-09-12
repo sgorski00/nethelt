@@ -2,7 +2,7 @@ package pl.sgorski.nethelt.agent.network;
 
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.model.Device;
-import pl.sgorski.nethelt.agent.model.Result;
+import pl.sgorski.nethelt.agent.model.monitoring_result.Result;
 
 public interface NetworkOperation<R extends Result> {
   R execute(Device device) throws NetworkException;
