@@ -20,7 +20,7 @@
 
   <modules>
     <module>client-core</module>
-    <module>client-app</module>
+    <module>bg-client</module>
     <module>gui-client</module>
     <module>cli-client</module>
   </modules>

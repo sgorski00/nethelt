@@ -59,7 +59,7 @@ public class SecurityConfig {
                         "/auth/logout",
                         "/oauth2/**",
                         "/login/oauth2/**",
-                        "/agent/authenticate")
+                        "/client/agent/authenticate")
                     .permitAll()
                     .requestMatchers("/auth/**")
                     .not()
@@ -67,7 +67,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/profile/**", "/identities/**", "/notifications/**", "/networks/**")
                     .authenticated()
-                    .requestMatchers("/agent/**")
+                    .requestMatchers("/client/**")
                     .hasAuthority("AGENT")
                     .anyRequest()
                     .denyAll())

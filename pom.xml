@@ -45,7 +45,7 @@
             </dependency>
             <dependency>
                 <groupId>pl.sgorski.nethelt</groupId>
-                <artifactId>client-app</artifactId>
+                <artifactId>bg-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

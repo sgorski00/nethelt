@@ -13,7 +13,7 @@ import pl.sgorski.nethelt.webapi.features.auth.dto.response.JwtResponse;
 import pl.sgorski.nethelt.webapi.security.agent.AgentAuthentication;
 
 @RestController
-@RequestMapping(value = "/agent", version = "1")
+@RequestMapping(value = "/client/agent", version = "1")
 @RequiredArgsConstructor
 public class AgentDesktopController {
 
