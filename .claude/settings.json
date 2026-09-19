@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.jks)",
+      "Read(**/secrets/**)",
+      "Read(**/application-local.*)",
+      "Read(**/application-prod.*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.config/gcloud/**)",
+      "Bash(cat *.env*)",
+      "Bash(cat **/.env*)",
+      "Bash(printenv*)",
+      "Bash(env)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ]
+  }
+}
