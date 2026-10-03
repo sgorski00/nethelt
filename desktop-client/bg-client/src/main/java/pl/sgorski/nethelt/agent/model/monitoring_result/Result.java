@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public abstract sealed class Result permits PingResult, TelnetResult {
+public abstract sealed class Result permits PingResult, TelnetResult, HttpHealthcheckResult {
   private final Long taskId;
   private final Instant timestamp = Instant.now();
   private final boolean success;

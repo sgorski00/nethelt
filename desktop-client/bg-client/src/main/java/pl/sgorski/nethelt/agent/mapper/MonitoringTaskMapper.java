@@ -30,7 +30,8 @@ public class MonitoringTaskMapper {
       case PingTaskConfigurationResponse c -> new PingTaskConfiguration(c.timeout());
       case TelnetTaskConfigurationResponse c -> new TelnetTaskConfiguration(c.port(), c.timeout());
       case HttpHealthcheckTaskConfigurationResponse c ->
-          new HttpHealthcheckTaskConfiguration(c.port(), c.path(), c.timeout());
+          new HttpHealthcheckTaskConfiguration(
+              c.scheme(), c.port(), c.path(), c.host(), c.expectedStatusCode(), c.timeout());
     };
   }
 }

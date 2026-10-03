@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.utils;
 
 import java.time.Duration;
 import pl.sgorski.nethelt.webapi.features.device.domain.Device;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.HttpScheme;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTask;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTaskConfiguration;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.TaskType;
@@ -38,7 +39,8 @@ public final class TestMonitoringTaskFactory {
       case PING -> new PingTaskConfiguration(Duration.ofSeconds(2));
       case TELNET -> new TelnetTaskConfiguration(8080, Duration.ofSeconds(2));
       case HTTP_HEALTHCHECK ->
-          new HttpHealthcheckTaskConfiguration(8080, "/healthcheck", Duration.ofSeconds(3));
+          new HttpHealthcheckTaskConfiguration(
+              HttpScheme.HTTP, 8080, "/healthcheck", null, null, Duration.ofSeconds(3));
     };
   }
 }

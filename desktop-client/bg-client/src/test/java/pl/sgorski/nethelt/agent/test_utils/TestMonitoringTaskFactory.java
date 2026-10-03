@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
+import pl.sgorski.nethelt.agent.model.monitoring_task.HttpHealthcheckTaskConfiguration;
+import pl.sgorski.nethelt.agent.model.monitoring_task.HttpScheme;
 import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
 import pl.sgorski.nethelt.agent.model.monitoring_task.PingTaskConfiguration;
 import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
@@ -27,6 +29,24 @@ public class TestMonitoringTaskFactory {
     var interval = Duration.ofSeconds(30);
     return new MonitoringTask(
         id, 1L, address, TaskType.PING, interval, true, config, Instant.now());
+  }
+
+  public static MonitoringTask createHttpHealthcheckMonitoringTask(
+      Long id, InetAddress address, HttpHealthcheckTaskConfiguration config) {
+    var interval = Duration.ofSeconds(30);
+    return new MonitoringTask(
+        id, 1L, address, TaskType.HTTP_HEALTHCHECK, interval, true, config, Instant.now());
+  }
+
+  public static HttpHealthcheckTaskConfiguration createHttpHealthcheckTaskConfiguration(
+      int port, String path, String host, Duration timeout) {
+    return createHttpHealthcheckTaskConfiguration(port, path, host, null, timeout);
+  }
+
+  public static HttpHealthcheckTaskConfiguration createHttpHealthcheckTaskConfiguration(
+      int port, String path, String host, Integer expectedStatusCode, Duration timeout) {
+    return new HttpHealthcheckTaskConfiguration(
+        HttpScheme.HTTP, port, path, host, expectedStatusCode, timeout);
   }
 
   private static TelnetTaskConfiguration createTelnetTaskConfiguration() {
