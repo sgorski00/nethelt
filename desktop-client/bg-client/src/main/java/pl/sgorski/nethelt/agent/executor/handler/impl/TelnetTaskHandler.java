@@ -1,22 +1,17 @@
 package pl.sgorski.nethelt.agent.executor.handler.impl;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.executor.handler.MonitoringTaskHandler;
-import pl.sgorski.nethelt.agent.executor.service.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
 import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
-import pl.sgorski.nethelt.agent.webclient.api.web.DeviceClient;
-import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
+import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 
 @Component
 @RequiredArgsConstructor
 public final class TelnetTaskHandler implements MonitoringTaskHandler {
 
-  private final DeviceClient deviceClient;
-  private final MonitoringResultClient monitoringResultClient;
-  private final MonitoringExecutor monitoringExecutor;
+  private final TelnetOperation telnetOperation;
 
   @Override
   public TaskType getOperation() {
@@ -25,12 +20,7 @@ public final class TelnetTaskHandler implements MonitoringTaskHandler {
 
   @Override
   public void execute(MonitoringTask task) {
-    // todo: implement
-    var devices =
-        deviceClient.getDevices().stream()
-            .filter(device -> device.getPort() != null)
-            .collect(Collectors.toSet());
-    var results = monitoringExecutor.getTelnetResults(devices);
-    monitoringResultClient.sendTelnetResults(results);
+    var result = telnetOperation.execute(task);
+    // todo: result should be send to the server vai api
   }
 }

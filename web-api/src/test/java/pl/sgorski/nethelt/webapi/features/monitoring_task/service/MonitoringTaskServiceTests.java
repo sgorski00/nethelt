@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskValidationFailedException;
 import pl.sgorski.nethelt.webapi.features.device.service.DeviceService;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.HttpScheme;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.TaskType;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskCreateCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.dto.command.MonitoringTaskUpdateCommand;
@@ -75,7 +76,9 @@ public class MonitoringTaskServiceTests {
   @Test
   void createMonitoringTask_shouldCreateMonitoringTask_whenValidCommand() {
     var device = TestDeviceFactory.createDevice();
-    var configuration = new HttpHealthcheckTaskConfigurationCommand(8080, "/health", 5000L);
+    var configuration =
+        new HttpHealthcheckTaskConfigurationCommand(
+            HttpScheme.HTTPS, 8080, "/health", "example.com", null, 5000L);
     var command = new MonitoringTaskCreateCommand(TaskType.HTTP_HEALTHCHECK, 30L, configuration);
     when(deviceService.getDevice(1L, 1L)).thenReturn(device);
     when(monitoringTaskConfigurationService.createConfiguration(
@@ -95,7 +98,9 @@ public class MonitoringTaskServiceTests {
   @Test
   void createMonitoringTask_shouldThrow_whenConfigNotValid() {
     var device = TestDeviceFactory.createDevice();
-    var configuration = new HttpHealthcheckTaskConfigurationCommand(8080, "/health", 5000L);
+    var configuration =
+        new HttpHealthcheckTaskConfigurationCommand(
+            HttpScheme.HTTPS, 8080, "/health", "example.com", null, 5000L);
     var command = new MonitoringTaskCreateCommand(TaskType.HTTP_HEALTHCHECK, 30L, configuration);
     when(deviceService.getDevice(1L, 1L)).thenReturn(device);
     when(monitoringTaskConfigurationService.createConfiguration(

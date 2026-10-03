@@ -1,4 +1,5 @@
 import { TaskType } from './task-type';
+import { HttpScheme } from './http-scheme';
 
 export interface PingTaskConfigurationRequest {
   type: TaskType.PING;
@@ -13,8 +14,11 @@ export interface TelnetTaskConfigurationRequest {
 
 export interface HttpHealthcheckTaskConfigurationRequest {
   type: TaskType.HTTP_HEALTHCHECK;
+  scheme: HttpScheme;
   port: number;
   path: string;
+  host: string | null;
+  expectedStatusCode: number | null;
   timeoutMs: number;
 }
 

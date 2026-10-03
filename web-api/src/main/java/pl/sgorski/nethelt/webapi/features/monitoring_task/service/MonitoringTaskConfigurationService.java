@@ -1,8 +1,10 @@
 package pl.sgorski.nethelt.webapi.features.monitoring_task.service;
 
 import java.time.Duration;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskValidationFailedException;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.HttpScheme;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTaskConfiguration;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.TaskType;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.configuration.HttpHealthcheckTaskConfiguration;
@@ -46,9 +48,17 @@ public class MonitoringTaskConfigurationService {
   private HttpHealthcheckTaskConfiguration createHttpHealthcheckTaskConfiguration(
       MonitoringTaskConfigurationCommand configuration) {
     if (configuration
-        instanceof HttpHealthcheckTaskConfigurationCommand(int port, String path, long timeoutMs)) {
+        instanceof
+        HttpHealthcheckTaskConfigurationCommand(
+            HttpScheme scheme,
+            int port,
+            String path,
+            @Nullable String host,
+            @Nullable Integer expectedStatusCode,
+            long timeoutMs)) {
       var timeout = getDurationFromMillis(timeoutMs);
-      return new HttpHealthcheckTaskConfiguration(port, path, timeout);
+      return new HttpHealthcheckTaskConfiguration(
+          scheme, port, path, host, expectedStatusCode, timeout);
     }
     throw new MonitoringTaskValidationFailedException(
         "Invalid configuration for HTTP HEALTHCHECK task");

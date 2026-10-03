@@ -6,6 +6,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_task.MonitoringTaskValidationFailedException;
+import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.HttpScheme;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.TaskType;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.configuration.HttpHealthcheckTaskConfiguration;
 import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.configuration.PingTaskConfiguration;
@@ -51,7 +52,9 @@ public class MonitoringTaskConfigurationServiceTests {
   @Test
   void createConfiguration_shouldCreateHttpHealthcheckTaskConfiguration() {
     var type = TaskType.HTTP_HEALTHCHECK;
-    var configCommand = new HttpHealthcheckTaskConfigurationCommand(8080, "/health", 1000L);
+    var configCommand =
+        new HttpHealthcheckTaskConfigurationCommand(
+            HttpScheme.HTTPS, 8080, "/health", "example.com", 204, 1000L);
 
     var result = monitoringTaskConfigurationService.createConfiguration(type, configCommand);
 
@@ -60,12 +63,17 @@ public class MonitoringTaskConfigurationServiceTests {
     assertEquals(Duration.ofSeconds(1), healthcheckConfig.getTimeout());
     assertEquals(8080, healthcheckConfig.getPort());
     assertEquals("/health", healthcheckConfig.getPath());
+    assertEquals(HttpScheme.HTTPS, healthcheckConfig.getScheme());
+    assertEquals("example.com", healthcheckConfig.getHost());
+    assertEquals(204, healthcheckConfig.getExpectedStatusCode());
   }
 
   @Test
   void createConfiguration_shouldThrow_whenConfigurationNotMatch_Ping() {
     var type = TaskType.PING;
-    var configCommand = new HttpHealthcheckTaskConfigurationCommand(8080, "/health", 1000L);
+    var configCommand =
+        new HttpHealthcheckTaskConfigurationCommand(
+            HttpScheme.HTTPS, 8080, "/health", "example.com", null, 1000L);
 
     assertThrows(
         MonitoringTaskValidationFailedException.class,

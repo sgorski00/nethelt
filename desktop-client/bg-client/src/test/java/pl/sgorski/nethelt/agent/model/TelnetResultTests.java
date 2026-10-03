@@ -4,16 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
-import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 
 public class TelnetResultTests {
   @Test
   void construction_shouldCreateTelnetResult() {
-    var device = TestDeviceFactory.createDeviceWithPort();
+    var result = new TelnetResult(1L, true, "Telnet successful", 20, true);
 
-    var result = new TelnetResult(device, true, "Telnet successful", 20, true);
-
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertEquals("Telnet successful", result.getMessage());
     assertEquals(20, result.getResponseTimeMs());

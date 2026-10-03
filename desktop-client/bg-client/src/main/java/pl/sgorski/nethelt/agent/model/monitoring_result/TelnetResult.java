@@ -1,16 +1,16 @@
 package pl.sgorski.nethelt.agent.model.monitoring_result;
 
 import lombok.*;
-import pl.sgorski.nethelt.agent.model.Device;
 
 @Getter
+@ToString(callSuper = true)
 public final class TelnetResult extends Result {
 
-  private boolean portOpen;
+  private final boolean portOpen;
 
   public TelnetResult(
-      Device device, boolean success, String message, long responseTimeMs, boolean portOpen) {
-    super(device, success, message, responseTimeMs);
+      Long taskId, boolean success, String message, long responseTimeMs, boolean portOpen) {
+    super(taskId, success, message, responseTimeMs);
     this.portOpen = portOpen;
   }
 }

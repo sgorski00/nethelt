@@ -6,23 +6,22 @@ import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
 import java.time.Duration;
-import java.util.Objects;
 import javax.net.SocketFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
-import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
+import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
+import pl.sgorski.nethelt.agent.model.monitoring_task.TelnetTaskConfiguration;
 import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
 
 @Slf4j
 @Component
 public final class DefaultTelnetOperation implements TelnetOperation {
 
-  // it will be taken from monitoringtask config
-  private static final int TELNET_TIMEOUT_MS = 5_000;
-
   private final SocketFactory socketFactory;
+
+  private TelnetTaskConfiguration configuration;
 
   public DefaultTelnetOperation() {
     this.socketFactory = SocketFactory.getDefault();
@@ -33,43 +32,38 @@ public final class DefaultTelnetOperation implements TelnetOperation {
   }
 
   @Override
-  public TelnetResult execute(Device device) throws NetworkException {
-    log.info("Checking port {} of device: {}", device.getPort(), device.getName());
+  public TelnetResult execute(MonitoringTask task) throws NetworkException {
+    configuration = (TelnetTaskConfiguration) task.configuration();
+    log.info("Checking port {} of device with id: {}", configuration.port(), task.deviceId());
     var startTime = System.nanoTime();
-    var isPortOpen = checkIfPortIsOpen(device);
+    var isPortOpen = checkIfPortIsOpen(task);
     var responseTime = Duration.ofNanos(System.nanoTime() - startTime).toMillis();
     var message =
         isPortOpen
-            ? "Port " + device.getPort() + " is open in device " + device.getName()
-            : "Port " + device.getPort() + " is closed in device " + device.getName();
-    log.info("Telnet check for {} result: {}", device.getName(), message);
-    return new TelnetResult(device, true, message, responseTime, isPortOpen);
+            ? "Port " + configuration.port() + " is open in device " + task.deviceId()
+            : "Port " + configuration.port() + " is closed in device " + task.deviceId();
+    log.info("Telnet check for device with id: {},result: {}", task.deviceId(), message);
+    return new TelnetResult(task.id(), true, message, responseTime, isPortOpen);
   }
 
-  private boolean checkIfPortIsOpen(Device device) {
-    if (Objects.isNull(device.getPort())) {
-      throw new IllegalArgumentException(
-          "Port for device "
-              + device.getName()
-              + " is not specified. It is required for Telnet operation.");
-    }
-
+  private boolean checkIfPortIsOpen(MonitoringTask task) {
     try (var socket = socketFactory.createSocket()) {
       socket.connect(
-          new InetSocketAddress(device.getAddress(), device.getPort()), TELNET_TIMEOUT_MS);
+          new InetSocketAddress(task.deviceIp(), configuration.port()),
+          (int) configuration.timeout().toMillis());
       return true;
     } catch (ConnectException | SocketTimeoutException | IllegalBlockingModeException e) {
       return false;
     } catch (IOException e) {
-      throw new NetworkException("Telnet connection failed for device " + device.getName(), e);
+      throw new NetworkException("Telnet connection failed for device " + task.deviceId(), e);
     } catch (IllegalArgumentException e) {
       throw new NetworkException(
-          "Invalid port number for device " + device.getName() + ": " + device.getPort(), e);
+          "Invalid port number for device " + task.deviceId() + ": " + configuration.port(), e);
     }
   }
 
   @Override
-  public TelnetResult error(Device device) {
-    return new TelnetResult(device, false, "Telnet check failed", -1, false);
+  public TelnetResult error(MonitoringTask task) {
+    return new TelnetResult(task.id(), false, "Telnet check failed", -1, false);
   }
 }

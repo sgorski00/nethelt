@@ -4,6 +4,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { MonitoringTasksService } from '../../../../services/monitoring-tasks-service';
 import { TASK_TYPE_LABELS, TaskType } from '../../../../models/tasks/task-type';
 import { MonitoringTaskCreateRequest } from '../../../../models/tasks/monitoring-task-request';
+import { HttpScheme } from '../../../../models/tasks/http-scheme';
 
 @Component({
   selector: 'app-create-task',
@@ -20,6 +21,7 @@ export class CreateTask {
   protected readonly taskTypes = Object.values(TaskType);
   protected readonly TaskType = TaskType;
   protected readonly TASK_TYPE_LABELS = TASK_TYPE_LABELS;
+  protected readonly httpSchemes = Object.values(HttpScheme);
 
   protected readonly errorMessage = signal('');
 
@@ -27,8 +29,11 @@ export class CreateTask {
     intervalSeconds: [5, [Validators.required, Validators.min(1)]],
     type: [TaskType.PING, Validators.required],
     configuration: this.fb.nonNullable.group({
+      scheme: [HttpScheme.HTTP, Validators.required],
       port: [23, [Validators.required, Validators.min(1), Validators.max(65535)]],
       path: ['/health', Validators.required],
+      host: [''],
+      expectedStatusCode: [null as number | null, [Validators.min(100), Validators.max(599)]],
       timeoutSeconds: [2.0, [Validators.required, Validators.min(0.5), Validators.max(5)]],
     }),
   });
@@ -61,8 +66,11 @@ export class CreateTask {
       case TaskType.HTTP_HEALTHCHECK:
         configuration = {
           type: value.type,
+          scheme: value.configuration.scheme,
           port: value.configuration.port,
           path: value.configuration.path,
+          host: value.configuration.host.trim() || null,
+          expectedStatusCode: value.configuration.expectedStatusCode || null,
           timeoutMs: value.configuration.timeoutSeconds * 1000,
         };
         break;

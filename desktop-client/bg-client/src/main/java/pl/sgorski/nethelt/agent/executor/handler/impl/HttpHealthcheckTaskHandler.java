@@ -5,22 +5,22 @@ import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.executor.handler.MonitoringTaskHandler;
 import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
 import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
-import pl.sgorski.nethelt.agent.network.ping.PingOperation;
+import pl.sgorski.nethelt.agent.network.http_healthcheck.HttpHealthcheckOperation;
 
 @Component
 @RequiredArgsConstructor
-public final class PingTaskHandler implements MonitoringTaskHandler {
+public final class HttpHealthcheckTaskHandler implements MonitoringTaskHandler {
 
-  private final PingOperation pingOperation;
+  private final HttpHealthcheckOperation httpHealthcheckOperation;
 
   @Override
   public TaskType getOperation() {
-    return TaskType.PING;
+    return TaskType.HTTP_HEALTHCHECK;
   }
 
   @Override
   public void execute(MonitoringTask task) {
-    var result = pingOperation.execute(task);
+    var result = httpHealthcheckOperation.execute(task);
     // todo: result should be send to the server vai api
   }
 }

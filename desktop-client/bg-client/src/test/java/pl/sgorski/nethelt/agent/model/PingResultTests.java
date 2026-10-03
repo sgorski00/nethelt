@@ -4,17 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.agent.model.monitoring_result.PingResult;
-import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
 
 public class PingResultTests {
 
   @Test
   void construction_shouldCreatePingResult() {
-    var device = TestDeviceFactory.createDeviceWithoutPort();
+    var result = new PingResult(1L, true, "Ping successful", 20);
 
-    var result = new PingResult(device, true, "Ping successful", 20);
-
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertEquals("Ping successful", result.getMessage());
     assertEquals(20, result.getResponseTimeMs());
