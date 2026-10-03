@@ -1,11 +1,11 @@
 package pl.sgorski.nethelt.agent.network;
 
 import pl.sgorski.nethelt.agent.exception.NetworkException;
-import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.monitoring_result.Result;
+import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
 
 public interface NetworkOperation<R extends Result> {
-  R execute(Device device) throws NetworkException;
+  R execute(MonitoringTask task) throws NetworkException;
 
-  R error(Device device);
+  R error(MonitoringTask task);
 }

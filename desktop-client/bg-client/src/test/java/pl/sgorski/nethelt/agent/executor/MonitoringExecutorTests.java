@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.agent.executor.service.MonitoringExecutor;
 import pl.sgorski.nethelt.agent.network.ping.PingOperation;
 import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
-import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
+import pl.sgorski.nethelt.agent.test_utils.TestMonitoringTaskFactory;
 import pl.sgorski.nethelt.agent.test_utils.TestResultFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,11 +32,11 @@ public class MonitoringExecutorTests {
 
   @Test
   void getPingResults_ShouldReturnResults() {
-    var device = TestDeviceFactory.createDeviceWithoutPort();
+    var task = TestMonitoringTaskFactory.createPingMonitoringTask(1L);
     var pingResult = TestResultFactory.createPingResult(true);
-    when(ping.execute(device)).thenReturn(pingResult);
+    when(ping.execute(task)).thenReturn(pingResult);
 
-    var results = monitoringExecutor.getPingResults(Collections.singleton(device));
+    var results = monitoringExecutor.getPingResults(Collections.singleton(task));
 
     assertEquals(1, results.size());
     assertSame(pingResult, results.iterator().next());
@@ -44,12 +44,12 @@ public class MonitoringExecutorTests {
 
   @Test
   void getPingResults_ShouldReturnErrorResult_WhenExecutionExceptionHappen() {
-    var device = TestDeviceFactory.createDeviceWithoutPort();
+    var task = TestMonitoringTaskFactory.createPingMonitoringTask(1L);
     var errorResult = TestResultFactory.createPingResult(false);
-    when(ping.execute(device)).thenThrow(RuntimeException.class);
-    when(ping.error(device)).thenReturn(errorResult);
+    when(ping.execute(task)).thenThrow(RuntimeException.class);
+    when(ping.error(task)).thenReturn(errorResult);
 
-    var results = monitoringExecutor.getPingResults(Collections.singleton(device));
+    var results = monitoringExecutor.getPingResults(Collections.singleton(task));
 
     assertEquals(1, results.size());
     assertSame(errorResult, results.iterator().next());
@@ -57,12 +57,12 @@ public class MonitoringExecutorTests {
 
   @Test
   void getTelnetResults_ShouldReturnResults() {
-    var deviceWithPort = TestDeviceFactory.createDeviceWithPort(22);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     var telnetResult = TestResultFactory.createTelnetResult(true);
 
-    when(telnet.execute(deviceWithPort)).thenReturn(telnetResult);
+    when(telnet.execute(task)).thenReturn(telnetResult);
 
-    var results = monitoringExecutor.getTelnetResults(Collections.singleton(deviceWithPort));
+    var results = monitoringExecutor.getTelnetResults(Collections.singleton(task));
 
     assertEquals(1, results.size());
     assertEquals(telnetResult, results.iterator().next());
@@ -70,12 +70,12 @@ public class MonitoringExecutorTests {
 
   @Test
   void getTelnetResults_ShouldReturnErrorResult_WhenExecutionExceptionHappen() {
-    var deviceWithPort = TestDeviceFactory.createDeviceWithPort(22);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     var errorResult = TestResultFactory.createTelnetResult(false);
-    when(telnet.execute(deviceWithPort)).thenThrow(RuntimeException.class);
-    when(telnet.error(deviceWithPort)).thenReturn(errorResult);
+    when(telnet.execute(task)).thenThrow(RuntimeException.class);
+    when(telnet.error(task)).thenReturn(errorResult);
 
-    var results = monitoringExecutor.getTelnetResults(Collections.singleton(deviceWithPort));
+    var results = monitoringExecutor.getTelnetResults(Collections.singleton(task));
 
     assertEquals(1, results.size());
     assertEquals(errorResult, results.iterator().next());

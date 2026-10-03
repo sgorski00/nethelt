@@ -5,12 +5,10 @@ import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
 
 public class TestResultFactory {
   public static PingResult createPingResult(boolean result) {
-    var device = TestDeviceFactory.createDeviceWithoutPort();
-    return new PingResult(device, result, "Test result message", result ? 100 : -1);
+    return new PingResult(1L, result, "Test result message", result ? 100 : -1);
   }
 
   public static TelnetResult createTelnetResult(boolean result) {
-    var device = TestDeviceFactory.createDeviceWithoutPort();
-    return new TelnetResult(device, result, "Test result message", result ? 100 : -1, result);
+    return new TelnetResult(1L, result, "Test result message", result ? 100 : -1, result);
   }
 }

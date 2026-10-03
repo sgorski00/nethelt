@@ -77,24 +77,17 @@ public class MonitoringTaskService {
     return current.updatedAt().equals(incoming.updatedAt());
   }
 
+  private void updateTask(MonitoringTaskKey key, MonitoringTask task) {
+    cancelTask(key);
+    addTask(key, task);
+  }
+
   private void addTask(MonitoringTaskKey key, MonitoringTask task) {
     currentTasks.put(key, task);
     if (!task.enabled()) {
       log.info("Monitoring task {} is disabled", key);
       return;
     }
-    scheduleTask(key, task);
-  }
-
-  private void updateTask(MonitoringTaskKey key, MonitoringTask task) {
-    cancelTask(key);
-    currentTasks.put(key, task);
-
-    if (!task.enabled()) {
-      log.info("Monitoring task {} is disabled", key);
-      return;
-    }
-
     scheduleTask(key, task);
   }
 

@@ -18,116 +18,100 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
-import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.network.telnet.impl.DefaultTelnetOperation;
-import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
+import pl.sgorski.nethelt.agent.test_utils.TestMonitoringTaskFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultTelnetOperationTests {
 
-  @Mock private Device device;
   @Mock private Socket socket;
   @Mock private SocketFactory socketFactory;
   @InjectMocks private DefaultTelnetOperation telnetOperation;
 
   @Test
   void execute_SuccessfulTelnet() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     when(socketFactory.createSocket()).thenReturn(socket);
 
-    var result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(task);
 
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertTrue(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
-    assertEquals("Port 80 is open in device Device", result.getMessage());
+    assertEquals("Port 80 is open in device 1", result.getMessage());
   }
 
   @Test
   void execute_FailureTelnet_PortClosedConnectException() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(ConnectException.class).when(socket).connect(any(), anyInt());
 
-    var result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(task);
 
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
-    assertEquals("Port 80 is closed in device Device", result.getMessage());
+    assertEquals("Port 80 is closed in device 1", result.getMessage());
   }
 
   @Test
   void execute_FailureTelnet_PortClosedSocketTimeoutException() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(SocketTimeoutException.class).when(socket).connect(any(), anyInt());
 
-    var result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(task);
 
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
-    assertEquals("Port 80 is closed in device Device", result.getMessage());
+    assertEquals("Port 80 is closed in device 1", result.getMessage());
   }
 
   @Test
   void execute_FailureTelnet_PortClosedIllegalBlockingModeException() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(IllegalBlockingModeException.class).when(socket).connect(any(), anyInt());
 
-    var result = telnetOperation.execute(device);
+    var result = telnetOperation.execute(task);
 
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertTrue(result.getResponseTimeMs() >= 0);
-    assertEquals("Port 80 is closed in device Device", result.getMessage());
+    assertEquals("Port 80 is closed in device 1", result.getMessage());
   }
 
   @Test
   void execute_shouldThrowNetworkException_IOException() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(IOException.class).when(socket).connect(any(), anyInt());
 
-    assertThrows(NetworkException.class, () -> telnetOperation.execute(device));
+    assertThrows(NetworkException.class, () -> telnetOperation.execute(task));
   }
 
   @Test
   void execute_shouldThrowNetworkException_IllegalArgumentException() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(80);
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
     when(socketFactory.createSocket()).thenReturn(socket);
     doThrow(IllegalArgumentException.class).when(socket).connect(any(), anyInt());
 
-    assertThrows(NetworkException.class, () -> telnetOperation.execute(device));
+    assertThrows(NetworkException.class, () -> telnetOperation.execute(task));
   }
 
   @Test
-  void execute_shouldThrowIllegalArgumentException_PortIsNull() {
-    when(device.getName()).thenReturn("Device");
-    when(device.getPort()).thenReturn(null);
+  void error_shouldReturnErrorTelnetResult() {
+    var task = TestMonitoringTaskFactory.createTelnetMonitoringTask(1L);
 
-    assertThrows(IllegalArgumentException.class, () -> telnetOperation.execute(device));
-  }
+    var result = telnetOperation.error(task);
 
-  @Test
-  void error_shouldReturnErrorPingResult() {
-    var device = TestDeviceFactory.createDeviceWithPort();
-
-    var result = telnetOperation.error(device);
-
-    assertSame(device, result.getDevice());
+    assertSame(task.id(), result.getTaskId());
     assertFalse(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertEquals("Telnet check failed", result.getMessage());

@@ -6,8 +6,6 @@ import org.springframework.web.client.support.RestClientHttpServiceGroupConfigur
 import org.springframework.web.service.registry.ImportHttpServices;
 import pl.sgorski.nethelt.agent.webclient.api.auth.AgentAuthClient;
 import pl.sgorski.nethelt.agent.webclient.api.web.AgentClient;
-import pl.sgorski.nethelt.agent.webclient.api.web.DeviceClient;
-import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
 import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringTaskClient;
 
 @Configuration
@@ -16,9 +14,7 @@ import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringTaskClient;
     types = {
       AgentAuthClient.class,
       AgentClient.class,
-      DeviceClient.class,
       MonitoringTaskClient.class,
-      MonitoringResultClient.class
     })
 public class HttpClientConfig {
 

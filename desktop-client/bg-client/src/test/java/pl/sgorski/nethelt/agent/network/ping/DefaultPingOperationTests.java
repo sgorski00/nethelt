@@ -10,15 +10,13 @@ import java.net.InetAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
-import pl.sgorski.nethelt.agent.model.Device;
 import pl.sgorski.nethelt.agent.model.monitoring_result.PingResult;
 import pl.sgorski.nethelt.agent.network.ping.impl.DefaultPingOperation;
-import pl.sgorski.nethelt.agent.test_utils.TestDeviceFactory;
+import pl.sgorski.nethelt.agent.test_utils.TestMonitoringTaskFactory;
 
 public class DefaultPingOperationTests {
 
-  private final Device device = mock(Device.class);
-  private final InetAddress address = mock(InetAddress.class);
+  private InetAddress address = mock(InetAddress.class);
   private PingOperation pingOperation;
 
   @BeforeEach
@@ -28,14 +26,13 @@ public class DefaultPingOperationTests {
 
   @Test
   void execute_SuccessfulPing() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getAddress()).thenReturn(address);
+    var task = TestMonitoringTaskFactory.createPingMonitoringTask(1L, address);
     when(address.isReachable(anyInt())).thenReturn(true);
 
-    var result = pingOperation.execute(device);
+    var result = pingOperation.execute(task);
 
     assertInstanceOf(PingResult.class, result);
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertEquals("Ping successful", result.getMessage());
     assertTrue(result.getResponseTimeMs() >= 0);
@@ -43,14 +40,13 @@ public class DefaultPingOperationTests {
 
   @Test
   void execute_NotSuccessfulPing_NotReachable() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getAddress()).thenReturn(address);
+    var task = TestMonitoringTaskFactory.createPingMonitoringTask(1L, address);
     when(address.isReachable(anyInt())).thenReturn(false);
 
-    var result = pingOperation.execute(device);
+    var result = pingOperation.execute(task);
 
     assertInstanceOf(PingResult.class, result);
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertFalse(result.isSuccess());
     assertTrue(result.getMessage().contains("Timeout after"));
     assertTrue(result.getResponseTimeMs() >= 0);
@@ -58,23 +54,22 @@ public class DefaultPingOperationTests {
 
   @Test
   void execute_ShouldThrow_NetworkErrorOccurs() throws Exception {
-    when(device.getName()).thenReturn("Device");
-    when(device.getAddress()).thenReturn(address);
+    var task = TestMonitoringTaskFactory.createPingMonitoringTask(1L, address);
     when(address.isReachable(anyInt())).thenThrow(new IOException("A network error occurs!"));
 
-    var ex = assertThrows(NetworkException.class, () -> pingOperation.execute(device));
+    var ex = assertThrows(NetworkException.class, () -> pingOperation.execute(task));
 
-    assertTrue(ex.getMessage().contains("Ping failed for device Device"));
+    assertTrue(ex.getMessage().contains("Ping failed for device 1"));
   }
 
   @Test
   void error_shouldReturnErrorPingResult() {
-    var device = TestDeviceFactory.createDeviceWithoutPort();
+    var task = TestMonitoringTaskFactory.createPingMonitoringTask(1L, address);
 
-    var result = pingOperation.error(device);
+    var result = pingOperation.error(task);
 
     assertInstanceOf(PingResult.class, result);
-    assertSame(device, result.getDevice());
+    assertSame(1L, result.getTaskId());
     assertFalse(result.isSuccess());
     assertEquals("Ping failed", result.getMessage());
     assertEquals(-1, result.getResponseTimeMs());
