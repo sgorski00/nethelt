@@ -4,6 +4,9 @@ import java.net.InetAddress;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.model.monitoring_task.*;
 import pl.sgorski.nethelt.agent.webclient.dto.response.*;
+import pl.sgorski.nethelt.agent.webclient.dto.response.HttpHealthcheckTaskConfigurationResponse;
+import pl.sgorski.nethelt.agent.webclient.dto.response.PingTaskConfigurationResponse;
+import pl.sgorski.nethelt.agent.webclient.dto.response.TelnetTaskConfigurationResponse;
 
 @Component
 public class MonitoringTaskMapper {
