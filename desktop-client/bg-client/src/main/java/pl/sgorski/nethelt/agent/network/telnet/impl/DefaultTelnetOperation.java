@@ -64,6 +64,6 @@ public final class DefaultTelnetOperation implements TelnetOperation {
 
   @Override
   public TelnetResult error(MonitoringTask task) {
-    return new TelnetResult(task.id(), false, "Telnet check failed", -1, false);
+    return new TelnetResult(task.id(), false, "Telnet check failed", null, false);
   }
 }

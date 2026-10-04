@@ -107,6 +107,6 @@ public final class DefaultHttpHealthcheckOperation implements HttpHealthcheckOpe
 
   @Override
   public HttpHealthcheckResult error(MonitoringTask task) {
-    return new HttpHealthcheckResult(task.id(), false, "HTTP Healthcheck failed", -1, null);
+    return new HttpHealthcheckResult(task.id(), false, "HTTP Healthcheck failed", null, null);
   }
 }

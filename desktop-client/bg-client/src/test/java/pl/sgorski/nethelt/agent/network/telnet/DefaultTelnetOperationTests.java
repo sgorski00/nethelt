@@ -115,6 +115,6 @@ public class DefaultTelnetOperationTests {
     assertFalse(result.isSuccess());
     assertFalse(result.isPortOpen());
     assertEquals("Telnet check failed", result.getMessage());
-    assertEquals(-1, result.getResponseTimeMs());
+    assertNull(result.getResponseTimeMs());
   }
 }

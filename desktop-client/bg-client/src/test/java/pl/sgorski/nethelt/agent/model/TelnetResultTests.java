@@ -8,12 +8,12 @@ import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
 public class TelnetResultTests {
   @Test
   void construction_shouldCreateTelnetResult() {
-    var result = new TelnetResult(1L, true, "Telnet successful", 20, true);
+    var result = new TelnetResult(1L, true, "Telnet successful", 20L, true);
 
     assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertEquals("Telnet successful", result.getMessage());
-    assertEquals(20, result.getResponseTimeMs());
+    assertEquals(20L, result.getResponseTimeMs());
     assertNotNull(result.getTimestamp());
     assertTrue(result.isPortOpen());
   }
