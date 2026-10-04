@@ -59,6 +59,27 @@ public class MonitoringTaskServiceTests {
   }
 
   @Test
+  void getMonitoringTaskInNetwork_shouldReturnMonitoringTask_whenMonitoringTaskExists() {
+    var monitoringTask = TestMonitoringTaskFactory.createTask();
+    when(monitoringTaskRepository.findByIdAndNetworkId(1L, 2L))
+        .thenReturn(Optional.of(monitoringTask));
+
+    var result = monitoringTaskService.getMonitoringTask(2L, 1L);
+
+    assertSame(monitoringTask, result);
+    verifyNoInteractions(deviceService);
+  }
+
+  @Test
+  void getMonitoringTaskInNetwork_shouldThrowException_whenMonitoringTaskNotInNetwork() {
+    when(monitoringTaskRepository.findByIdAndNetworkId(1L, 2L)).thenReturn(Optional.empty());
+
+    assertThrows(
+        MonitoringTaskNotFoundException.class,
+        () -> monitoringTaskService.getMonitoringTask(2L, 1L));
+  }
+
+  @Test
   void getMonitoringTasks_shouldReturnMonitoringTasks() {
     var device = TestDeviceFactory.createDevice();
     var monitoringTasks =

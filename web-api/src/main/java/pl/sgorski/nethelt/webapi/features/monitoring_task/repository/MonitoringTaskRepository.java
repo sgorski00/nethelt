@@ -19,4 +19,12 @@ public interface MonitoringTaskRepository extends JpaRepository<MonitoringTask, 
     where mt.device.network.id = :networkId and mt.isEnabled = true
 """)
   Set<MonitoringTask> findAllActiveByNetworkId(@Param("networkId") Long networkId);
+
+  @Query(
+"""
+    select mt from MonitoringTask mt
+    where mt.id = :monitoringTaskId and mt.device.network.id = :networkId
+""")
+  Optional<MonitoringTask> findByIdAndNetworkId(
+      @Param("monitoringTaskId") Long monitoringTaskId, @Param("networkId") Long networkId);
 }
