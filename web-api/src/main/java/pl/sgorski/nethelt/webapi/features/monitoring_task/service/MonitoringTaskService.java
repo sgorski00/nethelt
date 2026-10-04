@@ -27,6 +27,12 @@ public class MonitoringTaskService {
         .orElseThrow(MonitoringTaskNotFoundException::new);
   }
 
+  public MonitoringTask getMonitoringTask(Long networkId, Long monitoringTaskId) {
+    return monitoringTaskRepository
+        .findByIdAndNetworkId(monitoringTaskId, networkId)
+        .orElseThrow(MonitoringTaskNotFoundException::new);
+  }
+
   public Set<MonitoringTask> getMonitoringTasks(Long networkId, Long deviceId) {
     var device = deviceService.getDevice(networkId, deviceId);
     return monitoringTaskRepository.findAllByDevice(device);
