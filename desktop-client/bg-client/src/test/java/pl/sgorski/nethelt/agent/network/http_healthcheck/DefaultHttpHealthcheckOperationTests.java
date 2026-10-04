@@ -159,7 +159,7 @@ public class DefaultHttpHealthcheckOperationTests {
     assertFalse(result.isSuccess());
     assertNull(result.getStatusCode());
     assertEquals("HTTP Healthcheck failed", result.getMessage());
-    assertEquals(-1, result.getResponseTimeMs());
+    assertNull(result.getResponseTimeMs());
   }
 
   private MonitoringTask createTask(String path, String host, Duration timeout) {

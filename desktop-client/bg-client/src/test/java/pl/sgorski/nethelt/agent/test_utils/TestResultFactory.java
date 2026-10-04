@@ -5,10 +5,10 @@ import pl.sgorski.nethelt.agent.model.monitoring_result.TelnetResult;
 
 public class TestResultFactory {
   public static PingResult createPingResult(boolean result) {
-    return new PingResult(1L, result, "Test result message", result ? 100 : -1);
+    return new PingResult(1L, result, "Test result message", result ? 100L : null);
   }
 
   public static TelnetResult createTelnetResult(boolean result) {
-    return new TelnetResult(1L, result, "Test result message", result ? 100 : -1, result);
+    return new TelnetResult(1L, result, "Test result message", result ? 100L : null, result);
   }
 }

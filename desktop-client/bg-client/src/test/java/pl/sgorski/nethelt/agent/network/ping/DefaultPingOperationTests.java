@@ -72,6 +72,6 @@ public class DefaultPingOperationTests {
     assertSame(1L, result.getTaskId());
     assertFalse(result.isSuccess());
     assertEquals("Ping failed", result.getMessage());
-    assertEquals(-1, result.getResponseTimeMs());
+    assertNull(result.getResponseTimeMs());
   }
 }

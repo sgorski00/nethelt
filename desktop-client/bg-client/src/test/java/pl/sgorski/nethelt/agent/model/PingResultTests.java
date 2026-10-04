@@ -9,12 +9,12 @@ public class PingResultTests {
 
   @Test
   void construction_shouldCreatePingResult() {
-    var result = new PingResult(1L, true, "Ping successful", 20);
+    var result = new PingResult(1L, true, "Ping successful", 20L);
 
     assertSame(1L, result.getTaskId());
     assertTrue(result.isSuccess());
     assertEquals("Ping successful", result.getMessage());
-    assertEquals(20, result.getResponseTimeMs());
+    assertEquals(20L, result.getResponseTimeMs());
     assertNotNull(result.getTimestamp());
   }
 }

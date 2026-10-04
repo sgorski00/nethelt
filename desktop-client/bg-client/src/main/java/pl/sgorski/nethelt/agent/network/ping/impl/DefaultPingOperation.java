@@ -33,6 +33,6 @@ public final class DefaultPingOperation implements PingOperation {
 
   @Override
   public PingResult error(MonitoringTask task) {
-    return new PingResult(task.id(), false, "Ping failed", -1);
+    return new PingResult(task.id(), false, "Ping failed", null);
   }
 }
