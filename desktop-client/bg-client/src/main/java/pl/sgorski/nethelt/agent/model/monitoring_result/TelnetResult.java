@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 
 @Getter
 @ToString(callSuper = true)
-public final class TelnetResult extends Result {
+public final class TelnetResult extends MonitoringResult {
 
   private final boolean portOpen;
 

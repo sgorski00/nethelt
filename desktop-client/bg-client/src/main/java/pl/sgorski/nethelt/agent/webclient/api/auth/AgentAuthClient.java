@@ -1,12 +1,14 @@
 package pl.sgorski.nethelt.agent.webclient.api.auth;
 
 import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import pl.sgorski.nethelt.agent.webclient.dto.request.AgentAuthRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.response.AgentAuthResponse;
 
+@Validated
 @HttpExchange(url = "/client/agent")
 public interface AgentAuthClient {
   @PostExchange("/authenticate")

@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 @Getter
 @ToString(callSuper = true)
-public final class HttpHealthcheckResult extends Result {
+public final class HttpHealthcheckResult extends MonitoringResult {
 
   private final @Nullable Integer statusCode;
 
