@@ -1,7 +1,10 @@
 package pl.sgorski.nethelt.webapi.features.monitoring_result.service;
 
-import java.util.Set;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.monitoring_result.MonitoringResultNotFoundException;
@@ -26,10 +29,15 @@ public class MonitoringResultService {
         .orElseThrow(MonitoringResultNotFoundException::new);
   }
 
-  public Set<MonitoringResult> getMonitoringResults(
-      Long networkId, Long deviceId, Long monitoringTaskId) {
+  public Page<MonitoringResult> getMonitoringResults(
+      Long networkId,
+      Long deviceId,
+      Long monitoringTaskId,
+      @Nullable Instant from,
+      @Nullable Instant to,
+      Pageable pageable) {
     var task = taskService.getMonitoringTask(networkId, deviceId, monitoringTaskId);
-    return monitoringResultRepository.findAllByTask(task);
+    return monitoringResultRepository.findAllByTaskAndExecutedAtBetween(task, from, to, pageable);
   }
 
   @Transactional

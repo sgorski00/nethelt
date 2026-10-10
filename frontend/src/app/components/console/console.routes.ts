@@ -24,6 +24,10 @@ export const consoleRoutes: Routes = [
         path: 'tasks',
         loadComponent: () => import('./tasks/tasks').then((m) => m.Tasks),
       },
+      {
+        path: 'results',
+        loadComponent: () => import('./results/results').then((m) => m.Results),
+      },
     ],
   },
 ];

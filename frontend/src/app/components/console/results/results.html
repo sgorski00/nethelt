@@ -1,0 +1,124 @@
+<div class="content-details">
+  <div class="content-details-header">
+    <h2>Monitoring Results</h2>
+    <div class="content-header-actions">
+      <label>
+        Device:
+        <select [value]="selectedDeviceId()" (change)="onDeviceChange($event)">
+          <option value="" disabled>Select device</option>
+          @for (device of devices(); track device.id) {
+            <option [value]="device.id">{{ device.name }} [{{ device.ipAddress }}]</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Task:
+        <select
+          [value]="selectedTaskId()"
+          [disabled]="selectedDeviceId() === ''"
+          (change)="onTaskChange($event)"
+        >
+          <option value="" disabled>Select task</option>
+          @for (task of tasks(); track task.id) {
+            <option [value]="task.id">#{{ task.id }} {{ TASK_TYPE_LABELS[task.type] }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </div>
+  <div class="content-details-body">
+    @if (selectedDeviceId() === '') {
+      <p>Please select a device to view its monitoring results.</p>
+    } @else if (selectedTaskId() === '') {
+      <p>Please select a monitoring task.</p>
+    } @else {
+      <div class="results-filters-panel">
+        <div class="results-filters">
+          <label>
+            From:
+            <input type="datetime-local" [value]="from()" (change)="onFromChange($event)" />
+          </label>
+
+          <label>
+            To:
+            <input type="datetime-local" [value]="to()" (change)="onToChange($event)" />
+          </label>
+
+          <button type="button" [disabled]="!from() && !to()" (click)="clearDates()">
+            <i class="fa-solid fa-xmark"></i> Clear
+          </button>
+        </div>
+
+        <div class="results-filters">
+          <label>
+            Per page:
+            <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+              @for (size of pageSizes; track size) {
+                <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+              }
+            </select>
+          </label>
+        </div>
+      </div>
+    }
+    @if (results(); as resultPage) {
+      @if (resultPage.content.length > 0) {
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Executed at</th>
+              <th>Status</th>
+              <th>Response time</th>
+              @switch (selectedTaskType()) {
+                @case (TaskType.TELNET) {
+                  <th>Port status</th>
+                }
+                @case (TaskType.HTTP_HEALTHCHECK) {
+                  <th>Status code</th>
+                }
+              }
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (result of resultPage.content; track result.id) {
+              <tr>
+                <td>{{ result.executedAt | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.success]="result.success"
+                    [class.danger]="!result.success"
+                  >
+                    {{ result.success ? 'Success' : 'Failure' }}
+                  </span>
+                </td>
+                <td>{{ result.responseTimeMs !== null ? result.responseTimeMs + ' ms' : '-' }}</td>
+                @switch (result.type) {
+                  @case (TaskType.TELNET) {
+                    <td>{{ result.extension.portOpen ? 'Open' : 'Closed' }}</td>
+                  }
+                  @case (TaskType.HTTP_HEALTHCHECK) {
+                    <td>{{ result.extension.statusCode ?? '-' }}</td>
+                  }
+                }
+                <td>{{ result.message ?? '-' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-pagination
+          [page]="page()"
+          [pageSize]="pageSize()"
+          [totalElements]="resultPage.totalElements"
+          (pageChange)="onPageChange($event)"
+        />
+      } @else {
+        <p>No monitoring results found for the selected task and date range.</p>
+      }
+    } @else if (selectedTaskId() !== '') {
+      <p>Loading...</p>
+    }
+  </div>
+</div>
