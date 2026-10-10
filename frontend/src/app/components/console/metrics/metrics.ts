@@ -1,7 +1,7 @@
 import { Component, computed, DOCUMENT, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import {
   catchError,
   defer,
@@ -20,13 +20,17 @@ import { DeviceService } from '../../../services/device-service';
 import { MonitoringTasksService } from '../../../services/monitoring-tasks-service';
 import { MetricsService } from '../../../services/metrics-service';
 import { TASK_TYPE_LABELS, TaskType } from '../../../models/tasks/task-type';
-import { MetricsResponse } from '../../../models/metrics/metrics-response';
+import { MetricsResponse, TaskMetricsResponse } from '../../../models/metrics/metrics-response';
 import { MetricsFilters } from '../../../models/metrics/metrics-filters';
 import {
   METRICS_RANGE_LABELS,
   METRICS_RANGE_MS,
   MetricsRange,
 } from '../../../models/metrics/metrics-range';
+import { AvailabilityChart } from './availability-chart/availability-chart';
+import { LatencyChart } from './latency-chart/latency-chart';
+import { MetricsBreakdown } from './metrics-breakdown/metrics-breakdown';
+import { formatInterval, formatMs } from './metrics-chart';
 
 const REFRESH_INTERVAL_MS = 30_000;
 
@@ -44,7 +48,7 @@ type FetchMode = 'poll' | 'once' | 'paused';
 
 @Component({
   selector: 'app-metrics',
-  imports: [DatePipe],
+  imports: [DecimalPipe, AvailabilityChart, LatencyChart, MetricsBreakdown],
   templateUrl: './metrics.html',
   styleUrl: './metrics.scss',
 })
@@ -62,6 +66,8 @@ export class Metrics {
   protected readonly taskTypes = Object.values(TaskType);
   protected readonly ranges = Object.values(MetricsRange);
   protected readonly refreshIntervalSeconds = REFRESH_INTERVAL_MS / 1000;
+  protected readonly formatMs = formatMs;
+  protected readonly formatInterval = formatInterval;
 
   protected readonly selectedDeviceId = signal(this.toNumber(this.queryParam('deviceId')));
   protected readonly selectedTaskId = signal(this.toNumber(this.queryParam('taskId')));
@@ -161,6 +167,12 @@ export class Metrics {
   protected onTypeChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.selectedType.set(this.toOption(value, this.taskTypes));
+  }
+
+  protected onBreakdownSelect(row: TaskMetricsResponse): void {
+    this.selectedDeviceId.set(row.deviceId);
+    this.selectedTaskId.set(row.taskId);
+    this.selectedType.set(undefined);
   }
 
   protected onRangeChange(event: Event): void {
