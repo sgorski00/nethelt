@@ -15,14 +15,16 @@ import {
   TelnetMonitoringTaskResponse,
 } from '../../../models/tasks/monitoring-task-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-tasks',
-  imports: [DatePipe],
+  imports: [DatePipe, RouterLink],
   templateUrl: './tasks.html',
   styleUrl: './tasks.scss',
 })
 export class Tasks {
+  private readonly route = inject(ActivatedRoute);
   private readonly deviceService = inject(DeviceService);
   private readonly tasksService = inject(MonitoringTasksService);
   private readonly dialog = inject(Dialog);
@@ -33,7 +35,7 @@ export class Tasks {
   private readonly reload = signal(0);
   protected readonly message = signal('');
   protected readonly errorMessage = signal('');
-  protected readonly selectedDeviceId = signal<number | ''>('');
+  protected readonly selectedDeviceId = signal<number | ''>(this.getNumberParam('deviceId'));
   protected readonly devices = toSignal(this.deviceService.getDevicesList(), { initialValue: [] });
   protected readonly tasks = toSignal(
     toObservable(
@@ -138,5 +140,10 @@ export class Tasks {
     const value = (event.target as HTMLSelectElement).value;
     const deviceId = value !== '' ? Number(value) : '';
     this.selectedDeviceId.set(deviceId);
+  }
+
+  private getNumberParam(name: string): number | '' {
+    const value = this.route.snapshot.queryParamMap.get(name);
+    return value ? Number(value) : '';
   }
 }

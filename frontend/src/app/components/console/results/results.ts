@@ -7,6 +7,7 @@ import { MonitoringTasksService } from '../../../services/monitoring-tasks-servi
 import { MonitoringResultsService } from '../../../services/monitoring-results-service';
 import { TASK_TYPE_LABELS, TaskType } from '../../../models/tasks/task-type';
 import { Pagination } from '../../shared/pagination/pagination';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-results',
@@ -15,6 +16,7 @@ import { Pagination } from '../../shared/pagination/pagination';
   styleUrl: './results.scss',
 })
 export class Results {
+  private readonly route = inject(ActivatedRoute);
   private readonly deviceService = inject(DeviceService);
   private readonly tasksService = inject(MonitoringTasksService);
   private readonly resultsService = inject(MonitoringResultsService);
@@ -23,8 +25,8 @@ export class Results {
   protected readonly TaskType = TaskType;
   protected readonly pageSizes = [10, 20, 50, 100];
 
-  protected readonly selectedDeviceId = signal<number | ''>('');
-  protected readonly selectedTaskId = signal<number | ''>('');
+  protected readonly selectedDeviceId = signal<number | ''>(this.getNumberParam('deviceId'));
+  protected readonly selectedTaskId = signal<number | ''>(this.getNumberParam('taskId'));
   protected readonly from = signal('');
   protected readonly to = signal('');
   protected readonly page = signal(0);
@@ -106,5 +108,10 @@ export class Results {
 
   private toIsoString(value: string): string | undefined {
     return value ? new Date(value).toISOString() : undefined;
+  }
+
+  private getNumberParam(name: string): number | '' {
+    const value = this.route.snapshot.queryParamMap.get(name);
+    return value ? Number(value) : '';
   }
 }
