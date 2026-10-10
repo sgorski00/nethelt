@@ -20,7 +20,6 @@
 		<version.swagger-ui>3.0.3</version.swagger-ui>
 		<version.flyway>12.0.3</version.flyway>
 		<version.jjwt>0.13.0</version.jjwt>
-		<version.h2>2.4.240</version.h2>
 		<version.commons.codec>1.22.0</version.commons.codec>
 	</properties>
 
@@ -118,9 +117,18 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>${version.h2}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-postgresql</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

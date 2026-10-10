@@ -66,6 +66,14 @@
                 >
                   <i class="fa-solid fa-tasks"></i> Tasks
                 </button>
+                <button
+                  type="button"
+                  class="action-button"
+                  routerLink="../metrics"
+                  [queryParams]="{ deviceId: device.id }"
+                >
+                  <i class="fa-solid fa-chart-line"></i> Metrics
+                </button>
               </div>
             </div>
 

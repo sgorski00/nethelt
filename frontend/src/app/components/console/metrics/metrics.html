@@ -1,0 +1,175 @@
+<div class="content-details">
+  <div class="content-details-header">
+    <h2>Metrics</h2>
+    <div class="content-header-actions">
+      <label>
+        Device:
+        <select (change)="onDeviceChange($event)">
+          <option value="" [selected]="selectedDeviceId() === undefined">All devices</option>
+          @for (device of devices(); track device.id) {
+            <option [value]="device.id" [selected]="device.id === selectedDeviceId()">
+              {{ device.name }} [{{ device.ipAddress }}]
+            </option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Task:
+        <select [disabled]="selectedDeviceId() === undefined" (change)="onTaskChange($event)">
+          <option value="" [selected]="selectedTaskId() === undefined">All tasks</option>
+          @for (task of tasks(); track task.id) {
+            <option [value]="task.id" [selected]="task.id === selectedTaskId()">
+              #{{ task.id }} {{ TASK_TYPE_LABELS[task.type] }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Type:
+        <select [disabled]="selectedTaskId() !== undefined" (change)="onTypeChange($event)">
+          <option value="" [selected]="selectedType() === undefined">All types</option>
+          @for (type of taskTypes; track type) {
+            <option [value]="type" [selected]="type === selectedType()">
+              {{ TASK_TYPE_LABELS[type] }}
+            </option>
+          }
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="content-details-body">
+    <div class="metrics-toolbar">
+      <div class="metrics-toolbar-group">
+        <label>
+          Range:
+          <select (change)="onRangeChange($event)">
+            @for (option of ranges; track option) {
+              <option [value]="option" [selected]="option === range()">
+                {{ METRICS_RANGE_LABELS[option] }}
+              </option>
+            }
+          </select>
+        </label>
+
+        @if (range() === MetricsRange.CUSTOM) {
+          <label>
+            From:
+            <input type="datetime-local" [value]="from()" (change)="onFromChange($event)" />
+          </label>
+
+          <label>
+            To:
+            <input type="datetime-local" [value]="to()" (change)="onToChange($event)" />
+          </label>
+        }
+
+        @if (metrics(); as data) {
+          <span
+            class="metrics-interval"
+            title="Each bar and chart point aggregates the checks from one interval"
+          >
+            <i class="fa-regular fa-clock"></i> {{ formatInterval(data.bucketSeconds) }} intervals
+          </span>
+        }
+      </div>
+
+      <div class="metrics-toolbar-group">
+        <span class="metrics-status">
+          @if (loading()) {
+            <i class="fa-solid fa-rotate fa-spin"></i> Loading...
+          } @else if (secondsSinceUpdate() !== null) {
+            Updated {{ secondsSinceUpdate() }}s ago
+          }
+        </span>
+
+        <label class="metrics-auto-refresh">
+          <input
+            type="checkbox"
+            [checked]="autoRefresh()"
+            [disabled]="!canPoll()"
+            (change)="onAutoRefreshChange($event)"
+          />
+          Auto-refresh ({{ refreshIntervalSeconds }}s)
+        </label>
+
+        <button type="button" [disabled]="loading()" (click)="refresh()">
+          <i class="fa-solid fa-rotate-right"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    @if (error()) {
+      <p class="error-message">Could not load metrics. Check the selected range and try again.</p>
+    }
+
+    @if (metrics(); as data) {
+      @if (data.summary.total > 0) {
+        <div class="metrics-kpis">
+          <div class="metrics-kpi">
+            <span class="metrics-kpi-label">Uptime</span>
+            <span class="metrics-kpi-value" [class.metrics-kpi-danger]="data.summary.failed > 0">
+              {{ data.summary.uptimePercent | number: '1.0-2' }}%
+            </span>
+          </div>
+          <div class="metrics-kpi">
+            <span class="metrics-kpi-label">Checks</span>
+            <span class="metrics-kpi-value">{{ data.summary.total }}</span>
+          </div>
+          <div class="metrics-kpi">
+            <span class="metrics-kpi-label">Failures</span>
+            <span class="metrics-kpi-value" [class.metrics-kpi-danger]="data.summary.failed > 0">
+              {{ data.summary.failed }}
+            </span>
+          </div>
+          @for (latency of data.summary.latency; track latency.type) {
+            <div class="metrics-kpi">
+              <span class="metrics-kpi-label">{{ TASK_TYPE_LABELS[latency.type] }} latency</span>
+              <span class="metrics-kpi-value">{{ formatMs(latency.avgMs) }}</span>
+              <span class="metrics-kpi-hint">p95 {{ formatMs(latency.p95Ms) }}</span>
+            </div>
+          }
+        </div>
+
+        <section class="metrics-section">
+          <h3>
+            Availability <small>(checks per {{ formatInterval(data.bucketSeconds) }})</small>
+          </h3>
+          <app-availability-chart
+            [points]="data.availability"
+            [from]="data.from"
+            [to]="data.to"
+            [bucketSeconds]="data.bucketSeconds"
+          />
+        </section>
+
+        <section class="metrics-section">
+          <h3>
+            Latency <small>(average per {{ formatInterval(data.bucketSeconds) }})</small>
+          </h3>
+          @if (data.latency.length > 0) {
+            <app-latency-chart [points]="data.latency" [from]="data.from" [to]="data.to" />
+          } @else {
+            <p>No successful checks with a response time in the selected range.</p>
+          }
+        </section>
+
+        @if (selectedTaskId() === undefined && data.breakdown.length > 0) {
+          <section class="metrics-section">
+            <h3>Tasks with the lowest uptime</h3>
+            <app-metrics-breakdown
+              [rows]="data.breakdown"
+              (taskSelect)="onBreakdownSelect($event)"
+            />
+          </section>
+        }
+      } @else {
+        <p>No monitoring results in the selected range.</p>
+      }
+    } @else if (!error()) {
+      <p>Loading...</p>
+    }
+  </div>
+</div>

@@ -1,12 +1,11 @@
 package pl.sgorski.nethelt.webapi;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import pl.sgorski.nethelt.webapi.config.PostgresIntegrationTest;
 
 @SpringBootTest
-@Disabled
-class NetheltWebBackendApplicationTests {
+class NetheltWebBackendApplicationTests extends PostgresIntegrationTest {
 
   @Test
   void contextLoads() {}

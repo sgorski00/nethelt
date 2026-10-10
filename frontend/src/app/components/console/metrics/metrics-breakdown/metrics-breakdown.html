@@ -1,0 +1,43 @@
+<table class="breakdown-table">
+  <thead>
+    <tr>
+      <th>Device</th>
+      <th>Task</th>
+      <th>Uptime</th>
+      <th>Checks</th>
+      <th>Failures</th>
+      <th>Avg latency</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of rows(); track row.taskId) {
+      <tr (click)="taskSelect.emit(row)" title="Show metrics of this task">
+        <td>{{ row.deviceName }}</td>
+        <td>#{{ row.taskId }} {{ TASK_TYPE_LABELS[row.type] }}</td>
+        <td>
+          <span
+            class="badge"
+            [class.success]="row.uptimePercent >= HEALTHY_UPTIME_PERCENT"
+            [class.danger]="row.uptimePercent < HEALTHY_UPTIME_PERCENT"
+          >
+            {{ row.uptimePercent | number: '1.0-2' }}%
+          </span>
+        </td>
+        <td>{{ row.total }}</td>
+        <td>{{ row.total - row.successful }}</td>
+        <td>{{ formatMs(row.avgMs) }}</td>
+        <td>
+          <a
+            routerLink="/console/results"
+            [queryParams]="{ deviceId: row.deviceId, taskId: row.taskId }"
+            title="Open results"
+            (click)="$event.stopPropagation()"
+          >
+            <i class="fa-solid fa-list"></i>
+          </a>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
