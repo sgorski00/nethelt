@@ -25,6 +25,7 @@ import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.response.extensi
 
 @Mapper(componentModel = "spring")
 public interface MonitoringResultMapper {
+  @Mapping(target = "type", source = "task.type")
   @Mapping(target = "extension", source = "extension")
   MonitoringResultResponse toResponse(MonitoringResult monitoringResult);
 

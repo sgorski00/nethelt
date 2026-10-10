@@ -19,8 +19,8 @@ public interface MonitoringResultRepository extends JpaRepository<MonitoringResu
         SELECT r
         FROM MonitoringResult r
         WHERE r.task = :task
-          AND (:from IS NULL OR r.executedAt >= :from)
-          AND (:to IS NULL OR r.executedAt <= :to)
+          AND r.executedAt >= COALESCE(:from, r.executedAt)
+          AND r.executedAt <= COALESCE(:to, r.executedAt)
         ORDER BY r.executedAt DESC
 """)
   Page<MonitoringResult> findAllByTaskAndExecutedAtBetween(
