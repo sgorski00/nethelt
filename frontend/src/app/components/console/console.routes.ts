@@ -28,6 +28,10 @@ export const consoleRoutes: Routes = [
         path: 'results',
         loadComponent: () => import('./results/results').then((m) => m.Results),
       },
+      {
+        path: 'metrics',
+        loadComponent: () => import('./metrics/metrics').then((m) => m.Metrics),
+      },
     ],
   },
 ];
