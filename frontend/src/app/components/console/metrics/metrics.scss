@@ -1,0 +1,47 @@
+.metrics-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .metrics-toolbar-group {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+
+    input,
+    select {
+      height: 40px;
+    }
+
+    select {
+      min-width: 160px;
+    }
+
+    button {
+      min-width: 100px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+  }
+
+  .metrics-status {
+    min-width: 120px;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 40px;
+  }
+
+  .metrics-auto-refresh {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    white-space: nowrap;
+
+    input {
+      height: auto;
+    }
+  }
+}
