@@ -15,7 +15,7 @@ import {
   TelnetMonitoringTaskResponse,
 } from '../../../models/tasks/monitoring-task-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-tasks',

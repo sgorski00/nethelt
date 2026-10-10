@@ -10,7 +10,7 @@ import { UpdateDevice } from './update-device/update-device';
 import { DeviceResponse } from '../../../models/device/device-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { Pagination } from '../../shared/pagination/pagination';
-import {RouterLink} from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-device',

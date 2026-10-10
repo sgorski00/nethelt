@@ -7,7 +7,7 @@ import { MonitoringTasksService } from '../../../services/monitoring-tasks-servi
 import { MonitoringResultsService } from '../../../services/monitoring-results-service';
 import { TASK_TYPE_LABELS, TaskType } from '../../../models/tasks/task-type';
 import { Pagination } from '../../shared/pagination/pagination';
-import {ActivatedRoute} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-results',
