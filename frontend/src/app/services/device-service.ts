@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { DeviceResponse } from '../models/device/device-response';
 import { PageResponse } from '../models/general/page-response';
 import { DeviceCreateRequest, DeviceUpdateRequest } from '../models/device/device-request';
-import { DeviceType } from '../models/device/device-type';
+import { DeviceFilter } from '../models/device/device-filter';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class DeviceService {
   }
 
   public getDevices(
-    type?: DeviceType,
+    filter: DeviceFilter = {},
     sort = 'createdAt,desc',
     page = 0,
     size = 20,
@@ -30,7 +30,9 @@ export class DeviceService {
       .set('sort', sort)
       .set('page', page.toString())
       .set('size', size.toString());
-    if (type) params = params.set('type', type);
+    if (filter.name) params = params.set('name', filter.name);
+    if (filter.type) params = params.set('type', filter.type);
+    if (filter.ip) params = params.set('ip', filter.ip);
 
     return this.httpClient.get<PageResponse<DeviceResponse>>(this.devicesUrl, { params });
   }

@@ -3,7 +3,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { DeviceService } from '../../../services/device-service';
 import { Dialog } from '@angular/cdk/dialog';
 import { CreateDevice } from './create-device/create-device';
-import { switchMap } from 'rxjs';
+import { catchError, of, switchMap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { DEVICE_TYPE_LABELS, DeviceType } from '../../../models/device/device-type';
 import { UpdateDevice } from './update-device/update-device';
@@ -11,6 +11,7 @@ import { DeviceResponse } from '../../../models/device/device-response';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RouterLink } from '@angular/router';
+import { validateIpRangeFilter } from '../../../shared/validators/ip-range-filter.validator';
 
 @Component({
   selector: 'app-device',
@@ -31,24 +32,73 @@ export class Devices {
 
   private readonly reload = signal(0);
   protected readonly selectedType = signal<DeviceType | ''>('');
+  protected readonly nameInput = signal('');
+  protected readonly ipInput = signal('');
+  protected readonly ipTouched = signal(false);
+  protected readonly ipError = computed(() =>
+    this.ipInput().trim() ? validateIpRangeFilter(this.ipInput()) : null,
+  );
+  private readonly name = signal('');
+  private readonly ip = signal('');
+  protected readonly hasFilters = computed(
+    () => !!(this.nameInput() || this.ipInput() || this.name() || this.ip() || this.selectedType()),
+  );
   protected readonly sort = signal('ipAddress,asc');
   protected readonly page = signal(0);
   protected readonly pageSize = signal(18);
   protected readonly devices = toSignal(
     toObservable(
       computed(() => ({
-        type: this.selectedType() || undefined,
+        filter: {
+          name: this.name() || undefined,
+          type: this.selectedType() || undefined,
+          ip: this.ip() || undefined,
+        },
         sort: this.sort(),
         page: this.page(),
         size: this.pageSize(),
         reload: this.reload(),
       })),
     ).pipe(
-      switchMap(({ type, sort, page, size }) =>
-        this.deviceService.getDevices(type, sort, page, size),
+      switchMap(({ filter, sort, page, size }) =>
+        this.deviceService.getDevices(filter, sort, page, size).pipe(
+          catchError((err) => {
+            this.errorMessage.set(`Failed to load devices: ${err.error?.detail ?? err.message}`);
+            return of(null);
+          }),
+        ),
       ),
     ),
   );
+
+  protected onNameInput(event: Event): void {
+    this.nameInput.set((event.target as HTMLInputElement).value);
+  }
+
+  protected onIpInput(event: Event): void {
+    this.ipInput.set((event.target as HTMLInputElement).value);
+  }
+
+  protected search(): void {
+    this.ipTouched.set(true);
+    if (this.ipError()) return;
+
+    this.errorMessage.set('');
+    this.name.set(this.nameInput().trim());
+    this.ip.set(this.ipInput().trim());
+    this.page.set(0);
+  }
+
+  protected clearFilters(): void {
+    this.nameInput.set('');
+    this.ipInput.set('');
+    this.ipTouched.set(false);
+    this.errorMessage.set('');
+    this.name.set('');
+    this.ip.set('');
+    this.selectedType.set('');
+    this.page.set(0);
+  }
 
   protected onTypeChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
