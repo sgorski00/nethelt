@@ -16,7 +16,11 @@
       </div>
       <div class="content-header-actions">
         @if (editing()) {
-          <button type="button" [disabled]="!changed()" (click)="save()">
+          <button
+            type="button"
+            [disabled]="!changed() || !maxUnavailabilityValid()"
+            (click)="save()"
+          >
             <i class="fa-solid fa-floppy-disk"></i> Save
           </button>
           <button class="danger" type="button" (click)="cancelEdit()">
@@ -72,8 +76,53 @@
         >
       </div>
       <div class="detail-row">
+        <span class="detail-label">Connection</span>
+        @switch (agent.connectionState) {
+          @case (AgentConnectionState.ONLINE) {
+            <span class="badge success">ONLINE</span>
+          }
+          @case (AgentConnectionState.OFFLINE) {
+            <span class="badge danger">OFFLINE</span>
+          }
+          @case (AgentConnectionState.NEVER_CONNECTED) {
+            <span class="badge neutral">NEVER CONNECTED</span>
+          }
+        }
+      </div>
+      <div class="detail-row">
         <span class="detail-label">Last heartbeat</span>
-        <span>{{ (agent.lastHeartbeatAt | date: 'yyyy-MM-dd HH:mm') || 'Not recorded' }}</span>
+        <span>{{
+          (agent.lastHeartbeatAt | date: 'yyyy-MM-dd HH:mm:ss') ||
+            'The agent has never connected to the server'
+        }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Offline after</span>
+        @if (editing()) {
+          <span>
+            <input
+              type="number"
+              [min]="MIN_UNAVAILABILITY_MINUTES"
+              [max]="MAX_UNAVAILABILITY_MINUTES"
+              step="1"
+              [value]="maxUnavailabilityMinutes()"
+              (input)="maxUnavailabilityMinutes.set($any($event.target).valueAsNumber)"
+              style="width: 60px"
+            />
+            minutes without heartbeat
+            @if (!maxUnavailabilityValid()) {
+              <br />
+              <small class="error-message"
+                >Enter whole minutes between {{ MIN_UNAVAILABILITY_MINUTES }} and
+                {{ MAX_UNAVAILABILITY_MINUTES }}.</small
+              >
+            }
+          </span>
+        } @else {
+          <span
+            >{{ agent.configuration.maxUnavailabilitySeconds / 60 }} minutes without heartbeat</span
+          >
+        }
       </div>
       <div class="detail-row">
         <span class="detail-label">Token active since</span>

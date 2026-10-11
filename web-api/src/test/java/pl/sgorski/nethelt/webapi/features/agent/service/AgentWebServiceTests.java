@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.network.NetworkNotFoundException;
 import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentStatus;
+import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentConfigurationUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentCreateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.mapper.AgentUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
@@ -158,6 +160,26 @@ public class AgentWebServiceTests {
 
     assertThrows(
         AgentNotFoundException.class, () -> agentWebService.changeStatus(1L, AgentStatus.ACTIVE));
+  }
+
+  @Test
+  void updateConfiguration_shouldReplaceAgentConfiguration() {
+    var agent = TestAgentFactory.createAgent();
+    mockFindByNetworkId(agent);
+
+    var result = agentWebService.updateConfiguration(new AgentConfigurationUpdateCommand(1L, 600));
+
+    assertSame(agent, result);
+    assertEquals(Duration.ofMinutes(10), agent.getConfiguration().getMaxUnavailabilityTime());
+  }
+
+  @Test
+  void updateConfiguration_shouldThrow_whenAgentNotFound() {
+    mockFindByNetworkId(null);
+
+    assertThrows(
+        AgentNotFoundException.class,
+        () -> agentWebService.updateConfiguration(new AgentConfigurationUpdateCommand(1L, 600)));
   }
 
   @Test

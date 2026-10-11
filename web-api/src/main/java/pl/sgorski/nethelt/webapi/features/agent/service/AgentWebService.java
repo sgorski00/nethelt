@@ -1,12 +1,15 @@
 package pl.sgorski.nethelt.webapi.features.agent.service;
 
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentNotFoundException;
 import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
+import pl.sgorski.nethelt.webapi.features.agent.domain.AgentConfiguration;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentStatus;
+import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentConfigurationUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentCreateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.mapper.AgentUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
@@ -60,6 +63,14 @@ public class AgentWebService {
       case ACTIVE -> agent.activate();
       case DISABLED -> agent.deactivate();
     }
+    return agent;
+  }
+
+  @Transactional
+  public Agent updateConfiguration(AgentConfigurationUpdateCommand command) {
+    var agent = getAgent(command.networkId());
+    var maxUnavailabilityTime = Duration.ofSeconds(command.maxUnavailabilitySeconds());
+    agent.changeConfiguration(new AgentConfiguration(maxUnavailabilityTime));
     return agent;
   }
 

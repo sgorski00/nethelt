@@ -1,11 +1,18 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { concat, interval, last, Observable } from 'rxjs';
 import { AgentService } from '../../../services/agent-service';
 import { Dialog } from '@angular/cdk/dialog';
 import { Router } from '@angular/router';
 import { AgentResponse } from '../../../models/agent/agent-response';
 import { DatePipe } from '@angular/common';
 import { AgentStatus } from '../../../models/agent/agent-status';
+import { AgentConnectionState } from '../../../models/agent/agent-connection-state';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+
+const STATUS_REFRESH_INTERVAL_MS = 30_000;
+const MIN_UNAVAILABILITY_MINUTES = 2;
+const MAX_UNAVAILABILITY_MINUTES = 1440;
 
 @Component({
   selector: 'app-agent',
@@ -14,10 +21,14 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
   styleUrl: './agent.scss',
 })
 export class Agent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(Dialog);
   private readonly router = inject(Router);
   private readonly agentService = inject(AgentService);
   protected readonly AgentStatus = AgentStatus;
+  protected readonly AgentConnectionState = AgentConnectionState;
+  protected readonly MIN_UNAVAILABILITY_MINUTES = MIN_UNAVAILABILITY_MINUTES;
+  protected readonly MAX_UNAVAILABILITY_MINUTES = MAX_UNAVAILABILITY_MINUTES;
 
   protected readonly errorMessage = signal<string>('');
   protected readonly agent = signal<AgentResponse | undefined>(undefined);
@@ -25,14 +36,29 @@ export class Agent implements OnInit {
   protected readonly token = signal(this.router.currentNavigation()?.extras.state?.['token'] ?? '');
   protected readonly editing = signal(false);
   protected readonly name = signal('');
-  protected readonly changed = computed(() => {
-    const agent = this.agent();
-    if (!agent) return false;
-    return agent.name !== this.name();
+  protected readonly maxUnavailabilityMinutes = signal(0);
+  protected readonly nameChanged = computed(() => this.agent()?.name !== this.name());
+  protected readonly configurationChanged = computed(
+    () =>
+      this.agent()?.configuration.maxUnavailabilitySeconds !== this.maxUnavailabilityMinutes() * 60,
+  );
+  protected readonly maxUnavailabilityValid = computed(() => {
+    const minutes = this.maxUnavailabilityMinutes();
+    return (
+      Number.isInteger(minutes) &&
+      minutes >= MIN_UNAVAILABILITY_MINUTES &&
+      minutes <= MAX_UNAVAILABILITY_MINUTES
+    );
   });
+  protected readonly changed = computed(
+    () => this.agent() !== undefined && (this.nameChanged() || this.configurationChanged()),
+  );
 
   ngOnInit(): void {
     this.reloadAgent();
+    interval(STATUS_REFRESH_INTERVAL_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.refreshStatus());
   }
 
   protected edit() {
@@ -40,6 +66,7 @@ export class Agent implements OnInit {
     if (!agent) return;
 
     this.name.set(agent.name);
+    this.maxUnavailabilityMinutes.set(agent.configuration.maxUnavailabilitySeconds / 60);
     this.editing.set(true);
   }
 
@@ -48,19 +75,29 @@ export class Agent implements OnInit {
   }
 
   protected save() {
-    const agent = this.agent();
-    if (!agent) return;
+    if (!this.agent() || !this.maxUnavailabilityValid()) return;
 
-    this.agentService
-      .update({
-        name: this.name(),
-      })
+    const requests: Observable<AgentResponse>[] = [];
+    if (this.nameChanged()) {
+      requests.push(this.agentService.update({ name: this.name() }));
+    }
+    if (this.configurationChanged()) {
+      requests.push(
+        this.agentService.updateConfiguration({
+          maxUnavailabilitySeconds: this.maxUnavailabilityMinutes() * 60,
+        }),
+      );
+    }
+    if (requests.length === 0) return;
+
+    concat(...requests)
+      .pipe(last())
       .subscribe({
         next: (updated) => {
           this.editing.set(false);
           this.agent.set(updated);
         },
-        error: (err) => this.errorMessage.set(`Failed to update network: ${err.error.detail}`),
+        error: (err) => this.errorMessage.set(`Failed to update agent: ${err.error.detail}`),
       });
   }
 
@@ -117,6 +154,12 @@ export class Agent implements OnInit {
             ),
         });
       });
+  }
+
+  private refreshStatus() {
+    this.agentService.getAgent().subscribe({
+      next: (agent) => this.agent.set(agent),
+    });
   }
 
   private reloadAgent() {

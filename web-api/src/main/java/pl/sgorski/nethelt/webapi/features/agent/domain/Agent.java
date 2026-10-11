@@ -39,6 +39,8 @@ public class Agent {
   @Column(nullable = false)
   private AgentStatus status = AgentStatus.ACTIVE;
 
+  @Embedded private AgentConfiguration configuration = AgentConfiguration.defaults();
+
   public Agent(Network network, String name, String hashedToken) {
     this.network = network;
     this.name = name;
@@ -69,5 +71,17 @@ public class Agent {
 
   public boolean isActive() {
     return this.status == AgentStatus.ACTIVE;
+  }
+
+  public void changeConfiguration(AgentConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  public AgentConnectionState connectionState(Instant now) {
+    if (lastHeartbeatAt == null) {
+      return AgentConnectionState.NEVER_CONNECTED;
+    }
+    var deadline = lastHeartbeatAt.plus(configuration.getMaxUnavailabilityTime());
+    return now.isAfter(deadline) ? AgentConnectionState.OFFLINE : AgentConnectionState.ONLINE;
   }
 }

@@ -2,7 +2,10 @@ package pl.sgorski.nethelt.webapi.features.agent.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 import pl.sgorski.nethelt.webapi.utils.TestAgentFactory;
 import pl.sgorski.nethelt.webapi.utils.TestNetworkFactory;
 
@@ -19,6 +22,7 @@ public class AgentTests {
     assertEquals("hashedToken123", agent.getHashedToken());
     assertNotNull(agent.getTokenCreatedAt());
     assertTrue(agent.isActive());
+    assertEquals(AgentConfiguration.defaults(), agent.getConfiguration());
   }
 
   @Test
@@ -67,5 +71,65 @@ public class AgentTests {
     agent.activate();
 
     assertTrue(agent.isActive());
+  }
+
+  @Test
+  void changeConfiguration_shouldReplaceConfiguration() {
+    var agent = TestAgentFactory.createAgent();
+    var configuration = new AgentConfiguration(Duration.ofMinutes(15));
+
+    agent.changeConfiguration(configuration);
+
+    assertEquals(configuration, agent.getConfiguration());
+  }
+
+  @Test
+  void connectionState_shouldReturnNeverConnected_whenNoHeartbeatReceived() {
+    var agent = TestAgentFactory.createAgent();
+
+    assertEquals(AgentConnectionState.NEVER_CONNECTED, agent.connectionState(Instant.now()));
+  }
+
+  @Test
+  void connectionState_shouldReturnOnline_whenHeartbeatWithinMaxUnavailabilityTime() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+
+    var state = agent.connectionState(Instant.parse("2026-01-01T12:04:59Z"));
+
+    assertEquals(AgentConnectionState.ONLINE, state);
+  }
+
+  @Test
+  void connectionState_shouldReturnOnline_whenExactlyAtMaxUnavailabilityTime() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+
+    var state = agent.connectionState(Instant.parse("2026-01-01T12:05:00Z"));
+
+    assertEquals(AgentConnectionState.ONLINE, state);
+  }
+
+  @Test
+  void connectionState_shouldReturnOffline_whenHeartbeatOlderThanMaxUnavailabilityTime() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+
+    var state = agent.connectionState(Instant.parse("2026-01-01T12:05:01Z"));
+
+    assertEquals(AgentConnectionState.OFFLINE, state);
+  }
+
+  @Test
+  void connectionState_shouldUseConfiguredMaxUnavailabilityTime() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+    agent.changeConfiguration(new AgentConfiguration(Duration.ofMinutes(10)));
+
+    var state = agent.connectionState(Instant.parse("2026-01-01T12:07:00Z"));
+
+    assertEquals(AgentConnectionState.ONLINE, state);
+  }
+
+  private Agent createAgentWithLastHeartbeat(Instant lastHeartbeatAt) {
+    var agent = TestAgentFactory.createAgent();
+    ReflectionTestUtils.setField(agent, "lastHeartbeatAt", lastHeartbeatAt);
+    return agent;
   }
 }

@@ -11,3 +11,7 @@ export interface AgentUpdateRequest {
 export interface AgentStatusUpdateRequest {
   status: AgentStatus;
 }
+
+export interface AgentConfigurationUpdateRequest {
+  maxUnavailabilitySeconds: number;
+}
