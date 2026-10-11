@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import pl.sgorski.nethelt.webapi.features.agent.dto.request.AgentConfigurationUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.agent.dto.request.AgentCreateRequest;
 import pl.sgorski.nethelt.webapi.features.agent.dto.request.AgentStatusUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.agent.dto.request.AgentUpdateRequest;
@@ -60,6 +61,15 @@ public class AgentController {
       @P("networkId") @PathVariable("networkId") Long networkId,
       @RequestBody @Valid AgentStatusUpdateRequest request) {
     var agent = agentWebService.changeStatus(networkId, request.status());
+    return ResponseEntity.ok(agentMapper.toResponse(agent));
+  }
+
+  @PatchMapping("/configuration")
+  public ResponseEntity<AgentResponse> updateConfiguration(
+      @P("networkId") @PathVariable("networkId") Long networkId,
+      @RequestBody @Valid AgentConfigurationUpdateRequest request) {
+    var command = agentMapper.toCommand(networkId, request);
+    var agent = agentWebService.updateConfiguration(command);
     return ResponseEntity.ok(agentMapper.toResponse(agent));
   }
 

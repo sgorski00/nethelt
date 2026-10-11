@@ -5,6 +5,7 @@ import { NetworkContextService } from './network-context-service';
 import { Observable } from 'rxjs';
 import { AgentResponse, AgentTokenResponse } from '../models/agent/agent-response';
 import {
+  AgentConfigurationUpdateRequest,
   AgentCreateRequest,
   AgentStatusUpdateRequest,
   AgentUpdateRequest,
@@ -40,6 +41,10 @@ export class AgentService {
 
   public changeStatus(request: AgentStatusUpdateRequest): Observable<AgentResponse> {
     return this.httpClient.patch<AgentResponse>(`${this.networkAgentUrl}/status`, request);
+  }
+
+  public updateConfiguration(request: AgentConfigurationUpdateRequest): Observable<AgentResponse> {
+    return this.httpClient.patch<AgentResponse>(`${this.networkAgentUrl}/configuration`, request);
   }
 
   public renewToken(): Observable<AgentTokenResponse> {
