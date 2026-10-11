@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
+import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceFilterCommand;
 import pl.sgorski.nethelt.webapi.features.device.dto.request.DeviceCreateRequest;
 import pl.sgorski.nethelt.webapi.features.device.dto.request.DeviceUpdateRequest;
 import pl.sgorski.nethelt.webapi.features.device.dto.response.DeviceResponse;
@@ -30,11 +31,14 @@ public class DeviceController {
   @GetMapping
   public ResponseEntity<Page<DeviceResponse>> getAllDevices(
       @P("networkId") @PathVariable("networkId") Long networkId,
+      @RequestParam(name = "name", required = false) @Nullable String name,
       @RequestParam(name = "type", required = false) @Nullable DeviceType type,
+      @RequestParam(name = "ip", required = false) @Nullable String ip,
       Pageable pageable) {
+    var filter = new DeviceFilterCommand(name, type, ip);
     var devices =
         deviceService
-            .getAllDevicesInNetwork(networkId, type, pageable)
+            .getAllDevicesInNetwork(networkId, filter, pageable)
             .map(deviceMapper::toResponse);
     return ResponseEntity.ok(devices);
   }

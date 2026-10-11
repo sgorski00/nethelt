@@ -1,9 +1,10 @@
 package pl.sgorski.nethelt.webapi.features.device.service;
 
+import static pl.sgorski.nethelt.webapi.features.device.repository.DeviceSpecifications.*;
+
 import java.net.Inet4Address;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
 import pl.sgorski.nethelt.webapi.features.device.domain.Device;
-import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
+import pl.sgorski.nethelt.webapi.features.device.domain.Ipv4Range;
 import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceCreateCommand;
+import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceFilterCommand;
 import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.device.repository.DeviceRepository;
 import pl.sgorski.nethelt.webapi.features.network.service.NetworkService;
@@ -35,8 +37,18 @@ public class DeviceService {
   }
 
   public Page<Device> getAllDevicesInNetwork(
-      Long networkId, @Nullable DeviceType type, Pageable pageable) {
-    return deviceRepository.findAllByNetworkIdAndType(networkId, type, pageable);
+      Long networkId, DeviceFilterCommand filter, Pageable pageable) {
+    var specification = inNetwork(networkId);
+    if (filter.type() != null) {
+      specification = specification.and(hasType(filter.type()));
+    }
+    if (filter.name() != null && !filter.name().isBlank()) {
+      specification = specification.and(nameContains(filter.name()));
+    }
+    if (filter.ip() != null && !filter.ip().isBlank()) {
+      specification = specification.and(ipInAnyRange(Ipv4Range.parseAll(filter.ip())));
+    }
+    return deviceRepository.findAll(specification, pageable);
   }
 
   @Transactional

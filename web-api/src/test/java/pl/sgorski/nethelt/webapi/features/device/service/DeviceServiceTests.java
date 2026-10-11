@@ -9,17 +9,21 @@ import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
 import pl.sgorski.nethelt.webapi.exception.domain.network.NetworkNotFoundException;
+import pl.sgorski.nethelt.webapi.features.device.domain.Device;
 import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
 import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceCreateCommand;
+import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceFilterCommand;
 import pl.sgorski.nethelt.webapi.features.device.dto.command.DeviceUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.device.repository.DeviceRepository;
 import pl.sgorski.nethelt.webapi.features.network.service.NetworkService;
@@ -70,14 +74,29 @@ public class DeviceServiceTests {
             TestDeviceFactory.createDevice("test-device-1", "192.168.1.1"),
             TestDeviceFactory.createDevice("test-device-2", "192.168.1.2"));
     var pageable = PageRequest.of(0, 10);
-    when(deviceRepository.findAllByNetworkIdAndType(
-            eq(1L), nullable(DeviceType.class), any(Pageable.class)))
+    when(deviceRepository.findAll(
+            ArgumentMatchers.<Specification<Device>>any(), any(Pageable.class)))
         .thenReturn(new PageImpl<>(devices));
 
-    var result = deviceService.getAllDevicesInNetwork(1L, null, pageable);
+    var result =
+        deviceService.getAllDevicesInNetwork(
+            1L,
+            new DeviceFilterCommand("device", DeviceType.LAN_CLIENT, "192.168.1.0/24"),
+            pageable);
 
     assertEquals(devices.size(), result.getTotalElements());
     assertIterableEquals(devices, result.getContent());
+  }
+
+  @Test
+  void getAllDevicesInNetwork_shouldThrow_whenIpFilterNotValid() {
+    var filter = new DeviceFilterCommand(null, null, "192.168.1.0/33");
+    var pageable = PageRequest.of(0, 10);
+
+    assertThrows(
+        DeviceValidationFailedException.class,
+        () -> deviceService.getAllDevicesInNetwork(1L, filter, pageable));
+    verifyNoInteractions(deviceRepository);
   }
 
   @Test
@@ -216,6 +235,6 @@ public class DeviceServiceTests {
     when(deviceRepository.findByIdAndNetworkId(1L, 1L)).thenReturn(Optional.empty());
 
     assertThrows(DeviceNotFoundException.class, () -> deviceService.deleteDevice(1L, 1L));
-    verify(deviceRepository, never()).delete(any());
+    verify(deviceRepository, never()).delete(any(Device.class));
   }
 }

@@ -42,6 +42,10 @@ public class Device {
   @Column(nullable = false, columnDefinition = "inet")
   private InetAddress ipAddress;
 
+  /** {@link #ipAddress} as an unsigned 32-bit number, used to filter devices by IP ranges. */
+  @Column(nullable = false)
+  private long ipNumeric;
+
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private DeviceType type;
@@ -63,15 +67,20 @@ public class Device {
   public Device(Network network, String name, Inet4Address ipAddress, DeviceType type) {
     this.network = network;
     this.name = name;
-    this.ipAddress = ipAddress;
     this.type = type;
+    setIpAddress(ipAddress);
   }
 
   public void update(
       @Nullable String name, @Nullable Inet4Address ipAddress, @Nullable DeviceType type) {
     if (name != null) this.name = name;
     if (type != null) this.type = type;
-    if (ipAddress != null) this.ipAddress = ipAddress;
+    if (ipAddress != null) setIpAddress(ipAddress);
+  }
+
+  private void setIpAddress(Inet4Address ipAddress) {
+    this.ipAddress = ipAddress;
+    this.ipNumeric = Ipv4Range.toNumber(ipAddress);
   }
 
   public void enable() {

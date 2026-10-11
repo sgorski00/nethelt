@@ -1,0 +1,17 @@
+.ip-filter-input {
+  position: relative;
+  display: block;
+
+  input {
+    min-width: 320px;
+    padding-right: 36px;
+
+    &.invalid {
+      border-color: #dc2626;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+      }
+    }
+  }
+}

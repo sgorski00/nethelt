@@ -20,7 +20,17 @@ public class DeviceTests {
     assertEquals(ipAddress, device.getIpAddress());
     assertEquals("Device1", device.getName());
     assertEquals(DeviceType.LAN_CLIENT, device.getType());
+    assertEquals(2130706433L, device.getIpNumeric());
     assertTrue(device.isEnabled());
+  }
+
+  @Test
+  void update_shouldUpdateIpNumeric_whenAddressIsPresent() {
+    var device = TestDeviceFactory.createDevice();
+
+    device.update(null, Inet4Address.ofLiteral("255.255.255.255"), null);
+
+    assertEquals(4294967295L, device.getIpNumeric());
   }
 
   @Test
