@@ -28,12 +28,12 @@ select {
   }
 
   &:hover:not(:disabled) {
-    border-color: var(--slate-400);
+    border-color: var(--color-border-hover);
   }
 
   &:focus {
     outline: none;
-    border-color: var(--teal-600);
+    border-color: var(--color-focus);
     box-shadow: 0 0 0 3px var(--color-focus-ring);
   }
 

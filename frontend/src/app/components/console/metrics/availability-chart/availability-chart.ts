@@ -1,8 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import type { EChartsCoreOption } from 'echarts/core';
 import { AvailabilityPointResponse } from '../../../../models/metrics/metrics-response';
-import { CHART_GRID, CHART_TEXT_STYLE, FAILURE_COLOR, SUCCESS_COLOR } from '../metrics-chart';
+import { ThemeService } from '../../../../services/theme-service';
+import { CHART_GRID, chartThemeOptions, readChartColors } from '../metrics-chart';
 
 @Component({
   selector: 'app-availability-chart',
@@ -15,32 +16,43 @@ import { CHART_GRID, CHART_TEXT_STYLE, FAILURE_COLOR, SUCCESS_COLOR } from '../m
   `,
 })
 export class AvailabilityChart {
+  private readonly themeService = inject(ThemeService);
+
   readonly points = input.required<AvailabilityPointResponse[]>();
   readonly from = input.required<string>();
   readonly to = input.required<string>();
   readonly bucketSeconds = input.required<number>();
 
   protected readonly options: EChartsCoreOption = {
-    textStyle: CHART_TEXT_STYLE,
     tooltip: { trigger: 'axis', confine: true },
     legend: { type: 'scroll', top: 0 },
     grid: CHART_GRID,
     xAxis: { type: 'time' },
     yAxis: { type: 'value', minInterval: 1 },
     series: [
-      { id: 'successful', name: 'Successful', type: 'bar', stack: 'checks', color: SUCCESS_COLOR },
-      { id: 'failed', name: 'Failed', type: 'bar', stack: 'checks', color: FAILURE_COLOR },
+      { id: 'successful', name: 'Successful', type: 'bar', stack: 'checks' },
+      { id: 'failed', name: 'Failed', type: 'bar', stack: 'checks' },
     ],
   };
 
   protected readonly data = computed<EChartsCoreOption>(() => {
     const buckets = this.allBuckets();
+    // The colors come from CSS tokens, so recompute them whenever the theme changes
+    this.themeService.theme();
+    const colors = readChartColors();
+    const theme = chartThemeOptions(colors);
     return {
-      xAxis: { min: this.from(), max: this.to() },
+      ...theme,
+      xAxis: { ...theme.xAxis, min: this.from(), max: this.to() },
       series: [
-        { id: 'successful', data: buckets.map(([start, p]) => [start, p?.successful ?? 0]) },
+        {
+          id: 'successful',
+          color: colors.success,
+          data: buckets.map(([start, p]) => [start, p?.successful ?? 0]),
+        },
         {
           id: 'failed',
+          color: colors.failure,
           data: buckets.map(([start, p]) => [start, p ? p.total - p.successful : 0]),
         },
       ],

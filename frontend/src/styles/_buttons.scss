@@ -24,7 +24,7 @@ button {
   &:hover:not(:disabled) {
     color: var(--color-text);
     background-color: var(--color-surface-hover);
-    border-color: var(--slate-400);
+    border-color: var(--color-border-hover);
   }
 
   &:focus-visible {

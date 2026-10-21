@@ -51,6 +51,15 @@
     }
     <button
       type="button"
+      class="nav-link theme-toggle"
+      [attr.aria-label]="themeLabel()"
+      [title]="themeLabel()"
+      (click)="cycleTheme()"
+    >
+      <i class="fa-solid" [class]="themeIcon()" aria-hidden="true"></i>
+    </button>
+    <button
+      type="button"
       class="nav-link nav-toggle"
       aria-controls="main-menu"
       [attr.aria-expanded]="menuOpen()"

@@ -70,10 +70,10 @@ nav {
   }
 
   &.danger {
-    color: var(--color-danger-border);
+    color: var(--red-300);
 
     &:hover:not(:disabled) {
-      color: var(--color-danger-bg-hover);
+      color: var(--red-200);
       background-color: rgba(220, 38, 38, 0.18);
     }
   }
