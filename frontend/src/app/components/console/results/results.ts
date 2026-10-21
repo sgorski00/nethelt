@@ -8,12 +8,19 @@ import { MonitoringResultsService } from '../../../services/monitoring-results-s
 import { TASK_TYPE_LABELS, TaskType } from '../../../models/tasks/task-type';
 import { Pagination } from '../../shared/pagination/pagination';
 import { ActivatedRoute } from '@angular/router';
+import { FiltersPanel } from '../../shared/filters-panel/filters-panel';
 
 @Component({
   selector: 'app-results',
-  imports: [DatePipe, Pagination],
+  imports: [FiltersPanel, DatePipe, Pagination],
   templateUrl: './results.html',
-  styleUrl: './results.scss',
+  styles: `
+    .results-table td:first-child {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      white-space: nowrap;
+    }
+  `,
 })
 export class Results {
   private readonly route = inject(ActivatedRoute);

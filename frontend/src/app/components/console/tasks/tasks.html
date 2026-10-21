@@ -4,16 +4,19 @@
     <div class="content-header-actions">
       <label>
         Device:
-        <select [value]="selectedDeviceId()" (change)="onDeviceChange($event)">
-          <option value="" disabled>Select device</option>
+        <select (change)="onDeviceChange($event)">
+          <option value="" disabled [selected]="selectedDeviceId() === ''">Select device</option>
           @for (device of devices(); track device.id) {
-            <option [value]="device.id">{{ device.name }} [{{ device.ipAddress }}]</option>
+            <option [value]="device.id" [selected]="device.id === selectedDeviceId()">
+              {{ device.name }} [{{ device.ipAddress }}]
+            </option>
           }
         </select>
       </label>
 
       <button
         type="button"
+        class="primary"
         [disabled]="this.selectedDeviceId() === ''"
         (click)="openCreateDialog()"
       >

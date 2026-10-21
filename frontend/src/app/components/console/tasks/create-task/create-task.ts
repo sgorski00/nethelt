@@ -10,7 +10,14 @@ import { HttpScheme } from '../../../../models/tasks/http-scheme';
   selector: 'app-create-task',
   imports: [ReactiveFormsModule],
   templateUrl: './create-task.html',
-  styleUrl: './create-task.scss',
+  styles: `
+    :host {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class CreateTask {
   private readonly fb = inject(FormBuilder);

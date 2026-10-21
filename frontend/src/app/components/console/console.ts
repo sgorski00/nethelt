@@ -7,7 +7,13 @@ import { map } from 'rxjs';
   selector: 'app-console',
   imports: [RouterLink, RouterOutlet, RouterLinkActive],
   templateUrl: './console.html',
-  styleUrl: './console.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.side-nav-host;
+    }
+  `,
 })
 export class Console {
   private readonly route = inject(ActivatedRoute);

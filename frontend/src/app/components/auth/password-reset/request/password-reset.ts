@@ -8,7 +8,13 @@ import { PasswordResetRequest } from '../../../../models/auth/password-reset-req
   selector: 'app-password-reset',
   imports: [FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './password-reset.html',
-  styleUrl: './password-reset.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.centered-page;
+    }
+  `,
 })
 export class PasswordReset {
   private readonly authService = inject(AuthService);

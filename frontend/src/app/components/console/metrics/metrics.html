@@ -1,105 +1,107 @@
 <div class="content-details">
   <div class="content-details-header">
     <h2>Metrics</h2>
-    <div class="content-header-actions">
-      <label>
-        Device:
-        <select (change)="onDeviceChange($event)">
-          <option value="" [selected]="selectedDeviceId() === undefined">All devices</option>
-          @for (device of devices(); track device.id) {
-            <option [value]="device.id" [selected]="device.id === selectedDeviceId()">
-              {{ device.name }} [{{ device.ipAddress }}]
-            </option>
-          }
-        </select>
+    <div class="metrics-refresh">
+      <span class="metrics-status">
+        @if (loading()) {
+          <i class="fa-solid fa-rotate fa-spin"></i> Loading...
+        } @else if (secondsSinceUpdate() !== null) {
+          Updated {{ secondsSinceUpdate() }}s ago
+        }
+      </span>
+
+      <label class="metrics-auto-refresh">
+        <input
+          type="checkbox"
+          [checked]="autoRefresh()"
+          [disabled]="!canPoll()"
+          (change)="onAutoRefreshChange($event)"
+        />
+        Auto-refresh ({{ refreshIntervalSeconds }}s)
       </label>
 
-      <label>
-        Task:
-        <select [disabled]="selectedDeviceId() === undefined" (change)="onTaskChange($event)">
-          <option value="" [selected]="selectedTaskId() === undefined">All tasks</option>
-          @for (task of tasks(); track task.id) {
-            <option [value]="task.id" [selected]="task.id === selectedTaskId()">
-              #{{ task.id }} {{ TASK_TYPE_LABELS[task.type] }}
-            </option>
-          }
-        </select>
-      </label>
-
-      <label>
-        Type:
-        <select [disabled]="selectedTaskId() !== undefined" (change)="onTypeChange($event)">
-          <option value="" [selected]="selectedType() === undefined">All types</option>
-          @for (type of taskTypes; track type) {
-            <option [value]="type" [selected]="type === selectedType()">
-              {{ TASK_TYPE_LABELS[type] }}
-            </option>
-          }
-        </select>
-      </label>
+      <button type="button" [disabled]="loading()" (click)="refresh()">
+        <i class="fa-solid fa-rotate-right"></i> Refresh
+      </button>
     </div>
   </div>
 
   <div class="content-details-body">
-    <div class="metrics-toolbar">
-      <div class="metrics-toolbar-group">
-        <label>
-          Range:
-          <select (change)="onRangeChange($event)">
-            @for (option of ranges; track option) {
-              <option [value]="option" [selected]="option === range()">
-                {{ METRICS_RANGE_LABELS[option] }}
-              </option>
-            }
-          </select>
-        </label>
-
-        @if (range() === MetricsRange.CUSTOM) {
+    <app-filters-panel [active]="hasFilters()">
+      <div class="filters-panel">
+        <div class="filters">
           <label>
-            From:
-            <input type="datetime-local" [value]="from()" (change)="onFromChange($event)" />
+            Device:
+            <select (change)="onDeviceChange($event)">
+              <option value="" [selected]="selectedDeviceId() === undefined">All devices</option>
+              @for (device of devices(); track device.id) {
+                <option [value]="device.id" [selected]="device.id === selectedDeviceId()">
+                  {{ device.name }} [{{ device.ipAddress }}]
+                </option>
+              }
+            </select>
           </label>
 
           <label>
-            To:
-            <input type="datetime-local" [value]="to()" (change)="onToChange($event)" />
+            Task:
+            <select [disabled]="selectedDeviceId() === undefined" (change)="onTaskChange($event)">
+              <option value="" [selected]="selectedTaskId() === undefined">All tasks</option>
+              @for (task of tasks(); track task.id) {
+                <option [value]="task.id" [selected]="task.id === selectedTaskId()">
+                  #{{ task.id }} {{ TASK_TYPE_LABELS[task.type] }}
+                </option>
+              }
+            </select>
           </label>
-        }
 
-        @if (metrics(); as data) {
-          <span
-            class="metrics-interval"
-            title="Each bar and chart point aggregates the checks from one interval"
-          >
-            <i class="fa-regular fa-clock"></i> {{ formatInterval(data.bucketSeconds) }} intervals
-          </span>
-        }
-      </div>
+          <label>
+            Type:
+            <select [disabled]="selectedTaskId() !== undefined" (change)="onTypeChange($event)">
+              <option value="" [selected]="selectedType() === undefined">All types</option>
+              @for (type of taskTypes; track type) {
+                <option [value]="type" [selected]="type === selectedType()">
+                  {{ TASK_TYPE_LABELS[type] }}
+                </option>
+              }
+            </select>
+          </label>
+        </div>
 
-      <div class="metrics-toolbar-group">
-        <span class="metrics-status">
-          @if (loading()) {
-            <i class="fa-solid fa-rotate fa-spin"></i> Loading...
-          } @else if (secondsSinceUpdate() !== null) {
-            Updated {{ secondsSinceUpdate() }}s ago
+        <div class="filters">
+          <label>
+            Range:
+            <select (change)="onRangeChange($event)">
+              @for (option of ranges; track option) {
+                <option [value]="option" [selected]="option === range()">
+                  {{ METRICS_RANGE_LABELS[option] }}
+                </option>
+              }
+            </select>
+          </label>
+
+          @if (range() === MetricsRange.CUSTOM) {
+            <label>
+              From:
+              <input type="datetime-local" [value]="from()" (change)="onFromChange($event)" />
+            </label>
+
+            <label>
+              To:
+              <input type="datetime-local" [value]="to()" (change)="onToChange($event)" />
+            </label>
           }
-        </span>
-
-        <label class="metrics-auto-refresh">
-          <input
-            type="checkbox"
-            [checked]="autoRefresh()"
-            [disabled]="!canPoll()"
-            (change)="onAutoRefreshChange($event)"
-          />
-          Auto-refresh ({{ refreshIntervalSeconds }}s)
-        </label>
-
-        <button type="button" [disabled]="loading()" (click)="refresh()">
-          <i class="fa-solid fa-rotate-right"></i> Refresh
-        </button>
+        </div>
       </div>
-    </div>
+    </app-filters-panel>
+
+    @if (metrics(); as data) {
+      <span
+        class="metrics-interval"
+        title="Each bar and chart point aggregates the checks from one interval"
+      >
+        <i class="fa-regular fa-clock"></i> {{ formatInterval(data.bucketSeconds) }} intervals
+      </span>
+    }
 
     @if (error()) {
       <p class="error-message">Could not load metrics. Check the selected range and try again.</p>

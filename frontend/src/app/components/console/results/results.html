@@ -4,24 +4,24 @@
     <div class="content-header-actions">
       <label>
         Device:
-        <select [value]="selectedDeviceId()" (change)="onDeviceChange($event)">
-          <option value="" disabled>Select device</option>
+        <select (change)="onDeviceChange($event)">
+          <option value="" disabled [selected]="selectedDeviceId() === ''">Select device</option>
           @for (device of devices(); track device.id) {
-            <option [value]="device.id">{{ device.name }} [{{ device.ipAddress }}]</option>
+            <option [value]="device.id" [selected]="device.id === selectedDeviceId()">
+              {{ device.name }} [{{ device.ipAddress }}]
+            </option>
           }
         </select>
       </label>
 
       <label>
         Task:
-        <select
-          [value]="selectedTaskId()"
-          [disabled]="selectedDeviceId() === ''"
-          (change)="onTaskChange($event)"
-        >
-          <option value="" disabled>Select task</option>
+        <select [disabled]="selectedDeviceId() === ''" (change)="onTaskChange($event)">
+          <option value="" disabled [selected]="selectedTaskId() === ''">Select task</option>
           @for (task of tasks(); track task.id) {
-            <option [value]="task.id">#{{ task.id }} {{ TASK_TYPE_LABELS[task.type] }}</option>
+            <option [value]="task.id" [selected]="task.id === selectedTaskId()">
+              #{{ task.id }} {{ TASK_TYPE_LABELS[task.type] }}
+            </option>
           }
         </select>
       </label>
@@ -33,81 +33,87 @@
     } @else if (selectedTaskId() === '') {
       <p>Please select a monitoring task.</p>
     } @else {
-      <div class="filters-panel">
-        <div class="filters">
-          <label>
-            From:
-            <input type="datetime-local" [value]="from()" (change)="onFromChange($event)" />
-          </label>
+      <app-filters-panel [active]="!!from() || !!to()">
+        <div class="filters-panel">
+          <div class="filters">
+            <label>
+              From:
+              <input type="datetime-local" [value]="from()" (change)="onFromChange($event)" />
+            </label>
 
-          <label>
-            To:
-            <input type="datetime-local" [value]="to()" (change)="onToChange($event)" />
-          </label>
+            <label>
+              To:
+              <input type="datetime-local" [value]="to()" (change)="onToChange($event)" />
+            </label>
 
-          <button type="button" [disabled]="!from() && !to()" (click)="clearDates()">
-            <i class="fa-solid fa-xmark"></i> Clear
-          </button>
+            <button type="button" [disabled]="!from() && !to()" (click)="clearDates()">
+              <i class="fa-solid fa-xmark"></i> Clear
+            </button>
+          </div>
+
+          <div class="filters">
+            <label>
+              Per page:
+              <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+                @for (size of pageSizes; track size) {
+                  <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+                }
+              </select>
+            </label>
+          </div>
         </div>
-
-        <div class="filters">
-          <label>
-            Per page:
-            <select [value]="pageSize()" (change)="onPageSizeChange($event)">
-              @for (size of pageSizes; track size) {
-                <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
-              }
-            </select>
-          </label>
-        </div>
-      </div>
+      </app-filters-panel>
     }
     @if (results(); as resultPage) {
       @if (resultPage.content.length > 0) {
-        <table class="results-table">
-          <thead>
-            <tr>
-              <th>Executed at</th>
-              <th>Status</th>
-              <th>Response time</th>
-              @switch (selectedTaskType()) {
-                @case (TaskType.TELNET) {
-                  <th>Port status</th>
-                }
-                @case (TaskType.HTTP_HEALTHCHECK) {
-                  <th>Status code</th>
-                }
-              }
-              <th>Message</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (result of resultPage.content; track result.id) {
+        <div class="table-wrapper">
+          <table class="results-table">
+            <thead>
               <tr>
-                <td>{{ result.executedAt | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
-                <td>
-                  <span
-                    class="badge"
-                    [class.success]="result.success"
-                    [class.danger]="!result.success"
-                  >
-                    {{ result.success ? 'Success' : 'Failure' }}
-                  </span>
-                </td>
-                <td>{{ result.responseTimeMs !== null ? result.responseTimeMs + ' ms' : '-' }}</td>
-                @switch (result.type) {
+                <th>Executed at</th>
+                <th>Status</th>
+                <th>Response time</th>
+                @switch (selectedTaskType()) {
                   @case (TaskType.TELNET) {
-                    <td>{{ result.extension.portOpen ? 'Open' : 'Closed' }}</td>
+                    <th>Port status</th>
                   }
                   @case (TaskType.HTTP_HEALTHCHECK) {
-                    <td>{{ result.extension.statusCode ?? '-' }}</td>
+                    <th>Status code</th>
                   }
                 }
-                <td>{{ result.message ?? '-' }}</td>
+                <th>Message</th>
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              @for (result of resultPage.content; track result.id) {
+                <tr>
+                  <td>{{ result.executedAt | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.success]="result.success"
+                      [class.danger]="!result.success"
+                    >
+                      {{ result.success ? 'Success' : 'Failure' }}
+                    </span>
+                  </td>
+                  <td>
+                    {{ result.responseTimeMs !== null ? result.responseTimeMs + ' ms' : '-' }}
+                  </td>
+                  @switch (result.type) {
+                    @case (TaskType.TELNET) {
+                      <td>{{ result.extension.portOpen ? 'Open' : 'Closed' }}</td>
+                    }
+                    @case (TaskType.HTTP_HEALTHCHECK) {
+                      <td>{{ result.extension.statusCode ?? '-' }}</td>
+                    }
+                  }
+                  <td>{{ result.message ?? '-' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
         <app-pagination
           [page]="page()"
           [pageSize]="pageSize()"

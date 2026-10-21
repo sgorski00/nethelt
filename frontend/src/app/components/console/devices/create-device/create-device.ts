@@ -10,7 +10,14 @@ import { DialogRef } from '@angular/cdk/dialog';
   selector: 'app-create-device',
   imports: [ReactiveFormsModule],
   templateUrl: './create-device.html',
-  styleUrl: './create-device.scss',
+  styles: `
+    :host {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class CreateDevice {
   private readonly fb = inject(FormBuilder);

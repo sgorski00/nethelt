@@ -18,7 +18,6 @@ const MAX_UNAVAILABILITY_MINUTES = 1440;
   selector: 'app-agent',
   imports: [DatePipe],
   templateUrl: './agent.html',
-  styleUrl: './agent.scss',
 })
 export class Agent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

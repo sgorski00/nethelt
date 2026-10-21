@@ -21,7 +21,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   selector: 'app-tasks',
   imports: [DatePipe, RouterLink],
   templateUrl: './tasks.html',
-  styleUrl: './tasks.scss',
 })
 export class Tasks {
   private readonly route = inject(ActivatedRoute);

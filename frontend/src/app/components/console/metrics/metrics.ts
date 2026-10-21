@@ -2,6 +2,7 @@ import { Component, computed, DOCUMENT, effect, inject, signal } from '@angular/
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
+import { FiltersPanel } from '../../shared/filters-panel/filters-panel';
 import {
   catchError,
   defer,
@@ -46,9 +47,11 @@ interface MetricsQuery {
 /** 'poll' refreshes periodically, 'once' fetches a fixed range, 'paused' waits for a visible tab. */
 type FetchMode = 'poll' | 'once' | 'paused';
 
+const DEFAULT_RANGE = MetricsRange.LAST_DAY;
+
 @Component({
   selector: 'app-metrics',
-  imports: [DecimalPipe, AvailabilityChart, LatencyChart, MetricsBreakdown],
+  imports: [FiltersPanel, DecimalPipe, AvailabilityChart, LatencyChart, MetricsBreakdown],
   templateUrl: './metrics.html',
   styleUrl: './metrics.scss',
 })
@@ -73,11 +76,17 @@ export class Metrics {
   protected readonly selectedTaskId = signal(this.toNumber(this.queryParam('taskId')));
   protected readonly selectedType = signal(this.toOption(this.queryParam('type'), this.taskTypes));
   protected readonly range = signal(
-    this.toOption(this.queryParam('range'), this.ranges) ?? MetricsRange.LAST_DAY,
+    this.toOption(this.queryParam('range'), this.ranges) ?? DEFAULT_RANGE,
   );
   protected readonly from = signal(this.queryParam('from') ?? '');
   protected readonly to = signal(this.queryParam('to') ?? '');
   protected readonly autoRefresh = signal(true);
+  protected readonly hasFilters = computed(
+    () =>
+      this.selectedDeviceId() !== undefined ||
+      this.selectedType() !== undefined ||
+      this.range() !== DEFAULT_RANGE,
+  );
 
   protected readonly devices = toSignal(this.deviceService.getDevicesList(), { initialValue: [] });
   protected readonly tasks = toSignal(

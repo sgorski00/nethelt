@@ -18,6 +18,7 @@
         @if (editing()) {
           <button
             type="button"
+            class="primary"
             [disabled]="!changed() || !maxUnavailabilityValid()"
             (click)="save()"
           >
@@ -57,14 +58,14 @@
           </p>
           <p>Please copy it and store it securely. <b>This token will not be shown again!</b></p>
           <p>After saving it in a secure location, configure the desktop agent using this token.</p>
-          <p class="success-message">Token: {{ token }}</p>
+          <p class="success-message mono">Token: {{ token }}</p>
         }
         @if (errorMessage(); as errorMessage) {
           <p class="error-message">{{ errorMessage }}</p>
         }
       </div>
     }
-    <div class="content-details-body">
+    <div class="content-details-body panel">
       <h3>Details</h3>
       <div class="detail-row">
         <span class="detail-label">Status</span>

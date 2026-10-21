@@ -1,81 +1,97 @@
+@use 'breakpoints' as bp;
+@use 'mixins';
+
 :host {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: start;
-  gap: 15px;
-  padding: 0 50px;
-}
-
-.info-main-container {
-  flex: 1;
+  gap: var(--space-5);
   width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  align-items: start;
-  justify-content: space-around;
-}
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
 
-.info-sub-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  align-items: start;
-  justify-content: start;
-}
-
-.profile-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-
-  th {
-    text-align: left;
-    padding: 12px;
-    width: 180px;
-    color: #6b7280;
-    font-weight: 600;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-    color: #111827;
-  }
-}
-
-.social-item {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #fff;
-
-  .social-label {
-    flex: 1;
-    font-weight: 600;
-    color: #111827;
-  }
-
-  .social-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+  @include bp.sm-down {
+    padding: var(--space-5) var(--space-4);
   }
 }
 
 .profile-header {
-  width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
+  gap: var(--space-4);
+  width: 100%;
+
+  h2 {
+    overflow-wrap: anywhere;
+  }
+}
+
+.info-main-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+  width: 100%;
+
+  @include bp.md-down {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.info-sub-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  @include mixins.surface;
+
+  > p {
+    color: var(--color-text-muted);
+  }
+
+  .table-wrapper {
+    box-shadow: none;
+  }
+}
+
+.profile-table {
+  th {
+    width: 180px;
+
+    @include bp.sm-down {
+      width: 40%;
+    }
+  }
+
+  td {
+    overflow-wrap: anywhere;
+  }
+}
+
+.social-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  .social-label {
+    flex: 1;
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+  }
+
+  .social-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
 }

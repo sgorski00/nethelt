@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { NetworkSelector } from '../../networks/network-selector/network-selector';
 import { NotificationDropdown } from '../../notifications/notification-dropdown/notification-dropdown';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -20,8 +20,18 @@ export class Navigation {
   protected readonly isActiveNetworkSelected = computed(
     () => this.networkContextService.activeNetwork() !== null,
   );
+  protected readonly menuOpen = signal(false);
+
+  protected toggleMenu() {
+    this.menuOpen.update((open) => !open);
+  }
+
+  protected closeMenu() {
+    this.menuOpen.set(false);
+  }
 
   public logout() {
+    this.closeMenu();
     this.authService.logout().subscribe({
       next: () => this.router.navigateByUrl('/login'),
     });

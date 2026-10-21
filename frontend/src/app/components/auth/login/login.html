@@ -41,8 +41,12 @@
       <span>Login with</span>
     </div>
     <div class="additional-actions-row">
-      <button (click)="loginWithProvider(IdentityProvider.GOOGLE)">Google</button>
-      <button (click)="loginWithProvider(IdentityProvider.GITHUB)">GitHub</button>
+      <button (click)="loginWithProvider(IdentityProvider.GOOGLE)">
+        <i class="fa-brands fa-google" aria-hidden="true"></i> Google
+      </button>
+      <button (click)="loginWithProvider(IdentityProvider.GITHUB)">
+        <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub
+      </button>
     </div>
     <div class="separator">
       <span>or</span>

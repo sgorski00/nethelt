@@ -1,0 +1,16 @@
+$sm: 600px;
+$md: 900px;
+
+// Phones
+@mixin sm-down {
+  @media (max-width: #{$sm - 0.02px}) {
+    @content;
+  }
+}
+
+// Phones and tablets
+@mixin md-down {
+  @media (max-width: #{$md - 0.02px}) {
+    @content;
+  }
+}

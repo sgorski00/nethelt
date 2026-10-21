@@ -9,7 +9,13 @@ import { passwordMatchValidator } from '../../../shared/validators/password-matc
   selector: 'app-register',
   imports: [ReactiveFormsModule],
   templateUrl: './register.html',
-  styleUrl: './register.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.centered-page;
+    }
+  `,
 })
 export class Register {
   private readonly router = inject(Router);
