@@ -20,8 +20,14 @@
   --slate-700: #334155;
   --slate-900: #0f172a;
 
+  --red-200: #fecaca;
+  --red-300: #fca5a5;
+
+  // The header and side navigation are navy in both themes
   --on-navy: var(--slate-50);
   --on-navy-muted: var(--slate-400);
+
+  color-scheme: light;
 
   // Surfaces and text
   --color-bg: #f5f7fa;
@@ -34,12 +40,19 @@
   --color-text-secondary: var(--slate-700);
   --color-text-muted: var(--slate-500);
   --color-text-disabled: var(--slate-400);
+  --color-border-hover: var(--slate-400);
+  --color-divider: var(--slate-100);
+  --color-backdrop: rgba(11, 18, 32, 0.55);
+  --color-selection: var(--teal-100);
 
   // Primary action
   --color-primary: var(--teal-700);
   --color-primary-hover: var(--teal-800);
   --color-primary-soft: var(--teal-50);
+  --color-primary-soft-border: var(--teal-100);
   --color-on-primary: #ffffff;
+  --color-accent: var(--teal-500);
+  --color-focus: var(--teal-600);
   --color-focus-ring: rgba(13, 148, 136, 0.35);
 
   // Status
@@ -60,6 +73,17 @@
   --color-neutral-bg: var(--slate-100);
   --color-neutral-text: #475569;
   --color-neutral-border: var(--slate-300);
+
+  --chart-text: var(--slate-700);
+  --chart-axis: var(--slate-300);
+  --chart-grid: var(--slate-200);
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: var(--slate-200);
+  --chart-success: #009e73;
+  --chart-failure: #d55e00;
+  --chart-ping: #0072b2;
+  --chart-telnet: #cc79a7;
+  --chart-http: #e69f00;
 
   // Typography
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -101,4 +125,80 @@
   --side-nav-width: 240px;
 
   --transition: 0.15s ease;
+}
+
+@mixin dark-tokens {
+  color-scheme: dark;
+
+  // Surfaces and text
+  --color-bg: #0e1524;
+  --color-surface: #162033;
+  --color-surface-muted: #1a253a;
+  --color-surface-hover: #223049;
+  --color-border: #2a3852;
+  --color-border-strong: #3a4a68;
+  --color-text: #e8edf4;
+  --color-text-secondary: var(--slate-300);
+  --color-text-muted: var(--slate-400);
+  --color-text-disabled: var(--slate-500);
+  --color-border-hover: #51627f;
+  --color-divider: #223049;
+  --color-backdrop: rgba(3, 6, 12, 0.7);
+  --color-selection: rgba(20, 184, 166, 0.35);
+
+  // Primary action
+  --color-primary: var(--teal-500);
+  --color-primary-hover: #2dd4bf;
+  --color-primary-soft: rgba(20, 184, 166, 0.12);
+  --color-primary-soft-border: rgba(20, 184, 166, 0.35);
+  --color-on-primary: #042f2e;
+  --color-accent: var(--teal-500);
+  --color-focus: #2dd4bf;
+  --color-focus-ring: rgba(45, 212, 191, 0.4);
+
+  // Status
+  --color-success-bg: #11301f;
+  --color-success-text: #86efac;
+  --color-success-border: #1f6b3d;
+  --color-success-bg-hover: #163d28;
+  --color-warning-bg: #33260c;
+  --color-warning-text: #fcd34d;
+  --color-warning-border: #8a5a12;
+  --color-danger-bg: #3a1619;
+  --color-danger-text: var(--red-300);
+  --color-danger-border: #8f2a2a;
+  --color-danger-bg-hover: #4a1c20;
+  --color-danger: #dc2626;
+  --color-danger-ring: rgba(239, 68, 68, 0.35);
+  --color-on-danger: #ffffff;
+  --color-neutral-bg: #223049;
+  --color-neutral-text: var(--slate-300);
+  --color-neutral-border: #3a4a68;
+
+  --chart-text: var(--slate-300);
+  --chart-axis: #3a4a68;
+  --chart-grid: #26334b;
+  --chart-tooltip-bg: #1a253a;
+  --chart-tooltip-border: #3a4a68;
+  --chart-success: #2ec4a0;
+  --chart-failure: #f08a4b;
+  --chart-ping: #56b4e9;
+  --chart-telnet: #e39ac4;
+  --chart-http: #f0b429;
+
+  // Shape
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+// `data-theme` is set by ThemeService; without it the system setting decides
+:root[data-theme='dark'] {
+  @include dark-tokens;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
+  }
 }

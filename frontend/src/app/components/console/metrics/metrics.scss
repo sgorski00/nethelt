@@ -54,7 +54,7 @@
     gap: var(--space-1);
     padding: var(--space-4);
     @include mixins.surface;
-    border-top: 3px solid var(--teal-500);
+    border-top: 3px solid var(--color-accent);
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
 
