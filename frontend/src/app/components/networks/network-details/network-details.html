@@ -20,7 +20,7 @@
       </div>
       <div class="content-header-actions">
         @if (editing()) {
-          <button type="button" [disabled]="!changed()" (click)="save()">
+          <button type="button" class="primary" [disabled]="!changed()" (click)="save()">
             <i class="fa-solid fa-floppy-disk"></i> Save
           </button>
           <button class="danger" type="button" (click)="cancelEdit()">
@@ -36,7 +36,7 @@
         }
       </div>
     </div>
-    <div class="content-details-body">
+    <div class="content-details-body panel">
       <p>Details:</p>
       @if (editing()) {
         <textarea

@@ -12,7 +12,13 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
   selector: 'app-single-network',
   imports: [DatePipe],
   templateUrl: './network-details.html',
-  styleUrl: './network-details.scss',
+  styles: `
+    :host {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+    }
+  `,
 })
 export class NetworkDetails implements OnInit {
   private readonly dialog = inject(Dialog);

@@ -8,7 +8,13 @@ import { map } from 'rxjs';
   selector: 'app-networks',
   imports: [RouterLink, RouterOutlet, RouterLinkActive],
   templateUrl: './networks.html',
-  styleUrl: './networks.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.side-nav-host;
+    }
+  `,
 })
 export class Networks implements OnInit {
   private readonly networkService = inject(NetworkService);

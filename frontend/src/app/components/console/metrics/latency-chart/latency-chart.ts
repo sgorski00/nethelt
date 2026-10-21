@@ -3,7 +3,7 @@ import { NgxEchartsDirective } from 'ngx-echarts';
 import type { EChartsCoreOption } from 'echarts/core';
 import { LatencyPointResponse } from '../../../../models/metrics/metrics-response';
 import { TASK_TYPE_LABELS, TaskType } from '../../../../models/tasks/task-type';
-import { CHART_GRID, formatMs, TASK_TYPE_COLORS } from '../metrics-chart';
+import { CHART_GRID, CHART_TEXT_STYLE, formatMs, TASK_TYPE_COLORS } from '../metrics-chart';
 
 const TASK_TYPES = Object.values(TaskType);
 
@@ -13,8 +13,12 @@ const p95Name = (type: TaskType) => `${TASK_TYPE_LABELS[type]} p95`;
 @Component({
   selector: 'app-latency-chart',
   imports: [NgxEchartsDirective],
-  templateUrl: './latency-chart.html',
-  styleUrl: './latency-chart.scss',
+  template: `<div echarts class="chart" [options]="options" [merge]="data()"></div>`,
+  styles: `
+    .chart {
+      height: 320px;
+    }
+  `,
 })
 export class LatencyChart {
   readonly points = input.required<LatencyPointResponse[]>();
@@ -22,8 +26,10 @@ export class LatencyChart {
   readonly to = input.required<string>();
 
   protected readonly options: EChartsCoreOption = {
-    tooltip: { trigger: 'axis', valueFormatter: formatMs },
+    textStyle: CHART_TEXT_STYLE,
+    tooltip: { trigger: 'axis', confine: true, valueFormatter: formatMs },
     legend: {
+      type: 'scroll',
       top: 0,
       selected: Object.fromEntries(TASK_TYPES.map((type) => [p95Name(type), false])),
     },

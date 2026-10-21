@@ -8,7 +8,13 @@ import { AgentCreateRequest } from '../../../../models/agent/agent-request';
   selector: 'app-create-agent',
   imports: [ReactiveFormsModule],
   templateUrl: './create-agent.html',
-  styleUrl: './create-agent.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.centered-page;
+    }
+  `,
 })
 export class CreateAgent {
   private readonly fb = inject(FormBuilder);

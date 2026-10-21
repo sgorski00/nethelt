@@ -9,7 +9,13 @@ import { NetworkContextService } from '../../../services/network-context-service
   selector: 'app-create-network',
   imports: [ReactiveFormsModule],
   templateUrl: './create-network.html',
-  styleUrl: './create-network.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.centered-page;
+    }
+  `,
 })
 export class CreateNetwork {
   private readonly fb = inject(FormBuilder);

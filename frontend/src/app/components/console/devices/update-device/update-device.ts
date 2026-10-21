@@ -11,7 +11,14 @@ import { DeviceResponse } from '../../../../models/device/device-response';
   selector: 'app-update-device',
   imports: [ReactiveFormsModule],
   templateUrl: './update-device.html',
-  styleUrl: './update-device.scss',
+  styles: `
+    :host {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class UpdateDevice {
   private readonly fb = inject(FormBuilder);

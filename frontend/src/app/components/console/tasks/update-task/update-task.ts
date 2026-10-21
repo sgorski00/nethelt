@@ -23,7 +23,14 @@ interface UpdateTaskDialogData {
   selector: 'app-update-task',
   imports: [ReactiveFormsModule],
   templateUrl: './update-task.html',
-  styleUrl: './update-task.scss',
+  styles: `
+    :host {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class UpdateTask {
   private readonly fb = inject(FormBuilder);

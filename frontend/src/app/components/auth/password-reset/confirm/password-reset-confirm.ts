@@ -9,7 +9,13 @@ import { ActivatedRoute, Router } from '@angular/router';
   selector: 'app-password-reset',
   imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './password-reset-confirm.html',
-  styleUrl: './password-reset-confirm.scss',
+  styles: `
+    @use 'mixins';
+
+    :host {
+      @include mixins.centered-page;
+    }
+  `,
 })
 export class PasswordResetConfirm {
   private readonly authService = inject(AuthService);

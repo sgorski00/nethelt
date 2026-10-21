@@ -7,18 +7,18 @@
   </div>
   @if (networks(); as networks) {
     @for (network of networks; track network.id) {
-      <a [routerLink]="[network.id]" routerLinkActive="active" class="side-nav-link">{{
-        network.name
-      }}</a>
+      <a [routerLink]="[network.id]" routerLinkActive="active" class="side-nav-link">
+        <i class="fa-solid fa-network-wired" aria-hidden="true"></i> {{ network.name }}
+      </a>
     } @empty {
       <p>No networks found</p>
     }
   } @else {
     <p>Loading...</p>
   }
-  <a routerLink="create" routerLinkActive="active" class="side-nav-link bottom-link"
-    >Create Network</a
-  >
+  <a routerLink="create" routerLinkActive="active" class="side-nav-link bottom-link">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i> Create Network
+  </a>
 </div>
 <div class="content">
   <router-outlet #outlet="outlet"></router-outlet>

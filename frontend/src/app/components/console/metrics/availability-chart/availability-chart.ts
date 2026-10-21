@@ -2,13 +2,17 @@ import { Component, computed, input } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import type { EChartsCoreOption } from 'echarts/core';
 import { AvailabilityPointResponse } from '../../../../models/metrics/metrics-response';
-import { CHART_GRID, FAILURE_COLOR, SUCCESS_COLOR } from '../metrics-chart';
+import { CHART_GRID, CHART_TEXT_STYLE, FAILURE_COLOR, SUCCESS_COLOR } from '../metrics-chart';
 
 @Component({
   selector: 'app-availability-chart',
   imports: [NgxEchartsDirective],
-  templateUrl: './availability-chart.html',
-  styleUrl: './availability-chart.scss',
+  template: `<div echarts class="chart" [options]="options" [merge]="data()"></div>`,
+  styles: `
+    .chart {
+      height: 280px;
+    }
+  `,
 })
 export class AvailabilityChart {
   readonly points = input.required<AvailabilityPointResponse[]>();
@@ -17,8 +21,9 @@ export class AvailabilityChart {
   readonly bucketSeconds = input.required<number>();
 
   protected readonly options: EChartsCoreOption = {
-    tooltip: { trigger: 'axis' },
-    legend: { top: 0 },
+    textStyle: CHART_TEXT_STYLE,
+    tooltip: { trigger: 'axis', confine: true },
+    legend: { type: 'scroll', top: 0 },
     grid: CHART_GRID,
     xAxis: { type: 'time' },
     yAxis: { type: 'value', minInterval: 1 },

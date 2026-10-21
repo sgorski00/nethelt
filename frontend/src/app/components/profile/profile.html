@@ -22,28 +22,30 @@
     <div class="info-sub-container">
       <h3>Detailed info</h3>
       @if (user.profile; as profile) {
-        <table class="profile-table">
-          <tr>
-            <th>Username</th>
-            <td>{{ profile.username }}</td>
-          </tr>
-          <tr>
-            <th>First Name</th>
-            <td>{{ profile.firstName }}</td>
-          </tr>
-          <tr>
-            <th>Last Name</th>
-            <td>{{ profile.lastName }}</td>
-          </tr>
-          <tr>
-            <th>Birth Date</th>
-            <td>{{ profile.birthDate }}</td>
-          </tr>
-          <tr>
-            <th>Bio</th>
-            <td>{{ profile.bio }}</td>
-          </tr>
-        </table>
+        <div class="table-wrapper">
+          <table class="profile-table">
+            <tr>
+              <th>Username</th>
+              <td>{{ profile.username }}</td>
+            </tr>
+            <tr>
+              <th>First Name</th>
+              <td>{{ profile.firstName }}</td>
+            </tr>
+            <tr>
+              <th>Last Name</th>
+              <td>{{ profile.lastName }}</td>
+            </tr>
+            <tr>
+              <th>Birth Date</th>
+              <td>{{ profile.birthDate }}</td>
+            </tr>
+            <tr>
+              <th>Bio</th>
+              <td>{{ profile.bio }}</td>
+            </tr>
+          </table>
+        </div>
         <button class="align-right" type="button" (click)="openUpdateProfile()">
           Update Profile
         </button>

@@ -17,7 +17,14 @@ import { DatePipe } from '@angular/common';
   selector: 'app-profile-dialog',
   imports: [ReactiveFormsModule, FormsModule, DatePipe],
   templateUrl: './profile-dialog.html',
-  styleUrl: './profile-dialog.scss',
+  styles: `
+    :host {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class ProfileDialog implements OnInit {
   private readonly userService = inject(UserService);

@@ -1,22 +1,26 @@
+@use 'mixins';
+
 :host {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include mixins.centered-page;
 }
 
 .additional-actions {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  padding: 0 20px 25px 20px;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-4);
   width: 100%;
+  padding: 0 var(--space-8) var(--space-8);
 
   .additional-actions-row {
     display: flex;
-    flex-direction: row;
-    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    width: 100%;
+
+    button {
+      flex: 1 1 0;
+    }
   }
 }

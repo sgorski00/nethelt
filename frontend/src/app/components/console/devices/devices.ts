@@ -12,10 +12,11 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RouterLink } from '@angular/router';
 import { validateIpRangeFilter } from '../../../shared/validators/ip-range-filter.validator';
+import { FiltersPanel } from '../../shared/filters-panel/filters-panel';
 
 @Component({
   selector: 'app-device',
-  imports: [DatePipe, Pagination, RouterLink],
+  imports: [FiltersPanel, DatePipe, Pagination, RouterLink],
   templateUrl: './devices.html',
   styleUrl: './devices.scss',
 })

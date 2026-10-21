@@ -1,23 +1,63 @@
 <nav>
-  <div class="nav-section">
-    @if (isAuthenticated()) {
-      <a routerLink="/profile" routerLinkActive="active" class="nav-link">Profile</a>
-      <a routerLink="/networks" routerLinkActive="active" class="nav-link">Networks</a>
-      @if (isActiveNetworkSelected()) {
-        <a routerLink="/console" routerLinkActive="active" class="nav-link">Console</a>
+  <div class="nav-menu" [class.open]="menuOpen()" id="main-menu">
+    <div class="nav-section nav-links">
+      @if (isAuthenticated()) {
+        <a routerLink="/profile" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
+          <i class="fa-solid fa-user" aria-hidden="true"></i> Profile
+        </a>
+        <a routerLink="/networks" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
+          <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Networks
+        </a>
+        @if (isActiveNetworkSelected()) {
+          <a routerLink="/console" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
+            <i class="fa-solid fa-gauge-high" aria-hidden="true"></i> Console
+          </a>
+        }
+      } @else {
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-link"
+          (click)="closeMenu()"
+        >
+          <i class="fa-solid fa-house" aria-hidden="true"></i> Home Page
+        </a>
       }
-    } @else {
-      <a routerLink="/" routerLinkActive="active" class="nav-link">Home Page</a>
-    }
-  </div>
-  <div class="nav-section">
+    </div>
     @if (isAuthenticated()) {
-      <app-network-selector></app-network-selector>
-      <app-notification-dropdown class="nav-link"></app-notification-dropdown>
-      <button type="button" (click)="logout()" class="nav-link danger">Logout</button>
-    } @else {
-      <a routerLink="/login" routerLinkActive="active" class="nav-link">Login</a>
-      <a routerLink="/register" routerLinkActive="active" class="nav-link">Register</a>
+      <div class="nav-section nav-account">
+        <app-network-selector></app-network-selector>
+      </div>
     }
+    <div class="nav-section nav-auth">
+      @if (isAuthenticated()) {
+        <button type="button" (click)="logout()" class="nav-link danger">
+          <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Logout
+        </button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
+          <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Login
+        </a>
+        <a routerLink="/register" routerLinkActive="active" class="nav-link" (click)="closeMenu()">
+          <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Register
+        </a>
+      }
+    </div>
+  </div>
+  <div class="nav-section nav-tools">
+    @if (isAuthenticated()) {
+      <app-notification-dropdown class="nav-link"></app-notification-dropdown>
+    }
+    <button
+      type="button"
+      class="nav-link nav-toggle"
+      aria-controls="main-menu"
+      [attr.aria-expanded]="menuOpen()"
+      [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+      (click)="toggleMenu()"
+    >
+      <i class="fa-solid" [class.fa-bars]="!menuOpen()" [class.fa-xmark]="menuOpen()"></i>
+    </button>
   </div>
 </nav>
