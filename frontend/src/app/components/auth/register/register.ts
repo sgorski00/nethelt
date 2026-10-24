@@ -4,10 +4,11 @@ import { RegisterRequest } from '../../../models/auth/register-request';
 import { AuthService } from '../../../services/auth-service';
 import { Router } from '@angular/router';
 import { passwordMatchValidator } from '../../../shared/validators/password-match.validator';
+import { Logo } from '../../shared/logo/logo';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Logo],
   templateUrl: './register.html',
   styles: `
     @use 'mixins';

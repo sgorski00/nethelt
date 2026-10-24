@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Logo } from './components/shared/logo/logo';
 import { Navigation } from './components/shared/navigation/navigation';
 import { NetworkContextService } from './services/network-context-service';
 import { NetworkService } from './services/network-service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navigation],
+  imports: [RouterOutlet, Logo, Navigation],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

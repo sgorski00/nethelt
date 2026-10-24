@@ -62,6 +62,7 @@ HTTP clients are declarative Spring `@HttpExchange` interfaces registered in `we
 ## Conventions
 
 - Format with google-java-format via Spotless (2-space indent). Run `mvn spotless:apply` before committing; the PR check fails otherwise.
+- The logo is in `branding/` (light and dark SVG), app icons are in `frontend/public` and `desktop-client/distribution/src/icons`. The frontend shows the logo through the `app-logo` component (inline SVG, follows the theme), so a logo change has to be made there too.
 - Lombok is used throughout (`@RequiredArgsConstructor`, `@Getter`, `@Slf4j`); MapStruct annotation processing is configured in the root pom.
 - Branches are named `net-<ticket>-<slug>`; commits are prefixed `NET-<ticket>: ...`.
 - `.claude/settings.json` denies reading `.env*`, keys/keystores and `application-local.*`/`application-prod.*`, and denies `curl`/`wget`.

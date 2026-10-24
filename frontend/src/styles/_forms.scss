@@ -91,6 +91,15 @@ select.ng-invalid.ng-touched {
   h2 {
     margin-top: var(--space-8);
   }
+
+  .form-logo {
+    margin-top: var(--space-8);
+    --logo-height: 3rem;
+
+    + h2 {
+      margin-top: var(--space-5);
+    }
+  }
 }
 
 .form,

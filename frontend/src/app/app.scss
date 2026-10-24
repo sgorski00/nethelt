@@ -21,17 +21,11 @@
 
   .logo {
     display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
     flex-shrink: 0;
-    font-size: var(--text-lg);
-    font-weight: var(--weight-bold);
-    letter-spacing: 0.02em;
+    margin: 0;
     color: var(--on-navy);
-
-    i {
-      color: var(--teal-500);
-    }
+    --logo-tile: var(--teal-500);
+    --logo-mark: #042f2e;
   }
 
   @include bp.md-down {
@@ -48,10 +42,15 @@ main {
 }
 
 footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-4);
   font-size: var(--text-xs);
   text-align: center;
   color: var(--color-text-muted);
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
+  --logo-height: 1.25rem;
 }

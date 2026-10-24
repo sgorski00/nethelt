@@ -1,11 +1,13 @@
 <header class="app-header">
   <h1 class="logo">
-    <i class="fa-solid fa-network-wired" aria-hidden="true"></i>
-    <span>Nethelt</span>
+    <app-logo wordmark />
   </h1>
   <app-navigation></app-navigation>
 </header>
 <main>
   <router-outlet></router-outlet>
 </main>
-<footer>&copy; {{ currentYear }} Nethelt. All rights reserved.</footer>
+<footer>
+  <app-logo />
+  <span>&copy; {{ currentYear }} Nethelt. All rights reserved.</span>
+</footer>
