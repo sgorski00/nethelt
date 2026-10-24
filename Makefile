@@ -20,7 +20,10 @@ restart-backend:
 	docker compose -f infrastructure/docker-compose.yml up nh-web-api -d
 
 test:
-	mvn clean verify -Dspring.profiles.active=test
+	@echo "Running backend tests..."
+	@mvn clean verify -Dspring.profiles.active=test
+	@echo "Running frontend tests..."
+	@cd frontend && npm run test -- --watch=false
 
 coverage:
 	mvn clean verify -Pcoverage -Dspring.profiles.active=test
