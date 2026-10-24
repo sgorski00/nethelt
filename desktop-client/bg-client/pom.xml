@@ -15,11 +15,8 @@
   <description>${project.name}</description>
 
   <properties>
-    <app.name>NHClient</app.name>
-    <app.package.dir>${project.build.directory}/packed</app.package.dir>
-    <app.fatjar.dir>${app.package.dir}/jar</app.fatjar.dir>
-    <app.dest.dir>${app.package.dir}/exe</app.dest.dir>
     <project.main.class>pl.sgorski.nethelt.agent.App</project.main.class>
+    <nethelt.api-url>http://localhost:8080/api</nethelt.api-url>
   </properties>
 
   <dependencies>
@@ -64,104 +61,28 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>${version.assembly.plugin}</version>
+        <artifactId>maven-resources-plugin</artifactId>
         <configuration>
-          <archive>
-            <manifest>
-              <mainClass>${project.main.class}</mainClass>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <outputDirectory>${app.fatjar.dir}</outputDirectory>
-          <finalName>nethelt-bg-client</finalName>
+          <!-- Only @...@ is replaced, so Spring ${...} placeholders stay untouched -->
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+          <delimiters>
+            <delimiter>@</delimiter>
+          </delimiters>
         </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
-        <groupId>org.panteleyev</groupId>
-        <artifactId>jpackage-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>create-package</id>
-            <phase>install</phase>
-            <goals>
-              <goal>jpackage</goal>
-            </goals>
-            <configuration>
-              <name>${app.name}</name>
-              <appVersion>${project.version}</appVersion>
-              <vendor>Sebastian Górski</vendor>
-              <input>${app.fatjar.dir}</input>
-              <mainJar>nethelt-bg-client-jar-with-dependencies.jar</mainJar>
-              <mainClass>${project.main.class}</mainClass>
-              <destination>${app.dest.dir}</destination>
-              <javaOptions>
-                <option>-Dfile.encoding=UTF-8</option>
-              </javaOptions>
-              <removeDestination>true</removeDestination>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
-
-  <!-- OS-specific profiles for jpackage configuration -->
-  <profiles>
-    <profile>
-      <id>windows</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.panteleyev</groupId>
-            <artifactId>jpackage-maven-plugin</artifactId>
-            <configuration>
-              <type>EXE</type>
-              <winConsole>true</winConsole>
-              <launcherAsService>true</launcherAsService>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>linux</id>
-      <activation>
-        <os>
-          <family>linux</family>
-        </os>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.panteleyev</groupId>
-            <artifactId>jpackage-maven-plugin</artifactId>
-            <configuration>
-              <type>APP_IMAGE</type>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

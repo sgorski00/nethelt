@@ -20,7 +20,7 @@ Run from the repo root. `Makefile` wraps most of them.
 ```bash
 mvn clean verify -Dspring.profiles.active=test   # all Java tests (this is what CI runs; `make test`)
 mvn clean install -pl web-api -am                # build one module with its dependencies
-mvn clean install -pl :bg-client -am -DskipTests # `make install-bg-client`; also cli-client
+make dist                                        # desktop client app image + archive for the current OS (`-Pdist`)
 mvn test -pl web-api -Dtest=ClassName#method -Dspring.profiles.active=test   # single test
 mvn verify -Pcoverage -Dspring.profiles.active=test   # JaCoCo aggregate (coverage-aggregator module only exists in this profile)
 mvn spotless:apply        # format Java (google-java-format); CI runs `spotless:check` on PRs
@@ -50,12 +50,14 @@ Modules: `client-core` (machine-wide PAT file shared by the CLI and the service,
 
 Agent auth: the user registers a PAT via the CLI, `TokenProvider` exchanges it at `/client/agent/authenticate` for an agent access token, and `AuthorizationInterceptor` adds it to every request to the `web-api` HTTP service group. Without a PAT the interceptor throws `MissingCredentialsException` and the schedulers skip the tick with a warning.
 
+Packaging: `bg-client` and `cli-client` build Spring Boot executable jars with the `exec` classifier (the plain jar stays the main artifact). The `distribution` module (only in the `dist` profile) copies them as `nethelt-agent.jar`/`nethelt.jar` and runs jpackage to build one `app-image` with a shared jlink runtime and two launchers, `nethelt` (CLI) and `nethelt-agent`, then archives it as `nethelt-core-<os>-<arch>`. jpackage puts all jars on every launcher's classpath, which is fine only because each Spring Boot fat jar keeps its classes in `BOOT-INF`. Files of a launcher are named after it, so optional components are split by name. The JDK module list is `jlink.modules` in `distribution/pom.xml`.
+
 bg-client runtime flow (spans several classes):
 1. `TaskUpdateScheduler` polls `GET /client/monitoring-tasks` every `scheduler.update-interval-seconds`, and `HeartbeatScheduler` posts a heartbeat.
 2. `MonitoringTaskService.synchronize` diffs the fetched tasks against the running ones (key = `deviceId` + task `id`, change detection via `updatedAt`) and adds, reschedules or cancels them through `ScheduledTaskManager` (`scheduleWithFixedDelay`, so `interval` is the delay between the end of one run and the start of the next).
 3. On each tick the `MonitoringTaskHandler` matching the `TaskType` runs the task (`executor/handler/impl`), which uses the `NetworkOperation`s in `network/`.
 
-HTTP clients are declarative Spring `@HttpExchange` interfaces registered in `webclient/config/HttpClientConfig` (`@ImportHttpServices`, group `web-api`). Base URL comes from `WEB_API_BASE_URL`. Non-2xx responses become `WebClientException` via `WebApiResponseErrorHandler`.
+HTTP clients are declarative Spring `@HttpExchange` interfaces registered in `webclient/config/HttpClientConfig` (`@ImportHttpServices`, group `web-api`). Base URL is set at build time from the `nethelt.api-url` Maven property (resource filtering of `@nethelt.api-url@`, default `http://localhost:8080/api`), users cannot change it. Non-2xx responses become `WebClientException` via `WebApiResponseErrorHandler`.
 
 ## Conventions
 
