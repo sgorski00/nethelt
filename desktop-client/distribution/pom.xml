@@ -29,6 +29,8 @@
     <dist.os>linux</dist.os>
     <dist.arch>x64</dist.arch>
     <dist.archive.format>tar.gz</dist.archive.format>
+    <!-- Launcher icon, jpackage needs .png on Linux, .ico on Windows and .icns on macOS -->
+    <dist.icon>${project.basedir}/src/icons/nethelt.png</dist.icon>
     <!-- Windows installer (dist-windows profile) -->
     <winsw.version>2.12.0</winsw.version>
     <winsw.url>https://github.com/winsw/winsw/releases/download/v${winsw.version}/WinSW-x64.exe</winsw.url>
@@ -117,6 +119,7 @@
               <appVersion>${app.version}</appVersion>
               <vendor>${app.vendor}</vendor>
               <description>NetHelt network monitoring client</description>
+              <icon>${dist.icon}</icon>
               <input>${app.input.dir}</input>
               <mainJar>nethelt.jar</mainJar>
               <launchers>
@@ -174,6 +177,7 @@
       <properties>
         <dist.os>windows</dist.os>
         <dist.archive.format>zip</dist.archive.format>
+        <dist.icon>${project.basedir}/src/icons/nethelt.ico</dist.icon>
       </properties>
       <build>
         <plugins>
@@ -250,6 +254,7 @@
       </activation>
       <properties>
         <dist.os>macos</dist.os>
+        <dist.icon>${project.basedir}/src/icons/nethelt.icns</dist.icon>
       </properties>
     </profile>
     <profile>

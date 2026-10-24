@@ -41,6 +41,8 @@ OutputBaseFilename=nethelt-setup-{#AppVersion}-windows-x64
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\icons\nethelt.ico
+WizardSmallImageFile=..\icons\wizard-small-55.bmp,..\icons\wizard-small-110.bmp
 SetupLogging=yes
 
 [Types]

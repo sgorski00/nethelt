@@ -9,10 +9,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { getOAuth2ErrorMessage, OAuth2Error } from '../oauth2-callback/oauth2-errors';
 import { NetworkService } from '../../../services/network-service';
+import { Logo } from '../../shared/logo/logo';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, Logo],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

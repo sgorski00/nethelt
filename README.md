@@ -1,6 +1,11 @@
 [![codecov](https://codecov.io/gh/sgorski00/nethelt/graph/badge.svg?token=Q49QZKE7OD)](https://codecov.io/gh/sgorski00/nethelt)
 
-# NetHelt
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="branding/logo-wordmark-dark.svg">
+    <img src="branding/logo-wordmark-light.svg" alt="NetHelt" height="64">
+  </picture>
+</h1>
 
 Network monitoring platform consisting of a Spring Boot backend, Angular web application, desktop client, and AI-based anomaly detection module.
 
@@ -14,6 +19,7 @@ Network monitoring platform consisting of a Spring Boot backend, Angular web app
 | `frontend` | Angular web application for monitoring networks, devices, metrics, and user management |
 | `infrastructure` | Docker Compose configuration and environment setup |
 | `docs` | Project documentation |
+| `branding` | Logo (icon and icon with name) in SVG for light and dark backgrounds |
 | `coverage-aggregator` | JaCoCo test coverage aggregator |
 
 ## Requirements

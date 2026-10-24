@@ -1,0 +1,28 @@
+:host {
+  display: inline-flex;
+  flex-shrink: 0;
+  height: var(--logo-height, 2rem);
+}
+
+svg {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+.tile {
+  fill: var(--logo-tile, var(--color-primary));
+}
+
+.pulse {
+  fill: none;
+  stroke: var(--logo-mark, var(--color-on-primary));
+}
+
+.node {
+  fill: var(--logo-mark, var(--color-on-primary));
+}
+
+.text {
+  fill: currentColor;
+}
