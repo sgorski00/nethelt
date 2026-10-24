@@ -29,6 +29,14 @@
     <dist.os>linux</dist.os>
     <dist.arch>x64</dist.arch>
     <dist.archive.format>tar.gz</dist.archive.format>
+    <!-- Windows installer (dist-windows profile) -->
+    <winsw.version>2.12.0</winsw.version>
+    <winsw.url>https://github.com/winsw/winsw/releases/download/v${winsw.version}/WinSW-x64.exe</winsw.url>
+    <!-- WinSW does not publish checksums, update together with winsw.version: sha256sum WinSW-x64.exe -->
+    <winsw.sha256>05b82d46ad331cc16bdc00de5c6332c1ef818df8ceefcd49c726553209b3a0da</winsw.sha256>
+    <winsw.file>${project.build.directory}/winsw/WinSW-x64.exe</winsw.file>
+    <iscc.executable>C:\Program Files (x86)\Inno Setup 6\ISCC.exe</iscc.executable>
+    <skipInstaller>false</skipInstaller>
   </properties>
 
   <dependencies>
@@ -175,6 +183,60 @@
             <configuration>
               <winConsole>true</winConsole>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${version.antrun.plugin}</version>
+            <executions>
+              <execution>
+                <id>download-winsw</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipInstaller}</skip>
+                  <target>
+                    <mkdir dir="${project.build.directory}/winsw"/>
+                    <get src="${winsw.url}" dest="${winsw.file}" skipexisting="true"/>
+                    <checksum file="${winsw.file}" algorithm="SHA-256" property="${winsw.sha256}" verifyproperty="winsw.checksum.ok"/>
+                    <fail message="Checksum mismatch for ${winsw.file}, expected ${winsw.sha256}">
+                      <condition>
+                        <isfalse value="${winsw.checksum.ok}"/>
+                      </condition>
+                    </fail>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Runs after jpackage, see src/windows/nethelt.iss -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>${version.exec.plugin}</version>
+            <executions>
+              <execution>
+                <id>windows-installer</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipInstaller}</skip>
+                  <executable>${iscc.executable}</executable>
+                  <arguments>
+                    <argument>/Q</argument>
+                    <argument>/DAppVersion=${app.version}</argument>
+                    <argument>/DAppImageDir=${app.image.dir}\${app.name}</argument>
+                    <argument>/DWinSWExe=${winsw.file}</argument>
+                    <argument>/DOutputDir=${project.build.directory}</argument>
+                    <argument>${project.basedir}\src\windows\nethelt.iss</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
