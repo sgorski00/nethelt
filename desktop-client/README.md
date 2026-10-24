@@ -11,6 +11,62 @@ Desktop application for network health monitoring. Contains background service a
 | `cli-client` | Command line tool (`nethelt auth register\|status\|remove`) |
 | `gui-client` | Desktop GUI application (planned) |
 
+## Installation
+
+### Linux and macOS
+
+```bash
+curl -fsSL https://github.com/sgorski00/nethelt/releases/latest/download/install.sh | sudo bash
+```
+
+The script (`distribution/src/unix/install.sh`) downloads the archive for the current OS/architecture from GitHub Releases, verifies it against `SHA256SUMS` and installs it:
+
+| | Linux | macOS |
+|---|---|---|
+| Application | `/opt/nethelt` | `/opt/nethelt/nethelt.app` |
+| CLI | `/usr/local/bin/nethelt` | `/usr/local/bin/nethelt` |
+| Service | systemd unit `nethelt-agent`, runs as system user `nethelt` with `CAP_NET_RAW` | launchd daemon `pl.sgorski.nethelt.agent`, logs in `/Library/Logs/NetHelt` |
+
+At the end it asks for the PAT (it can be registered later with `sudo nethelt auth register`). Running it again upgrades the installation and keeps the credentials.
+
+Options are passed after `bash -s --`:
+
+```bash
+curl -fsSL .../install.sh | sudo bash -s -- --yes                 # no questions
+curl -fsSL .../install.sh | sudo bash -s -- --version 1.2.3       # specific release
+curl -fsSL .../install.sh | sudo bash -s -- --uninstall [--purge] # remove (--purge also removes credentials and the service account)
+sudo desktop-client/distribution/src/unix/install.sh --archive-dir desktop-client/distribution/target # local `make dist` build
+```
+
+The CLI and the background service are always installed. Optional components are listed in `OPTIONAL_COMPONENTS` at the top of the script and are selected interactively or with `--with <name>`. Each one is released as `nethelt-<name>-<os>-<arch>.tar.gz` and extracted on top of the core files.
+
+### Checking the background service
+
+Linux (systemd):
+
+```bash
+systemctl status nethelt-agent                   # "active (running)" and "enabled" (starts with the system)
+journalctl -u nethelt-agent -f                   # live logs
+journalctl -u nethelt-agent -n 50 --no-pager     # last 50 lines
+sudo systemctl restart nethelt-agent             # restart (stop / start work the same way)
+```
+
+macOS (launchd):
+
+```bash
+sudo launchctl print system/pl.sgorski.nethelt.agent   # state and PID
+tail -f /Library/Logs/NetHelt/agent.log                 # live logs
+```
+
+What the logs mean:
+
+| Log message | Meaning |
+|-------------|---------|
+| `Skipping heartbeat: No Personal Access Token is registered` | Service runs, but no PAT is registered. Run `sudo nethelt auth register` |
+| `Skipping ...: Access denied to credentials file` | The service account cannot read the credentials file, check the owner/group of the config directory |
+| `Error while ... I/O error on POST request` | PAT is registered, but the Web API cannot be reached |
+| No errors | Agent works, its status is also visible in the web app (heartbeat) |
+
 ## Building
 
 ```bash
