@@ -1,0 +1,26 @@
+<!--
+  WinSW 2.x configuration of the nethelt-agent Windows service.
+  WinSW reads it from the file next to the wrapper with the same base name (nethelt-agent-service.exe).
+-->
+<service>
+  <id>nethelt-agent</id>
+  <name>NetHelt Agent</name>
+  <description>NetHelt network monitoring agent</description>
+  <executable>%BASE%\nethelt-agent.exe</executable>
+
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+
+  <onfailure action="restart" delay="10 sec"/>
+  <onfailure action="restart" delay="30 sec"/>
+  <resetfailure>1 hour</resetfailure>
+  <!-- The launcher is a console app, WinSW sends Ctrl+C first so Spring can shut down gracefully -->
+  <stoptimeout>15 sec</stoptimeout>
+
+  <!-- The installer restricts this directory to SYSTEM and Administrators -->
+  <logpath>%ProgramData%\NetHelt\logs</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+</service>

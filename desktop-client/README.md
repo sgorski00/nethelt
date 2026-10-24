@@ -40,6 +40,24 @@ sudo desktop-client/distribution/src/unix/install.sh --archive-dir desktop-clien
 
 The CLI and the background service are always installed. Optional components are listed in `OPTIONAL_COMPONENTS` at the top of the script and are selected interactively or with `--with <name>`. Each one is released as `nethelt-<name>-<os>-<arch>.tar.gz` and extracted on top of the core files.
 
+### Windows
+
+Run `nethelt-setup-<version>-windows-x64.exe` (needs administrator rights). The installer:
+
+* installs to `C:\Program Files\NetHelt` and adds it to the system `PATH` (`nethelt` works in a new terminal),
+* registers the `nethelt-agent` Windows service (WinSW wrapper `nethelt-agent-service.exe`, runs as LocalSystem, starts with the system),
+* optionally registers the PAT (the page is skipped on upgrades when a PAT is already registered),
+* restricts `C:\ProgramData\NetHelt` (credentials and logs) to SYSTEM and Administrators.
+
+The CLI and the background service form the required `core` component. Optional components are prepared in `distribution/src/windows/nethelt.iss`.
+
+Installing a newer version upgrades in place. Uninstall it from *Settings > Apps* or with `unins000.exe` in the install directory. It asks whether to remove the PAT and logs.
+
+```powershell
+nethelt-setup-1.2.3-windows-x64.exe /VERYSILENT /SUPPRESSMSGBOXES   # silent install
+& "C:\Program Files\NetHelt\unins000.exe" /VERYSILENT /PURGE      # silent uninstall, /PURGE also removes PAT and logs
+```
+
 ### Checking the background service
 
 Linux (systemd):
@@ -56,6 +74,14 @@ macOS (launchd):
 ```bash
 sudo launchctl print system/pl.sgorski.nethelt.agent   # state and PID
 tail -f /Library/Logs/NetHelt/agent.log                 # live logs
+```
+
+Windows (PowerShell):
+
+```powershell
+Get-Service nethelt-agent                                                   # Status: Running
+Get-Content C:\ProgramData\NetHelt\logs\nethelt-agent-service.out.log -Wait -Tail 50   # live logs (as administrator)
+Restart-Service nethelt-agent                                               # restart (as administrator)
 ```
 
 What the logs mean:
@@ -93,12 +119,15 @@ make dist
 mvn clean package -Pdist -pl desktop-client/distribution -am -DskipTests -Dapp.version=1.2.3
 ```
 
+On Windows the build also creates the installer and needs [Inno Setup 6](https://jrsoftware.org/isinfo.php). WinSW is downloaded during the build and verified against `winsw.sha256`. Use `-Discc.executable=<path to ISCC.exe>` when Inno Setup is not installed in the default location, or `-DskipInstaller` to build only the app image and archive.
+
 Output in `distribution/target`:
 
 | Path | Description |
 |------|-------------|
 | `app-image/` | jpackage app image: one shared jlink runtime and two launchers, `nethelt` (CLI) and `nethelt-agent` (background service) |
 | `nethelt-core-<os>-<arch>.tar.gz` / `.zip` (Windows) | Required component archive, input for the installers |
+| `nethelt-setup-<version>-windows-x64.exe` | Windows installer (Windows only) |
 
 Files of every launcher are named after it (`bin/nethelt-agent`, `nethelt-agent.exe`, `app/nethelt-agent.cfg`, `app/nethelt-agent.jar`). An optional component (for example a future `nethelt-gui`) is added as another jpackage launcher plus its own assembly descriptor, and excluded from `src/assembly/core.xml` by its name.
 
