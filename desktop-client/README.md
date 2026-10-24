@@ -126,7 +126,7 @@ Output in `distribution/target`:
 | Path | Description |
 |------|-------------|
 | `app-image/` | jpackage app image: one shared jlink runtime and two launchers, `nethelt` (CLI) and `nethelt-agent` (background service) |
-| `nethelt-core-<os>-<arch>.tar.gz` / `.zip` (Windows) | Required component archive, input for the installers |
+| `nethelt-core-<os>-<arch>.tar.gz` / `.zip` (Windows) | Required component archive, input for `install.sh` (the Windows zip is only a local by-product, the installer uses `app-image/`) |
 | `nethelt-setup-<version>-windows-x64.exe` | Windows installer (Windows only) |
 
 Files of every launcher are named after it (`bin/nethelt-agent`, `nethelt-agent.exe`, `app/nethelt-agent.cfg`, `app/nethelt-agent.jar`). An optional component (for example a future `nethelt-gui`) is added as another jpackage launcher plus its own assembly descriptor, and excluded from `src/assembly/core.xml` by its name.
@@ -148,7 +148,7 @@ done | grep -oE -- '-> (java|jdk)\.[a-z.]+' | sort -u
 
 | Trigger | Result |
 |---------|--------|
-| Tag `client-v<MAJOR.MINOR.PATCH>` | GitHub release with the archives, the Windows installer, `install.sh` and `SHA256SUMS` |
+| Tag `client-v<MAJOR.MINOR.PATCH>` | GitHub release with the Linux/macOS archives, the Windows installer, `install.sh` and `SHA256SUMS` (the Windows core zip is not published) |
 | Pull request changing `desktop-client/**` | Workflow artifact `nethelt-desktop-client-1.0.0` |
 | Manual run (*Actions > Desktop client release > Run workflow*) | Workflow artifact `nethelt-desktop-client-<version>` |
 

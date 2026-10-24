@@ -64,14 +64,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # dist: files to publish. Windows gets only the installer, it embeds the app image itself
+          # and install.sh does not support Windows, so the core zip would be unused
           - platform: linux-x64
             runner: ubuntu-22.04
+            dist: nethelt-core-*.tar.gz
           - platform: linux-arm64
             runner: ubuntu-22.04-arm
+            dist: nethelt-core-*.tar.gz
           - platform: macos-arm64
             runner: macos-15
+            dist: nethelt-core-*.tar.gz
           - platform: windows-x64
             runner: windows-2025
+            dist: nethelt-setup-*.exe
 
     steps:
       - name: Checkout code
@@ -174,9 +180,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: dist-${{ matrix.platform }}
-          path: |
-            desktop-client/distribution/target/nethelt-core-*
-            desktop-client/distribution/target/nethelt-setup-*.exe
+          path: desktop-client/distribution/target/${{ matrix.dist }}
           if-no-files-found: error
 
   release:
