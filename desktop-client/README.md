@@ -126,7 +126,7 @@ Output in `distribution/target`:
 | Path | Description |
 |------|-------------|
 | `app-image/` | jpackage app image: one shared jlink runtime and two launchers, `nethelt` (CLI) and `nethelt-agent` (background service) |
-| `nethelt-core-<os>-<arch>.tar.gz` / `.zip` (Windows) | Required component archive, input for the installers |
+| `nethelt-core-<os>-<arch>.tar.gz` / `.zip` (Windows) | Required component archive, input for `install.sh` (the Windows zip is only a local by-product, the installer uses `app-image/`) |
 | `nethelt-setup-<version>-windows-x64.exe` | Windows installer (Windows only) |
 
 Files of every launcher are named after it (`bin/nethelt-agent`, `nethelt-agent.exe`, `app/nethelt-agent.cfg`, `app/nethelt-agent.jar`). An optional component (for example a future `nethelt-gui`) is added as another jpackage launcher plus its own assembly descriptor, and excluded from `src/assembly/core.xml` by its name.
@@ -141,6 +141,25 @@ for j in BOOT-INF/classes BOOT-INF/lib/*.jar; do
   jdeps --ignore-missing-deps --multi-release 25 -summary "$j" 2>/dev/null
 done | grep -oE -- '-> (java|jdk)\.[a-z.]+' | sort -u
 ```
+
+## Releases
+
+`.github/workflows/desktop-client-release.yml` builds every platform on its own runner (jpackage and Inno Setup cannot cross-compile): `linux-x64`, `linux-arm64`, `macos-arm64` and `windows-x64`. Each job also installs the result, checks that the service runs and uninstalls it (Windows with `/PURGE`).
+
+| Trigger | Result |
+|---------|--------|
+| Tag `client-v<MAJOR.MINOR.PATCH>` | GitHub release with the Linux/macOS archives, the Windows installer, `install.sh` and `SHA256SUMS` (the Windows core zip is not published) |
+| Pull request changing `desktop-client/**` | Workflow artifact `nethelt-desktop-client-1.0.0` |
+| Manual run (*Actions > Desktop client release > Run workflow*) | Workflow artifact `nethelt-desktop-client-<version>` |
+
+The Web API URL of releases comes from the `NETHELT_API_URL` repository variable (*Settings > Secrets and variables > Actions > Variables*). Releases fail without it, pull requests and manual runs fall back to `http://localhost:8080/api`.
+
+```bash
+git tag client-v1.2.3
+git push origin client-v1.2.3
+```
+
+To test a workflow artifact on Linux/macOS, unzip it and run `sudo bash install.sh --archive-dir .` in its directory (unzipping drops the executable bit, checksums are verified with the included `SHA256SUMS`).
 
 ## Credentials
 
