@@ -46,9 +46,9 @@ Java tests run with the `test` profile: `web-api` uses in-memory H2, `ddl-auto=c
 
 ### desktop-client
 
-Modules: `client-core` (credential storage in the OS keyring, shared by the others), `bg-client` (the monitoring service), `cli-client` (picocli commands like `auth register|status|remove`, which manage the stored PAT), `gui-client` (placeholder).
+Modules: `client-core` (machine-wide PAT file shared by the CLI and the service, see `FileCredentialsStore`), `bg-client` (the monitoring service), `cli-client` (picocli commands like `auth register|status|remove`, which manage the stored PAT), `gui-client` (placeholder).
 
-Agent auth: the user registers a PAT via the CLI, `TokenProvider` exchanges it at `/client/agent/authenticate` for an agent access token, and `AuthorizationInterceptor` adds it to every request to the `web-api` HTTP service group.
+Agent auth: the user registers a PAT via the CLI, `TokenProvider` exchanges it at `/client/agent/authenticate` for an agent access token, and `AuthorizationInterceptor` adds it to every request to the `web-api` HTTP service group. Without a PAT the interceptor throws `MissingCredentialsException` and the schedulers skip the tick with a warning.
 
 bg-client runtime flow (spans several classes):
 1. `TaskUpdateScheduler` polls `GET /client/monitoring-tasks` every `scheduler.update-interval-seconds`, and `HeartbeatScheduler` posts a heartbeat.

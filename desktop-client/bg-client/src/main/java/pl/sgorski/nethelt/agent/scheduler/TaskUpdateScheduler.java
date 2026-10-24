@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
+import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.mapper.MonitoringTaskMapper;
 import pl.sgorski.nethelt.agent.service.MonitoringTaskService;
 import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringTaskClient;
@@ -27,6 +29,8 @@ public final class TaskUpdateScheduler {
               .toList();
       tasks.forEach(task -> log.info("task: {}", task));
       monitoringTaskService.synchronize(tasks);
+    } catch (MissingCredentialsException | CredentialsAccessDeniedException e) {
+      log.warn("Skipping task update: {}", e.getMessage());
     } catch (Exception e) {
       log.error("Error while updating tasks: {}", e.getMessage(), e);
     }

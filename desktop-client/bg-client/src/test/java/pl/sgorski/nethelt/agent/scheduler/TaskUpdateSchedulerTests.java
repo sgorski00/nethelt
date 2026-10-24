@@ -3,6 +3,8 @@ package pl.sgorski.nethelt.agent.scheduler;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
+import java.nio.file.AccessDeniedException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -12,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
+import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.mapper.MonitoringTaskMapper;
 import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
@@ -81,6 +85,26 @@ public class TaskUpdateSchedulerTests {
             Instant.now());
     when(monitoringTaskClient.fetchMonitoringTasks()).thenReturn(Set.of(response));
     when(monitoringTaskMapper.toModel(response)).thenThrow(new IllegalArgumentException());
+
+    assertDoesNotThrow(() -> taskUpdateScheduler.updateTasks());
+    verifyNoInteractions(monitoringTaskService);
+  }
+
+  @Test
+  void updateTasks_shouldNotSynchronize_whenCredentialsAreMissing() {
+    when(monitoringTaskClient.fetchMonitoringTasks())
+        .thenThrow(new MissingCredentialsException("no PAT"));
+
+    assertDoesNotThrow(() -> taskUpdateScheduler.updateTasks());
+    verifyNoInteractions(monitoringTaskService);
+  }
+
+  @Test
+  void updateTasks_shouldNotSynchronize_whenCredentialsAccessIsDenied() {
+    var file = Path.of("/etc/nethelt/credentials");
+    when(monitoringTaskClient.fetchMonitoringTasks())
+        .thenThrow(
+            new CredentialsAccessDeniedException(file, new AccessDeniedException(file.toString())));
 
     assertDoesNotThrow(() -> taskUpdateScheduler.updateTasks());
     verifyNoInteractions(monitoringTaskService);
