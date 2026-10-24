@@ -16,6 +16,7 @@
 
   <properties>
     <version.assembly.plugin>3.7.1</version.assembly.plugin>
+    <version.dependency.plugin>3.8.1</version.dependency.plugin>
   </properties>
 
   <modules>
@@ -24,6 +25,15 @@
     <module>gui-client</module>
     <module>cli-client</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>dist</id>
+      <modules>
+        <module>distribution</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <build>
     <pluginManagement>
@@ -35,6 +45,22 @@
           <configuration>
             <release>${java.version}</release>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>repackage</id>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+              <configuration>
+                <classifier>exec</classifier>
+                <mainClass>${project.main.class}</mainClass>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>

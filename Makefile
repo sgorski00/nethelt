@@ -1,4 +1,4 @@
-.PHONY: up down build logs test coverage install-bg-client psql
+.PHONY: up down build logs test coverage dist psql
 
 up:
 	docker compose -f infrastructure/docker-compose.yml up -d
@@ -25,11 +25,8 @@ test:
 coverage:
 	mvn clean verify -Pcoverage -Dspring.profiles.active=test
 
-install-bg-client:
-	mvn clean install -pl :bg-client -am -DskipTests
-
-install-cli-client:
-	mvn clean install -pl :cli-client -am -DskipTests
+dist:
+	mvn clean package -Pdist -pl desktop-client/distribution -am -DskipTests
 
 psql:
 	docker exec -it nh-postgres psql -U postgres -d nh-db

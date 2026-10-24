@@ -1,0 +1,21 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+  <!--
+    Required component: shared runtime + CLI (nethelt) + background service (nethelt-agent).
+    Every launcher owns files named after it (bin/<name>, <name>.exe, app/<name>.cfg, app/<name>.jar),
+    so an optional component (e.g. nethelt-gui) gets its own descriptor including **/nethelt-gui*
+    and the same pattern is excluded here.
+  -->
+  <id>core</id>
+  <formats>
+    <format>${dist.archive.format}</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${app.image.dir}</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>
