@@ -14,19 +14,10 @@
     <name>Nethelt Desktop Client - Core</name>
     <description>${project.name}</description>
 
-    <properties>
-        <version.keyring>1.0.4</version.keyring>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javakeyring</groupId>
-            <artifactId>java-keyring</artifactId>
-            <version>${version.keyring}</version>
         </dependency>
 
         <dependency>

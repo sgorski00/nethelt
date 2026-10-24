@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
+import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.webclient.api.web.AgentClient;
 
 @Slf4j
@@ -19,6 +21,8 @@ public final class HeartbeatScheduler {
   void sendHeartbeat() {
     try {
       agentClient.heartbeat();
+    } catch (MissingCredentialsException | CredentialsAccessDeniedException e) {
+      log.warn("Skipping heartbeat: {}", e.getMessage());
     } catch (Exception e) {
       log.error("Error while sending heartbeat to the server: {}", e.getMessage(), e);
     }

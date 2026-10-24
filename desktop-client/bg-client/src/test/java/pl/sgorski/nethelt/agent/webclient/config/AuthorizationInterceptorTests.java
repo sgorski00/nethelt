@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.webclient.security.TokenProvider;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,15 +41,15 @@ public class AuthorizationInterceptorTests {
   }
 
   @Test
-  void intercept_shouldNotAddAuthorizationHeader_whenTokenIsNotAvailable() throws Exception {
+  void intercept_shouldThrowAndNotSendRequest_whenTokenIsNotAvailable() {
     var request = createRequest("/api/client/monitoring-tasks");
     when(tokenProviderObjectProvider.getObject()).thenReturn(tokenProvider);
     when(tokenProvider.getToken()).thenReturn(Optional.empty());
 
-    authorizationInterceptor.intercept(request, BODY, execution);
-
-    assertFalse(request.getHeaders().containsHeader(HttpHeaders.AUTHORIZATION));
-    verify(execution).execute(request, BODY);
+    assertThrows(
+        MissingCredentialsException.class,
+        () -> authorizationInterceptor.intercept(request, BODY, execution));
+    verifyNoInteractions(execution);
   }
 
   @Test

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import picocli.CommandLine;
 import picocli.spring.PicocliSpringFactory;
+import pl.sgorski.nethelt.agent.command.CliExecutionExceptionHandler;
 import pl.sgorski.nethelt.agent.command.NetheltCommand;
 
 @SpringBootApplication(
@@ -26,7 +27,10 @@ public class CliApplication implements CommandLineRunner {
   public void run(String... args) {
     var command = context.getBean(NetheltCommand.class);
     var factory = new PicocliSpringFactory(context);
-    var exitCode = new CommandLine(command, factory).execute(args);
+    var exitCode =
+        new CommandLine(command, factory)
+            .setExecutionExceptionHandler(new CliExecutionExceptionHandler())
+            .execute(args);
     if (exitCode != 0) {
       System.exit(exitCode);
     }

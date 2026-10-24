@@ -11,6 +11,7 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
+import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.webclient.security.TokenProvider;
 
 @Slf4j
@@ -33,14 +34,15 @@ public final class AuthorizationInterceptor implements ClientHttpRequestIntercep
     }
 
     log.debug("Authenticating new HTTP request with PAT");
-    tokenProvider
-        .getObject()
-        .getToken()
-        .ifPresent(
-            token ->
-                request
-                    .getHeaders()
-                    .set(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + token));
+    var token =
+        tokenProvider
+            .getObject()
+            .getToken()
+            .orElseThrow(
+                () ->
+                    new MissingCredentialsException(
+                        "No Personal Access Token is registered. Run 'nethelt auth register'."));
+    request.getHeaders().set(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + token);
     return execution.execute(request, body);
   }
 }
