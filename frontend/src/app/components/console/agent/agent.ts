@@ -1,6 +1,6 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concat, interval, last, Observable } from 'rxjs';
+import { concat, filter, last, Observable } from 'rxjs';
 import { AgentService } from '../../../services/agent-service';
 import { Dialog } from '@angular/cdk/dialog';
 import { Router } from '@angular/router';
@@ -9,8 +9,10 @@ import { DatePipe } from '@angular/common';
 import { AgentStatus } from '../../../models/agent/agent-status';
 import { AgentConnectionState } from '../../../models/agent/agent-connection-state';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { WebSocketService } from '../../../services/websocket-service';
+import { NetworkContextService } from '../../../services/network-context-service';
+import { AgentConnectionStateResponse } from '../../../models/agent/agent-connection-state-response';
 
-const STATUS_REFRESH_INTERVAL_MS = 30_000;
 const MIN_UNAVAILABILITY_MINUTES = 2;
 const MAX_UNAVAILABILITY_MINUTES = 1440;
 
@@ -24,6 +26,8 @@ export class Agent implements OnInit {
   private readonly dialog = inject(Dialog);
   private readonly router = inject(Router);
   private readonly agentService = inject(AgentService);
+  private readonly webSocketService = inject(WebSocketService);
+  private readonly networkContextService = inject(NetworkContextService);
   protected readonly AgentStatus = AgentStatus;
   protected readonly AgentConnectionState = AgentConnectionState;
   protected readonly MIN_UNAVAILABILITY_MINUTES = MIN_UNAVAILABILITY_MINUTES;
@@ -55,8 +59,12 @@ export class Agent implements OnInit {
 
   ngOnInit(): void {
     this.reloadAgent();
-    interval(STATUS_REFRESH_INTERVAL_MS)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.webSocketService
+      .watch<AgentConnectionStateResponse>('/user/queue/agents')
+      .pipe(
+        filter((state) => state.networkId === this.networkContextService.getActiveNetworkId()),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe(() => this.refreshStatus());
   }
 

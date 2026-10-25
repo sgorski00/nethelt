@@ -1,7 +1,6 @@
 package pl.sgorski.nethelt.webapi.notification.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Instant;
@@ -10,20 +9,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.springframework.test.util.ReflectionTestUtils;
 import pl.sgorski.nethelt.webapi.exception.notification.NotificationDeliverySkippedException;
+import pl.sgorski.nethelt.webapi.notification.domain.Notification;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationChannel;
 import pl.sgorski.nethelt.webapi.notification.dto.response.NotificationResponse;
 import pl.sgorski.nethelt.webapi.notification.mapper.NotificationMapper;
 import pl.sgorski.nethelt.webapi.utils.TestNotificationFactory;
+import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
+import pl.sgorski.nethelt.webapi.web.websocket.UserMessageSender;
 
 @ExtendWith(MockitoExtension.class)
 public class WebSocketNotificationSenderTests {
 
-  @Mock private SimpMessagingTemplate messagingTemplate;
-  @Mock private SimpUserRegistry userRegistry;
+  private final NotificationResponse response =
+      new NotificationResponse(1L, "Title", "Content", Instant.now(), null);
+
+  @Mock private UserMessageSender userMessageSender;
   @Mock private NotificationMapper notificationMapper;
   @InjectMocks private WebSocketNotificationSender webSocketNotificationSender;
 
@@ -42,28 +44,32 @@ public class WebSocketNotificationSenderTests {
   }
 
   @Test
-  void send_shouldPushNotificationToUserDestination_whenUserIsConnected() {
-    var notification = TestNotificationFactory.createNotification();
-    var email = notification.getUser().getEmail();
-    var response = new NotificationResponse(1L, "Title", "Content", Instant.now(), null);
-    when(userRegistry.getUser(email)).thenReturn(mock(SimpUser.class));
+  void send_shouldPushNotificationToUser() {
+    var notification = createNotification();
     when(notificationMapper.toResponse(notification)).thenReturn(response);
+    when(userMessageSender.send(7L, WebSocketNotificationSender.DESTINATION, response))
+        .thenReturn(true);
 
     webSocketNotificationSender.send(notification);
 
-    verify(messagingTemplate)
-        .convertAndSendToUser(email, WebSocketNotificationSender.DESTINATION, response);
+    verify(userMessageSender).send(7L, WebSocketNotificationSender.DESTINATION, response);
   }
 
   @Test
-  void send_shouldSkipWithoutPushing_whenUserIsNotConnected() {
-    var notification = TestNotificationFactory.createNotification();
-    when(userRegistry.getUser(notification.getUser().getEmail())).thenReturn(null);
+  void send_shouldSkip_whenUserIsNotConnected() {
+    var notification = createNotification();
+    when(notificationMapper.toResponse(notification)).thenReturn(response);
+    when(userMessageSender.send(7L, WebSocketNotificationSender.DESTINATION, response))
+        .thenReturn(false);
 
     assertThrows(
         NotificationDeliverySkippedException.class,
         () -> webSocketNotificationSender.send(notification));
+  }
 
-    verify(messagingTemplate, never()).convertAndSendToUser(anyString(), anyString(), any());
+  private Notification createNotification() {
+    var user = TestUserFactory.createLocalUser();
+    ReflectionTestUtils.setField(user, "id", 7L);
+    return TestNotificationFactory.createNotification(user);
   }
 }

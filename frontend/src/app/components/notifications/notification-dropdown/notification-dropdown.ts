@@ -5,7 +5,8 @@ import { NotificationService } from '../../../services/notification-service';
 import { DatePipe } from '@angular/common';
 import { combineLatest, switchMap } from 'rxjs';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { NotificationSocketService } from '../../../services/notification-socket-service';
+import { WebSocketService } from '../../../services/websocket-service';
+import { NotificationResponse } from '../../../models/notifications/notification-response';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -19,7 +20,7 @@ import { NotificationSocketService } from '../../../services/notification-socket
 export class NotificationDropdown {
   private readonly dialog = inject(Dialog);
   private readonly notificationService = inject(NotificationService);
-  private readonly notificationSocketService = inject(NotificationSocketService);
+  private readonly webSocketService = inject(WebSocketService);
   public readonly elementRef = inject(ElementRef);
 
   private readonly refresh = signal(0);
@@ -46,7 +47,8 @@ export class NotificationDropdown {
   public readonly hasPreviousPage = computed(() => !(this.notificationsPage()?.first ?? true));
 
   constructor() {
-    this.notificationSocketService.notifications$
+    this.webSocketService
+      .watch<NotificationResponse>('/user/queue/notifications')
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.refresh.update((v) => v + 1));
   }

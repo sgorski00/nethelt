@@ -1,14 +1,13 @@
 package pl.sgorski.nethelt.webapi.notification.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.webapi.exception.notification.NotificationDeliverySkippedException;
 import pl.sgorski.nethelt.webapi.notification.domain.Notification;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationChannel;
 import pl.sgorski.nethelt.webapi.notification.mapper.NotificationMapper;
 import pl.sgorski.nethelt.webapi.notification.service.NotificationSender;
+import pl.sgorski.nethelt.webapi.web.websocket.UserMessageSender;
 
 @Component
 @RequiredArgsConstructor
@@ -16,8 +15,7 @@ public final class WebSocketNotificationSender implements NotificationSender {
 
   public static final String DESTINATION = "/queue/notifications";
 
-  private final SimpMessagingTemplate messagingTemplate;
-  private final SimpUserRegistry userRegistry;
+  private final UserMessageSender userMessageSender;
   private final NotificationMapper notificationMapper;
 
   @Override
@@ -27,11 +25,13 @@ public final class WebSocketNotificationSender implements NotificationSender {
 
   @Override
   public void send(Notification notification) {
-    var username = notification.getUser().getUsername();
-    if (userRegistry.getUser(username) == null) {
+    var sent =
+        userMessageSender.send(
+            notification.getUser().getId(),
+            DESTINATION,
+            notificationMapper.toResponse(notification));
+    if (!sent) {
       throw new NotificationDeliverySkippedException("User is not connected");
     }
-    messagingTemplate.convertAndSendToUser(
-        username, DESTINATION, notificationMapper.toResponse(notification));
   }
 }

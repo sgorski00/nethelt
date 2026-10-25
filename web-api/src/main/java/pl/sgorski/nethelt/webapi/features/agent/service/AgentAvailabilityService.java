@@ -11,6 +11,7 @@ import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentConnectionState;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentStatus;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AlertState;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentConnectionStateChangedEvent;
 import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentOfflineEvent;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
 
@@ -53,6 +54,12 @@ public class AgentAvailabilityService {
                       agent.getName(),
                       agent.getLastHeartbeatAt(),
                       agent.getConfiguration().getMaxUnavailabilityTime()));
+              eventPublisher.publishEvent(
+                  new AgentConnectionStateChangedEvent(
+                      network.getUser().getId(),
+                      network.getId(),
+                      agent.getId(),
+                      AgentConnectionState.OFFLINE));
             });
   }
 }
