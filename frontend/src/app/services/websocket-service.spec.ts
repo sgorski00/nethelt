@@ -2,27 +2,30 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Client, IMessage, StompConfig } from '@stomp/stompjs';
 import { of } from 'rxjs';
-import { NotificationResponse } from '../models/notifications/notification-response';
 import { AuthService } from './auth-service';
-import { NotificationSocketService, STOMP_CLIENT } from './notification-socket-service';
+import { STOMP_CLIENT, WebSocketService } from './websocket-service';
 
-describe('NotificationSocketService', () => {
+describe('WebSocketService', () => {
   const isAuthenticated = signal(true);
   const refresh = vi.fn();
   const client = {
+    connected: false,
     connectHeaders: {},
     configure: vi.fn(),
     activate: vi.fn(),
     deactivate: vi.fn(),
     subscribe: vi.fn(),
   };
-  let service: NotificationSocketService;
+  let service: WebSocketService;
 
   const config = (): StompConfig => client.configure.mock.calls[0][0];
+  const push = (callIndex: number, body: unknown) =>
+    client.subscribe.mock.calls[callIndex][1]({ body: JSON.stringify(body) } as IMessage);
 
   beforeEach(() => {
     isAuthenticated.set(true);
     vi.clearAllMocks();
+    client.connected = false;
     client.deactivate.mockResolvedValue(undefined);
     refresh.mockReturnValue(of({ token: 'new' }));
     TestBed.configureTestingModule({
@@ -34,7 +37,7 @@ describe('NotificationSocketService', () => {
         },
       ],
     });
-    service = TestBed.inject(NotificationSocketService);
+    service = TestBed.inject(WebSocketService);
     TestBed.tick();
   });
 
@@ -55,23 +58,32 @@ describe('NotificationSocketService', () => {
     expect(client.connectHeaders).toEqual({ Authorization: 'Bearer token' });
   });
 
-  it('emits notifications pushed to the user', () => {
-    const notification: NotificationResponse = {
-      id: 1,
-      title: 'Agent offline',
-      content: 'content',
-      createdAt: '2026-10-25T12:00:00Z',
-      readAt: null,
-    };
-    const received: NotificationResponse[] = [];
-    service.notifications$.subscribe((n) => received.push(n));
+  it('subscribes to watched destinations on connect', () => {
+    const received: unknown[] = [];
+    service.watch('/user/queue/notifications').subscribe((m) => received.push(m));
 
     config().onConnect?.({} as never);
-    const [destination, callback] = client.subscribe.mock.calls[0];
-    callback({ body: JSON.stringify(notification) } as IMessage);
+    push(0, { id: 1 });
 
-    expect(destination).toBe('/user/queue/notifications');
-    expect(received).toEqual([notification]);
+    expect(client.subscribe.mock.calls[0][0]).toBe('/user/queue/notifications');
+    expect(received).toEqual([{ id: 1 }]);
+  });
+
+  it('subscribes immediately when already connected', () => {
+    client.connected = true;
+
+    service.watch('/user/queue/agents').subscribe();
+
+    expect(client.subscribe).toHaveBeenCalledWith('/user/queue/agents', expect.any(Function));
+  });
+
+  it('subscribes to a destination only once', () => {
+    service.watch('/user/queue/agents').subscribe();
+    service.watch('/user/queue/agents').subscribe();
+
+    config().onConnect?.({} as never);
+
+    expect(client.subscribe).toHaveBeenCalledTimes(1);
   });
 
   it('refreshes the access token when the server rejects the connection', () => {

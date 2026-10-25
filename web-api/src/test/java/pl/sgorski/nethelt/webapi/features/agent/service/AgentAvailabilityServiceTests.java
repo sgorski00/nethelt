@@ -17,8 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
+import pl.sgorski.nethelt.webapi.features.agent.domain.AgentConnectionState;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentStatus;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AlertState;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentConnectionStateChangedEvent;
 import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentOfflineEvent;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
 import pl.sgorski.nethelt.webapi.utils.TestAgentFactory;
@@ -58,6 +60,9 @@ public class AgentAvailabilityServiceTests {
         .publishEvent(
             new AgentOfflineEvent(
                 null, "Test Network", "Test Agent", LAST_HEARTBEAT, Duration.ofMinutes(5)));
+    verify(eventPublisher)
+        .publishEvent(
+            new AgentConnectionStateChangedEvent(null, 1L, 1L, AgentConnectionState.OFFLINE));
   }
 
   @Test

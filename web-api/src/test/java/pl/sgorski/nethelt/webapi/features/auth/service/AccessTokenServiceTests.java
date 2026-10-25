@@ -58,6 +58,16 @@ public class AccessTokenServiceTests {
   }
 
   @Test
+  void getUserIdFromToken_shouldReturnSubjectAsUserId() {
+    var token = "jwt-token";
+    when(jwtService.getSubject(token)).thenReturn("42");
+
+    var result = accessTokenService.getUserIdFromToken(token);
+
+    assertEquals(42L, result);
+  }
+
+  @Test
   void isValid_shouldReturnTrue_whenTokenIsValid() {
     var token = "jwt-token";
     when(jwtService.isValid(token)).thenReturn(true);

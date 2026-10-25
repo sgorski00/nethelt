@@ -141,7 +141,7 @@ public class WebSocketNotificationSenderIntegrationTests extends PostgresIntegra
   }
 
   private boolean isSubscribed(User subscriber) {
-    var simpUser = userRegistry.getUser(subscriber.getEmail());
+    var simpUser = userRegistry.getUser(subscriber.getId().toString());
     return simpUser != null
         && simpUser.getSessions().stream().anyMatch(s -> !s.getSubscriptions().isEmpty());
   }

@@ -54,7 +54,8 @@ public final class StompAuthenticationInterceptor implements ChannelInterceptor 
 
     var email = accessTokenService.getEmailFromToken(token);
     var userDetails = userDetailsService.loadUserByUsername(email);
-    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    var userId = accessTokenService.getUserIdFromToken(token).toString();
+    return new UsernamePasswordAuthenticationToken(userId, null, userDetails.getAuthorities());
   }
 
   private void requireUserDestination(StompHeaderAccessor accessor) {

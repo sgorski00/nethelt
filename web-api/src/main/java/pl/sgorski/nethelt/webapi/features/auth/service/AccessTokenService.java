@@ -24,6 +24,10 @@ public class AccessTokenService {
     return jwtService.generate(payload);
   }
 
+  public Long getUserIdFromToken(String token) {
+    return Long.valueOf(jwtService.getSubject(token));
+  }
+
   public String getEmailFromToken(String token) {
     return jwtService.getClaim(token, "email", String.class);
   }

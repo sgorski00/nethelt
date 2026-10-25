@@ -36,6 +36,7 @@ public class StompAuthenticationInterceptorTests {
     var user = TestUserFactory.createLocalUser();
     when(accessTokenService.isValid("token")).thenReturn(true);
     when(accessTokenService.getEmailFromToken("token")).thenReturn(user.getEmail());
+    when(accessTokenService.getUserIdFromToken("token")).thenReturn(1L);
     when(userDetailsService.loadUserByUsername(user.getEmail())).thenReturn(user);
     var accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
     accessor.addNativeHeader("Authorization", "Bearer token");
@@ -43,8 +44,8 @@ public class StompAuthenticationInterceptorTests {
     interceptor.preSend(message(accessor), channel);
 
     var auth = assertInstanceOf(UsernamePasswordAuthenticationToken.class, accessor.getUser());
-    assertSame(user, auth.getPrincipal());
-    assertEquals(user.getEmail(), auth.getName());
+    assertEquals("1", auth.getName());
+    assertEquals(user.getAuthorities(), auth.getAuthorities());
   }
 
   @Test
