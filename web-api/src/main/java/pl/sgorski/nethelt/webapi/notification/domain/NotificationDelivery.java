@@ -70,6 +70,14 @@ public class NotificationDelivery {
     this.lastError = null;
   }
 
+  public void markSkipped(String reason) {
+    this.attempts++;
+    this.status = NotificationDeliveryStatus.SKIPPED;
+    this.lastAttemptAt = Instant.now();
+    this.nextAttemptAt = null;
+    this.lastError = reason;
+  }
+
   /**
    * Records a failed attempt. The next attempt is scheduled with exponential backoff ({@code
    * retryBackoff * 2^(attempts - 1)}) until {@code maxAttempts} is reached.

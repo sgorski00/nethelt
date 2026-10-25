@@ -3,6 +3,7 @@ import { NotificationService } from '../../../services/notification-service';
 import { NotificationPreferencesResponse } from '../../../models/notifications/notification-preferences-response';
 import { DialogRef } from '@angular/cdk/dialog';
 import {
+  ConfigurableNotificationChannels,
   NotificationChannel,
   NotificationChannelLabels,
 } from '../../../models/notifications/notification-channels';
@@ -19,7 +20,7 @@ export class NotificationPreferencesDialog implements OnInit {
     optional: true,
   });
   protected readonly NotificationChannelLabels = NotificationChannelLabels;
-  public availableChannels = Object.values(NotificationChannel);
+  public readonly availableChannels = ConfigurableNotificationChannels;
   public readonly errorMessage = signal('');
   public readonly successMessage = signal('');
   public readonly preferences = signal<NotificationPreferencesResponse | null>(null);

@@ -5,11 +5,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.sgorski.nethelt.webapi.exception.notification.NotificationDeliverySkippedException;
 import pl.sgorski.nethelt.webapi.notification.config.NotificationDeliveryProperties;
 import pl.sgorski.nethelt.webapi.notification.domain.Notification;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationChannel;
@@ -19,12 +21,23 @@ import pl.sgorski.nethelt.webapi.notification.repository.NotificationDeliveryRep
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class NotificationDeliveryService {
 
   private final List<NotificationSender> senders;
   private final NotificationDeliveryRepository notificationDeliveryRepository;
   private final NotificationDeliveryProperties properties;
+  private final TaskExecutor taskExecutor;
+
+  public NotificationDeliveryService(
+      List<NotificationSender> senders,
+      NotificationDeliveryRepository notificationDeliveryRepository,
+      NotificationDeliveryProperties properties,
+      @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {
+    this.senders = senders;
+    this.notificationDeliveryRepository = notificationDeliveryRepository;
+    this.properties = properties;
+    this.taskExecutor = taskExecutor;
+  }
 
   public void send(Notification notification, Set<NotificationChannel> channels) {
     channels.forEach(
@@ -36,8 +49,9 @@ public class NotificationDeliveryService {
                 notification.getId());
             return;
           }
-          deliver(
-              notificationDeliveryRepository.save(new NotificationDelivery(notification, channel)));
+          var delivery =
+              notificationDeliveryRepository.save(new NotificationDelivery(notification, channel));
+          taskExecutor.execute(() -> deliver(delivery)); // every channel on seperated executor
         });
   }
 
@@ -54,7 +68,10 @@ public class NotificationDeliveryService {
   @Transactional
   public int deleteFinishedDeliveries() {
     return notificationDeliveryRepository.deleteByStatusInAndUpdatedAtBefore(
-        EnumSet.of(NotificationDeliveryStatus.SENT, NotificationDeliveryStatus.EXHAUSTED),
+        EnumSet.of(
+            NotificationDeliveryStatus.SENT,
+            NotificationDeliveryStatus.EXHAUSTED,
+            NotificationDeliveryStatus.SKIPPED),
         Instant.now().minus(properties.retention()));
   }
 
@@ -68,6 +85,13 @@ public class NotificationDeliveryService {
                           "No sender supports channel " + delivery.getChannel()));
       sender.send(delivery.getNotification());
       delivery.markSent();
+    } catch (NotificationDeliverySkippedException e) {
+      log.debug(
+          "Skipped notification delivery with ID {} via {}: {}",
+          delivery.getId(),
+          delivery.getChannel(),
+          e.getMessage());
+      delivery.markSkipped(e.getMessage());
     } catch (Exception e) {
       log.warn(
           "Failed to deliver notification delivery with ID {} via {}: {}",

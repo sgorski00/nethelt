@@ -59,7 +59,8 @@ public class SecurityConfig {
                         "/auth/logout",
                         "/oauth2/**",
                         "/login/oauth2/**",
-                        "/client/agent/authenticate")
+                        "/client/agent/authenticate",
+                        WebSocketConfig.ENDPOINT)
                     .permitAll()
                     .requestMatchers("/auth/**")
                     .not()
