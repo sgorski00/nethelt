@@ -1,0 +1,1 @@
+ALTER TABLE network_agents ADD COLUMN availability_alert_state varchar(16) NOT NULL DEFAULT 'OK';

@@ -1,6 +1,8 @@
 package pl.sgorski.nethelt.webapi.features.agent.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -9,7 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.util.ReflectionTestUtils;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentNotFoundException;
+import pl.sgorski.nethelt.webapi.features.agent.domain.AlertState;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentOnlineEvent;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
 import pl.sgorski.nethelt.webapi.utils.TestAgentFactory;
 
@@ -19,6 +25,7 @@ public class AgentDesktopServiceTests {
   @Mock private AgentRepository agentRepository;
   @Mock private AgentTokenService agentTokenService;
   @Mock private AgentAccessTokenService agentAccessTokenService;
+  @Mock private ApplicationEventPublisher eventPublisher;
   @InjectMocks private AgentDesktopService agentDesktopService;
 
   @Test
@@ -58,7 +65,7 @@ public class AgentDesktopServiceTests {
 
   @Test
   void heartbeat_shouldThrow_whenAgentNotFound() {
-    when(agentRepository.findById(1L)).thenReturn(Optional.empty());
+    when(agentRepository.findByIdForUpdate(1L)).thenReturn(Optional.empty());
 
     assertThrows(AgentNotFoundException.class, () -> agentDesktopService.heartbeat(1L));
   }
@@ -66,10 +73,23 @@ public class AgentDesktopServiceTests {
   @Test
   void heartbeat_shouldUpdateHeartbeat_whenAgentFound() {
     var agent = TestAgentFactory.createAgent();
-    when(agentRepository.findById(1L)).thenReturn(Optional.of(agent));
+    when(agentRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(agent));
 
     agentDesktopService.heartbeat(1L);
 
     assertNotNull(agent.getLastHeartbeatAt());
+    verifyNoInteractions(eventPublisher);
+  }
+
+  @Test
+  void heartbeat_shouldPublishOnlineEvent_whenAvailabilityAlertWasFiring() {
+    var agent = TestAgentFactory.createAgent();
+    ReflectionTestUtils.setField(agent, "availabilityAlertState", AlertState.FIRING);
+    when(agentRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(agent));
+
+    agentDesktopService.heartbeat(1L);
+
+    assertEquals(AlertState.OK, agent.getAvailabilityAlertState());
+    verify(eventPublisher).publishEvent(new AgentOnlineEvent(null, "Test Network", "Test Agent"));
   }
 }

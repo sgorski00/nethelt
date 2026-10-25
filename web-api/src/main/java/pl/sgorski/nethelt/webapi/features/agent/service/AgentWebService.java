@@ -2,6 +2,7 @@ package pl.sgorski.nethelt.webapi.features.agent.service;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentAlreadyExistsException;
@@ -11,6 +12,8 @@ import pl.sgorski.nethelt.webapi.features.agent.domain.AgentConfiguration;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentStatus;
 import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentConfigurationUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentCreateCommand;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentStatusChangedEvent;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentTokenRenewedEvent;
 import pl.sgorski.nethelt.webapi.features.agent.mapper.AgentUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
 import pl.sgorski.nethelt.webapi.features.network.service.NetworkService;
@@ -22,6 +25,7 @@ public class AgentWebService {
   private final AgentRepository agentRepository;
   private final AgentTokenService agentTokenService;
   private final NetworkService networkService;
+  private final ApplicationEventPublisher eventPublisher;
 
   public Agent getAgent(Long networkId) {
     return agentRepository.findByNetworkId(networkId).orElseThrow(AgentNotFoundException::new);
@@ -46,6 +50,9 @@ public class AgentWebService {
     var token = agentTokenService.generateRawToken();
     var hashedToken = agentTokenService.hashToken(token);
     agent.changeToken(hashedToken);
+    var network = agent.getNetwork();
+    eventPublisher.publishEvent(
+        new AgentTokenRenewedEvent(network.getUser().getId(), network.getName(), agent.getName()));
     return token;
   }
 
@@ -59,10 +66,17 @@ public class AgentWebService {
   @Transactional
   public Agent changeStatus(Long networkId, AgentStatus status) {
     var agent = getAgent(networkId);
+    if (agent.getStatus() == status) {
+      return agent;
+    }
     switch (status) {
       case ACTIVE -> agent.activate();
       case DISABLED -> agent.deactivate();
     }
+    var network = agent.getNetwork();
+    eventPublisher.publishEvent(
+        new AgentStatusChangedEvent(
+            network.getUser().getId(), network.getName(), agent.getName(), status));
     return agent;
   }
 
