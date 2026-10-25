@@ -41,6 +41,10 @@ public class Agent {
 
   @Embedded private AgentConfiguration configuration = AgentConfiguration.defaults();
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private AlertState availabilityAlertState = AlertState.OK;
+
   public Agent(Network network, String name, String hashedToken) {
     this.network = network;
     this.name = name;
@@ -57,8 +61,34 @@ public class Agent {
     this.tokenCreatedAt = Instant.now();
   }
 
-  public void heartbeat() {
+  /**
+   * Records a heartbeat and resolves the availability alert.
+   *
+   * @return {@code true} when the alert was firing, so the agent is back online
+   */
+  public boolean heartbeat() {
     this.lastHeartbeatAt = Instant.now();
+    if (availabilityAlertState == AlertState.FIRING) {
+      this.availabilityAlertState = AlertState.OK;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Fires the availability alert when an active agent has not sent a heartbeat for longer than
+   * {@code maxUnavailabilityTime}.
+   *
+   * @return {@code true} when the alert changed from {@code OK} to {@code FIRING}
+   */
+  public boolean fireAvailabilityAlertIfOffline(Instant now) {
+    if (!isActive()
+        || availabilityAlertState == AlertState.FIRING
+        || connectionState(now) != AgentConnectionState.OFFLINE) {
+      return false;
+    }
+    this.availabilityAlertState = AlertState.FIRING;
+    return true;
   }
 
   public void deactivate() {

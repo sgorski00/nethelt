@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentAlreadyExistsException;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentNotFoundException;
@@ -22,6 +24,8 @@ import pl.sgorski.nethelt.webapi.features.agent.domain.Agent;
 import pl.sgorski.nethelt.webapi.features.agent.domain.AgentStatus;
 import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentConfigurationUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.dto.command.AgentCreateCommand;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentStatusChangedEvent;
+import pl.sgorski.nethelt.webapi.features.agent.dto.event.AgentTokenRenewedEvent;
 import pl.sgorski.nethelt.webapi.features.agent.mapper.AgentUpdateCommand;
 import pl.sgorski.nethelt.webapi.features.agent.repository.AgentRepository;
 import pl.sgorski.nethelt.webapi.features.network.service.NetworkService;
@@ -34,6 +38,7 @@ public class AgentWebServiceTests {
   @Mock private AgentRepository agentRepository;
   @Mock private AgentTokenService agentTokenService;
   @Mock private NetworkService networkService;
+  @Mock private ApplicationEventPublisher eventPublisher;
   @InjectMocks private AgentWebService agentWebService;
 
   private final AgentCreateCommand createCommand = new AgentCreateCommand(1L, "Agent Name");
@@ -104,6 +109,8 @@ public class AgentWebServiceTests {
 
     assertEquals("some-new-raw-token-123", token);
     assertEquals("some-new-hashed-token-123", agent.getHashedToken());
+    verify(eventPublisher)
+        .publishEvent(new AgentTokenRenewedEvent(null, "Test Network", "Test Agent"));
   }
 
   @Test
@@ -141,6 +148,9 @@ public class AgentWebServiceTests {
 
     assertSame(agent, result);
     assertTrue(agent.isActive());
+    verify(eventPublisher)
+        .publishEvent(
+            new AgentStatusChangedEvent(null, "Test Network", "Test Agent", AgentStatus.ACTIVE));
   }
 
   @Test
@@ -152,6 +162,21 @@ public class AgentWebServiceTests {
 
     assertSame(agent, result);
     assertFalse(agent.isActive());
+    verify(eventPublisher)
+        .publishEvent(
+            new AgentStatusChangedEvent(null, "Test Network", "Test Agent", AgentStatus.DISABLED));
+  }
+
+  @Test
+  void changeStatus_shouldNotPublishEvent_whenStatusIsUnchanged() {
+    var agent = TestAgentFactory.createAgent();
+    mockFindByNetworkId(agent);
+
+    var result = agentWebService.changeStatus(1L, AgentStatus.ACTIVE);
+
+    assertSame(agent, result);
+    assertTrue(agent.isActive());
+    verifyNoInteractions(eventPublisher);
   }
 
   @Test

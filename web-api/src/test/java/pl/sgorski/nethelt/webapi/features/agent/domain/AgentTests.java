@@ -55,6 +55,72 @@ public class AgentTests {
   }
 
   @Test
+  void heartbeat_shouldReturnFalse_whenAlertIsNotFiring() {
+    var agent = TestAgentFactory.createAgent();
+
+    assertFalse(agent.heartbeat());
+    assertEquals(AlertState.OK, agent.getAvailabilityAlertState());
+  }
+
+  @Test
+  void heartbeat_shouldResolveAlertAndReturnTrue_whenAlertIsFiring() {
+    var agent = TestAgentFactory.createAgent();
+    ReflectionTestUtils.setField(agent, "availabilityAlertState", AlertState.FIRING);
+
+    assertTrue(agent.heartbeat());
+    assertEquals(AlertState.OK, agent.getAvailabilityAlertState());
+  }
+
+  @Test
+  void fireAvailabilityAlertIfOffline_shouldFire_whenActiveAgentIsOffline() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+
+    var fired = agent.fireAvailabilityAlertIfOffline(Instant.parse("2026-01-01T12:05:01Z"));
+
+    assertTrue(fired);
+    assertEquals(AlertState.FIRING, agent.getAvailabilityAlertState());
+  }
+
+  @Test
+  void fireAvailabilityAlertIfOffline_shouldNotFire_whenAgentIsOnline() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+
+    var fired = agent.fireAvailabilityAlertIfOffline(Instant.parse("2026-01-01T12:05:00Z"));
+
+    assertFalse(fired);
+    assertEquals(AlertState.OK, agent.getAvailabilityAlertState());
+  }
+
+  @Test
+  void fireAvailabilityAlertIfOffline_shouldNotFire_whenAgentNeverConnected() {
+    var agent = TestAgentFactory.createAgent();
+
+    assertFalse(agent.fireAvailabilityAlertIfOffline(Instant.now()));
+    assertEquals(AlertState.OK, agent.getAvailabilityAlertState());
+  }
+
+  @Test
+  void fireAvailabilityAlertIfOffline_shouldNotFire_whenAgentIsDisabled() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+    agent.deactivate();
+
+    var fired = agent.fireAvailabilityAlertIfOffline(Instant.parse("2026-01-01T13:00:00Z"));
+
+    assertFalse(fired);
+    assertEquals(AlertState.OK, agent.getAvailabilityAlertState());
+  }
+
+  @Test
+  void fireAvailabilityAlertIfOffline_shouldNotFireAgain_whenAlertIsAlreadyFiring() {
+    var agent = createAgentWithLastHeartbeat(Instant.parse("2026-01-01T12:00:00Z"));
+    var now = Instant.parse("2026-01-01T13:00:00Z");
+    agent.fireAvailabilityAlertIfOffline(now);
+
+    assertFalse(agent.fireAvailabilityAlertIfOffline(now));
+    assertEquals(AlertState.FIRING, agent.getAvailabilityAlertState());
+  }
+
+  @Test
   void deactivate_shouldSetStatusToDisabled() {
     var agent = TestAgentFactory.createAgent();
 
