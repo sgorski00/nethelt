@@ -3,6 +3,7 @@ package pl.sgorski.nethelt.webapi.notification.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import pl.sgorski.nethelt.webapi.exception.notification.NotificationChannelNotConfigurableException;
 import pl.sgorski.nethelt.webapi.utils.TestUserFactory;
 
 public class NotificationPreferencesTests {
@@ -65,5 +66,16 @@ public class NotificationPreferencesTests {
     preferences.disableChannel(NotificationChannel.EMAIL);
 
     assertFalse(preferences.isChannelEnabled(NotificationChannel.EMAIL));
+  }
+
+  @Test
+  void disableChannel_shouldThrow_whenChannelIsWebsocket() {
+    var user = TestUserFactory.createLocalUser();
+    var preferences = new NotificationPreferences(user);
+
+    assertThrows(
+        NotificationChannelNotConfigurableException.class,
+        () -> preferences.disableChannel(NotificationChannel.WEBSOCKET));
+    assertTrue(preferences.isChannelEnabled(NotificationChannel.WEBSOCKET));
   }
 }

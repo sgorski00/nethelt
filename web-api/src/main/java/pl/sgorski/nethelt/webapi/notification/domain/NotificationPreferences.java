@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.EnumSet;
 import java.util.Set;
 import lombok.*;
+import pl.sgorski.nethelt.webapi.exception.notification.NotificationChannelNotConfigurableException;
 import pl.sgorski.nethelt.webapi.features.user.domain.User;
 
 @Getter
@@ -43,6 +44,9 @@ public class NotificationPreferences {
   }
 
   public void disableChannel(NotificationChannel channel) {
+    if (channel == NotificationChannel.WEBSOCKET) {
+      throw new NotificationChannelNotConfigurableException(channel);
+    }
     enabledChannels.remove(channel);
   }
 }

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.task.SyncTaskExecutor;
+import pl.sgorski.nethelt.webapi.exception.notification.NotificationDeliverySkippedException;
 import pl.sgorski.nethelt.webapi.notification.config.NotificationDeliveryProperties;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationChannel;
 import pl.sgorski.nethelt.webapi.notification.domain.NotificationDelivery;
@@ -35,7 +38,10 @@ public class NotificationDeliveryServiceTests {
   void setUp() {
     this.notificationDeliveryService =
         new NotificationDeliveryService(
-            List.of(emailSender, websocketSender), notificationDeliveryRepository, properties);
+            List.of(emailSender, websocketSender),
+            notificationDeliveryRepository,
+            properties,
+            new SyncTaskExecutor());
     lenient().when(emailSender.supports(NotificationChannel.EMAIL)).thenReturn(true);
     lenient().when(websocketSender.supports(NotificationChannel.WEBSOCKET)).thenReturn(true);
     lenient()
@@ -71,6 +77,21 @@ public class NotificationDeliveryServiceTests {
   }
 
   @Test
+  void send_shouldRecordSkippedDeliveryWithoutRetry_whenSenderSkips() {
+    var notification = TestNotificationFactory.createNotification();
+    doThrow(new NotificationDeliverySkippedException("User is not connected"))
+        .when(websocketSender)
+        .send(notification);
+
+    notificationDeliveryService.send(notification, Set.of(NotificationChannel.WEBSOCKET));
+
+    var delivery = captureSavedDelivery();
+    assertEquals(NotificationDeliveryStatus.SKIPPED, delivery.getStatus());
+    assertEquals("User is not connected", delivery.getLastError());
+    assertNull(delivery.getNextAttemptAt());
+  }
+
+  @Test
   void send_shouldDeliverOtherChannels_whenOneSenderThrows() {
     var notification = TestNotificationFactory.createNotification();
     doThrow(new RuntimeException("SMTP down")).when(emailSender).send(notification);
@@ -78,6 +99,26 @@ public class NotificationDeliveryServiceTests {
     notificationDeliveryService.send(
         notification, Set.of(NotificationChannel.EMAIL, NotificationChannel.WEBSOCKET));
 
+    verify(websocketSender).send(notification);
+  }
+
+  @Test
+  void send_shouldDeliverEachChannelAsSeparateTask() {
+    var tasks = new ArrayList<Runnable>();
+    var service =
+        new NotificationDeliveryService(
+            List.of(emailSender, websocketSender),
+            notificationDeliveryRepository,
+            properties,
+            tasks::add);
+    var notification = TestNotificationFactory.createNotification();
+
+    service.send(notification, Set.of(NotificationChannel.EMAIL, NotificationChannel.WEBSOCKET));
+
+    assertEquals(2, tasks.size());
+    verify(emailSender, never()).send(any());
+    tasks.forEach(Runnable::run);
+    verify(emailSender).send(notification);
     verify(websocketSender).send(notification);
   }
 
@@ -143,7 +184,7 @@ public class NotificationDeliveryServiceTests {
   }
 
   @Test
-  void deleteFinishedDeliveries_shouldDeleteSentAndExhaustedDeliveries() {
+  void deleteFinishedDeliveries_shouldDeleteSentExhaustedAndSkippedDeliveries() {
     when(notificationDeliveryRepository.deleteByStatusInAndUpdatedAtBefore(any(), any()))
         .thenReturn(4);
 
@@ -152,7 +193,11 @@ public class NotificationDeliveryServiceTests {
     assertEquals(4, result);
     verify(notificationDeliveryRepository)
         .deleteByStatusInAndUpdatedAtBefore(
-            eq(Set.of(NotificationDeliveryStatus.SENT, NotificationDeliveryStatus.EXHAUSTED)),
+            eq(
+                Set.of(
+                    NotificationDeliveryStatus.SENT,
+                    NotificationDeliveryStatus.EXHAUSTED,
+                    NotificationDeliveryStatus.SKIPPED)),
             any());
   }
 

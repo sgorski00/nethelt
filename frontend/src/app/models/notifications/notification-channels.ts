@@ -7,3 +7,5 @@ export const NotificationChannelLabels: Record<NotificationChannel, string> = {
   [NotificationChannel.EMAIL]: 'Email',
   [NotificationChannel.WEBSOCKET]: 'Real-time notifications',
 };
+
+export const ConfigurableNotificationChannels: NotificationChannel[] = [NotificationChannel.EMAIL];

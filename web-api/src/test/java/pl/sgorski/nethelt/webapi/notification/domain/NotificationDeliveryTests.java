@@ -39,6 +39,21 @@ public class NotificationDeliveryTests {
   }
 
   @Test
+  void markSkipped_shouldSetSkippedStatusWithoutNextAttempt() {
+    var delivery = createDelivery();
+    delivery.markFailed("error", 5, BACKOFF);
+
+    delivery.markSkipped("User is not connected");
+
+    assertEquals(NotificationDeliveryStatus.SKIPPED, delivery.getStatus());
+    assertEquals(2, delivery.getAttempts());
+    assertEquals("User is not connected", delivery.getLastError());
+    assertNotNull(delivery.getLastAttemptAt());
+    assertNull(delivery.getNextAttemptAt());
+    assertNull(delivery.getDeliveredAt());
+  }
+
+  @Test
   void markFailed_shouldSetFailedStatusAndScheduleNextAttempt() {
     var delivery = createDelivery();
     var before = Instant.now();
