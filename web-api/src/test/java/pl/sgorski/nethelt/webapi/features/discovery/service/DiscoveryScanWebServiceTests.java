@@ -56,7 +56,7 @@ public class DiscoveryScanWebServiceTests {
 
   @Test
   void getScan_shouldReturnScan_whenFound() {
-    var scan = new DiscoveryScan(agent.getNetwork(), null, Instant.now());
+    var scan = new DiscoveryScan(agent.getNetwork(), null);
     when(discoveryScanRepository.findByNetworkId(1L)).thenReturn(Optional.of(scan));
 
     assertSame(scan, discoveryScanWebService.getScan(1L));
@@ -108,7 +108,7 @@ public class DiscoveryScanWebServiceTests {
   @Test
   void startScan_shouldRestartPreviousScan_whenItIsFinished() {
     mockAgent();
-    var scan = new DiscoveryScan(agent.getNetwork(), null, Instant.now().minusSeconds(3600));
+    var scan = new DiscoveryScan(agent.getNetwork(), null);
     ReflectionTestUtils.setField(scan, "status", DiscoveryScanStatus.COMPLETED);
     when(discoveryScanRepository.findByNetworkIdForUpdate(1L)).thenReturn(Optional.of(scan));
 
@@ -123,8 +123,8 @@ public class DiscoveryScanWebServiceTests {
   @Test
   void startScan_shouldThrow_whenScanIsInProgress() {
     mockAgent();
-    var requestedAt = Instant.now().minusSeconds(60);
-    var scan = new DiscoveryScan(agent.getNetwork(), null, requestedAt);
+    var scan = new DiscoveryScan(agent.getNetwork(), null);
+    var requestedAt = scan.getRequestedAt();
     when(discoveryScanRepository.findByNetworkIdForUpdate(1L)).thenReturn(Optional.of(scan));
 
     assertThrows(
@@ -137,7 +137,8 @@ public class DiscoveryScanWebServiceTests {
   void startScan_shouldRestartScan_whenScanInProgressHasTimedOut() {
     mockAgent();
     var requestedAt = Instant.now().minus(TIMEOUT).minusSeconds(1);
-    var scan = new DiscoveryScan(agent.getNetwork(), null, requestedAt);
+    var scan = new DiscoveryScan(agent.getNetwork(), null);
+    ReflectionTestUtils.setField(scan, "requestedAt", requestedAt);
     ReflectionTestUtils.setField(scan, "status", DiscoveryScanStatus.RUNNING);
     when(discoveryScanRepository.findByNetworkIdForUpdate(1L)).thenReturn(Optional.of(scan));
 
@@ -192,10 +193,13 @@ public class DiscoveryScanWebServiceTests {
   @ParameterizedTest
   @ValueSource(strings = {"192.168.0.0/23", "10.0.0.0-10.0.1.0", "0.0.0.0/0"})
   void startScan_shouldThrow_whenRangeIsLargerThan24(String ipRange) {
+    mockAgent();
+    when(discoveryScanRepository.findByNetworkIdForUpdate(1L)).thenReturn(Optional.empty());
+
     assertThrows(
         DiscoveryScanValidationFailedException.class,
         () -> discoveryScanWebService.startScan(command(ipRange)));
-    verifyNoInteractions(agentWebService, discoveryScanRepository);
+    verify(discoveryScanRepository, never()).saveAndFlush(any());
   }
 
   @ParameterizedTest

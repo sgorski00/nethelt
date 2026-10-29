@@ -100,6 +100,31 @@ public class Ipv4RangeTests {
     assertEquals(address, Ipv4Range.toLiteral(toNumber(address)));
   }
 
+  @Test
+  void of_shouldReturnRangeBetweenAddresses() {
+    assertEquals(
+        Ipv4Range.parse("192.168.0.10-192.168.0.20"),
+        Ipv4Range.of("192.168.0.10", " 192.168.0.20"));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"192.168.0.20, 192.168.0.10", "192.168.0.300, 192.168.0.10", "abc, 192.168.0.10"})
+  void of_shouldThrow_whenRangeIsInvalid(String start, String end) {
+    assertThrows(InvalidIpRangeException.class, () -> Ipv4Range.of(start, end));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "192.168.0.0, true",
+    "192.168.0.100, true",
+    "192.168.0.255, true",
+    "192.167.255.255, false",
+    "192.168.1.0, false",
+  })
+  void contains_shouldReturnWhetherAddressIsInRange(String address, boolean expected) {
+    assertEquals(expected, Ipv4Range.parse("192.168.0.0/24").contains(toNumber(address)));
+  }
+
   private static long toNumber(String address) {
     return Ipv4Range.toNumber(Inet4Address.ofLiteral(address));
   }

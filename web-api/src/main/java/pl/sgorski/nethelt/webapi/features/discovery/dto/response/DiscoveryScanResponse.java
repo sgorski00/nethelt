@@ -1,6 +1,7 @@
 package pl.sgorski.nethelt.webapi.features.discovery.dto.response;
 
 import java.time.Instant;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 import pl.sgorski.nethelt.webapi.features.discovery.domain.DiscoveryScanStatus;
 
@@ -12,4 +13,5 @@ public record DiscoveryScanResponse(
     Instant requestedAt,
     @Nullable Instant startedAt,
     @Nullable Instant finishedAt,
-    @Nullable String failureReason) {}
+    @Nullable String failureReason,
+    List<DiscoveryScanResultResponse> results) {}

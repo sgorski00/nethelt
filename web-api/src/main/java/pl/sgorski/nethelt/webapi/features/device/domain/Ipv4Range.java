@@ -37,6 +37,14 @@ public record Ipv4Range(long start, long end) {
     return new Ipv4Range(address, address);
   }
 
+  public static Ipv4Range of(String start, String end) {
+    var value = start + "-" + end;
+    var startNumber = toNumber(start.strip(), value);
+    var endNumber = toNumber(end.strip(), value);
+    if (startNumber > endNumber) throw invalid(value, "range start is greater than its end");
+    return new Ipv4Range(startNumber, endNumber);
+  }
+
   public static long toNumber(Inet4Address address) {
     return Integer.toUnsignedLong(ByteBuffer.wrap(address.getAddress()).getInt());
   }
@@ -56,13 +64,14 @@ public record Ipv4Range(long start, long end) {
     return end - start + 1;
   }
 
+  public boolean contains(long address) {
+    return start <= address && address <= end;
+  }
+
   private static Ipv4Range parseRange(String value) {
     var parts = value.split("-", -1);
     if (parts.length != 2) throw invalid(value, "range must have exactly one '-'");
-    var start = toNumber(parts[0].strip(), value);
-    var end = toNumber(parts[1].strip(), value);
-    if (start > end) throw invalid(value, "range start is greater than its end");
-    return new Ipv4Range(start, end);
+    return of(parts[0], parts[1]);
   }
 
   private static Ipv4Range parseSubnet(String value) {

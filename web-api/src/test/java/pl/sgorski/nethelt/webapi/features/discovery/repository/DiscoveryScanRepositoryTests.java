@@ -3,8 +3,9 @@ package pl.sgorski.nethelt.webapi.features.discovery.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
+import java.net.Inet4Address;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +36,52 @@ public class DiscoveryScanRepositoryTests extends PostgresIntegrationTest {
 
   @Test
   void findByNetworkIdForUpdate_shouldReturnScanWithRange() {
-    var requestedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
     var range = Ipv4Range.parse("192.168.0.0/24");
-    discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, range, requestedAt));
+    var requestedAt =
+        discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, range)).getRequestedAt();
     entityManager.clear();
 
     var scan = discoveryScanRepository.findByNetworkIdForUpdate(network.getId()).orElseThrow();
 
     assertEquals(range, scan.getRange());
-    assertEquals(requestedAt, scan.getRequestedAt());
+    assertEquals(requestedAt.truncatedTo(ChronoUnit.MICROS), scan.getRequestedAt());
+  }
+
+  @Test
+  void findByNetworkId_shouldReturnResultsOrderedByIpAddress() {
+    var scan = new DiscoveryScan(network, null);
+    scan.start(Ipv4Range.parse("192.168.0.0/24"));
+    scan.addResult(Inet4Address.ofLiteral("192.168.0.100"), "laptop", 5);
+    scan.addResult(Inet4Address.ofLiteral("192.168.0.9"), null, 2);
+    scan.addResult(Inet4Address.ofLiteral("192.168.0.20"), "phone", 3);
+    scan.complete();
+    discoveryScanRepository.saveAndFlush(scan);
+    entityManager.clear();
+
+    var result = discoveryScanRepository.findByNetworkId(network.getId()).orElseThrow();
+
+    assertEquals(
+        List.of("192.168.0.9", "192.168.0.20", "192.168.0.100"),
+        result.getResults().stream().map(r -> r.getIpAddress().getHostAddress()).toList());
+  }
+
+  @Test
+  void restart_shouldDeletePreviousResults() {
+    var scan = new DiscoveryScan(network, null);
+    scan.start(Ipv4Range.parse("192.168.0.0/24"));
+    scan.addResult(Inet4Address.ofLiteral("192.168.0.1"), "router", 1);
+    scan.complete();
+    discoveryScanRepository.saveAndFlush(scan);
+
+    scan.restart(null);
+    discoveryScanRepository.saveAndFlush(scan);
+    entityManager.clear();
+
+    var count =
+        entityManager
+            .createQuery("SELECT count(r) FROM DiscoveryScanResult r", Long.class)
+            .getSingleResult();
+    assertEquals(0, count);
   }
 
   @Test
@@ -53,11 +91,10 @@ public class DiscoveryScanRepositoryTests extends PostgresIntegrationTest {
 
   @Test
   void saveAndFlush_shouldThrow_whenNetworkAlreadyHasScan() {
-    discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, null, Instant.now()));
+    discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, null));
 
     assertThrows(
         DataIntegrityViolationException.class,
-        () ->
-            discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, null, Instant.now())));
+        () -> discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, null)));
   }
 }
