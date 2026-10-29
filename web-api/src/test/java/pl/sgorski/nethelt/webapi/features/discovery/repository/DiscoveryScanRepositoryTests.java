@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import jakarta.persistence.EntityManager;
 import java.net.Inet4Address;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,14 +39,14 @@ public class DiscoveryScanRepositoryTests extends PostgresIntegrationTest {
   @Test
   void findByNetworkIdForUpdate_shouldReturnScanWithRange() {
     var range = Ipv4Range.parse("192.168.0.0/24");
-    var requestedAt =
-        discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, range)).getRequestedAt();
+    var requestedAt = Instant.parse("2026-01-01T12:00:00.123456Z");
+    save(new DiscoveryScan(network, range), requestedAt);
     entityManager.clear();
 
     var scan = discoveryScanRepository.findByNetworkIdForUpdate(network.getId()).orElseThrow();
 
     assertEquals(range, scan.getRange());
-    assertEquals(requestedAt.truncatedTo(ChronoUnit.MICROS), scan.getRequestedAt());
+    assertEquals(requestedAt, scan.getRequestedAt());
   }
 
   @Test
