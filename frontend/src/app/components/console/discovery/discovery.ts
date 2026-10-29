@@ -1,6 +1,7 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
+import { Dialog } from '@angular/cdk/dialog';
 import { filter, finalize } from 'rxjs';
 import { AgentService } from '../../../services/agent-service';
 import { DiscoveryScanService } from '../../../services/discovery-scan-service';
@@ -12,6 +13,7 @@ import { AgentConnectionState } from '../../../models/agent/agent-connection-sta
 import { AgentConnectionStateResponse } from '../../../models/agent/agent-connection-state-response';
 import {
   DiscoveryScanResponse,
+  DiscoveryScanResultResponse,
   DiscoveryScanStatusResponse,
 } from '../../../models/discovery/discovery-scan-response';
 import {
@@ -20,6 +22,10 @@ import {
   isScanInProgress,
 } from '../../../models/discovery/discovery-scan-status';
 import { validateDiscoveryRange } from '../../../shared/validators/discovery-range.validator';
+import { CreateDevice } from '../devices/create-device/create-device';
+import { DeviceCreateRequest } from '../../../models/device/device-request';
+
+const MAX_DEVICE_NAME_LENGTH = 100;
 
 @Component({
   selector: 'app-discovery',
@@ -43,6 +49,7 @@ import { validateDiscoveryRange } from '../../../shared/validators/discovery-ran
 })
 export class Discovery implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(Dialog);
   private readonly agentService = inject(AgentService);
   private readonly discoveryScanService = inject(DiscoveryScanService);
   private readonly webSocketService = inject(WebSocketService);
@@ -51,6 +58,7 @@ export class Discovery implements OnInit {
   protected readonly STATUS_LABELS = DISCOVERY_SCAN_STATUS_LABELS;
 
   protected readonly errorMessage = signal('');
+  protected readonly message = signal('');
   protected readonly agent = signal<AgentResponse | undefined>(undefined);
   protected readonly scan = signal<DiscoveryScanResponse | null | undefined>(undefined);
   protected readonly starting = signal(false);
@@ -100,6 +108,7 @@ export class Discovery implements OnInit {
     if (!this.canStart() || this.ipRangeError()) return;
 
     this.errorMessage.set('');
+    this.message.set('');
     this.starting.set(true);
     this.discoveryScanService
       .startScan({ ipRange: this.ipRange().trim() || null })
@@ -109,6 +118,19 @@ export class Discovery implements OnInit {
         error: (err) =>
           this.errorMessage.set(err.error?.detail || 'An error occurred while starting the scan.'),
       });
+  }
+
+  protected addDevice(result: DiscoveryScanResultResponse): void {
+    const data: Partial<DeviceCreateRequest> = {
+      name: (result.hostname ?? result.ipAddress).slice(0, MAX_DEVICE_NAME_LENGTH),
+      ipAddress: result.ipAddress,
+    };
+    this.dialog.open(CreateDevice, { data }).closed.subscribe((created) => {
+      if (!created) return;
+
+      this.message.set(`Device ${result.ipAddress} added successfully.`);
+      this.loadScan();
+    });
   }
 
   private loadAgent(): void {

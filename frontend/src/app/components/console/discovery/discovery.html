@@ -28,8 +28,11 @@
   @if (ipRangeTouched() && ipRangeError(); as ipRangeError) {
     <small class="error-message">{{ ipRangeError }}</small>
   }
-  @if ((agent() && !agentOnline()) || errorMessage()) {
+  @if ((agent() && !agentOnline()) || message() || errorMessage()) {
     <div class="message-box">
+      @if (message(); as message) {
+        <p class="success-message">{{ message }}</p>
+      }
       @if (agent() && !agentOnline()) {
         <p class="neutral-message">The agent must be active and online to scan the network.</p>
       }
@@ -89,6 +92,7 @@
                   <th>Hostname</th>
                   <th>Response time</th>
                   <th>Status</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -102,6 +106,13 @@
                         <span class="badge success">In network</span>
                       } @else {
                         <span class="badge neutral">New</span>
+                      }
+                    </td>
+                    <td>
+                      @if (result.existingDeviceId === null) {
+                        <button type="button" class="action-button" (click)="addDevice(result)">
+                          <i class="fa-solid fa-plus"></i> Add
+                        </button>
                       }
                     </td>
                   </tr>
