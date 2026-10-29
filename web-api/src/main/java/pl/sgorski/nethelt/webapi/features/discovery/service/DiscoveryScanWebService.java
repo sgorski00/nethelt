@@ -3,6 +3,7 @@ package pl.sgorski.nethelt.webapi.features.discovery.service;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import pl.sgorski.nethelt.webapi.features.device.domain.Ipv4Range;
 import pl.sgorski.nethelt.webapi.features.discovery.config.DiscoveryScanProperties;
 import pl.sgorski.nethelt.webapi.features.discovery.domain.DiscoveryScan;
 import pl.sgorski.nethelt.webapi.features.discovery.dto.command.DiscoveryScanStartCommand;
+import pl.sgorski.nethelt.webapi.features.discovery.dto.event.DiscoveryScanStatusChangedEvent;
 import pl.sgorski.nethelt.webapi.features.discovery.repository.DiscoveryScanRepository;
 import pl.sgorski.nethelt.webapi.features.network.domain.Network;
 
@@ -24,6 +26,7 @@ public class DiscoveryScanWebService {
   private final DiscoveryScanRepository discoveryScanRepository;
   private final AgentWebService agentWebService;
   private final DiscoveryScanProperties discoveryScanProperties;
+  private final ApplicationEventPublisher eventPublisher;
 
   public DiscoveryScan getScan(Long networkId) {
     return discoveryScanRepository
@@ -40,12 +43,19 @@ public class DiscoveryScanWebService {
       throw new DiscoveryScanNotAllowedException(
           "Cannot start discovery scan: the agent must be active and online");
     }
-    var existingScan = discoveryScanRepository.findByNetworkIdForUpdate(command.networkId());
-    if (existingScan.isEmpty()) {
-      return createScan(agent.getNetwork(), range);
+    var scan =
+        discoveryScanRepository
+            .findByNetworkIdForUpdate(command.networkId())
+            .map(existingScan -> restartScan(existingScan, range, now))
+            .orElseGet(() -> createScan(agent.getNetwork(), range));
+    eventPublisher.publishEvent(DiscoveryScanStatusChangedEvent.of(scan));
+    return scan;
+  }
+
+  private DiscoveryScan restartScan(DiscoveryScan scan, @Nullable Ipv4Range range, Instant now) {
+    if (scan.timeOutIfExpired(now, discoveryScanProperties.timeout())) {
+      eventPublisher.publishEvent(DiscoveryScanStatusChangedEvent.of(scan));
     }
-    var scan = existingScan.get();
-    scan.timeOutIfExpired(now, discoveryScanProperties.timeout());
     if (scan.isInProgress()) {
       throw new DiscoveryScanNotAllowedException(
           "Cannot start discovery scan: another scan is already in progress");

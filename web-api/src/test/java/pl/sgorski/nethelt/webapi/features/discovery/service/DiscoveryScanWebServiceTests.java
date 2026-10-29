@@ -3,20 +3,24 @@ package pl.sgorski.nethelt.webapi.features.discovery.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 import pl.sgorski.nethelt.webapi.exception.domain.agent.AgentNotFoundException;
@@ -31,6 +35,7 @@ import pl.sgorski.nethelt.webapi.features.discovery.config.DiscoveryScanProperti
 import pl.sgorski.nethelt.webapi.features.discovery.domain.DiscoveryScan;
 import pl.sgorski.nethelt.webapi.features.discovery.domain.DiscoveryScanStatus;
 import pl.sgorski.nethelt.webapi.features.discovery.dto.command.DiscoveryScanStartCommand;
+import pl.sgorski.nethelt.webapi.features.discovery.dto.event.DiscoveryScanStatusChangedEvent;
 import pl.sgorski.nethelt.webapi.features.discovery.repository.DiscoveryScanRepository;
 import pl.sgorski.nethelt.webapi.utils.TestAgentFactory;
 
@@ -41,6 +46,7 @@ public class DiscoveryScanWebServiceTests {
 
   @Mock private DiscoveryScanRepository discoveryScanRepository;
   @Mock private AgentWebService agentWebService;
+  @Mock private ApplicationEventPublisher eventPublisher;
   private DiscoveryScanWebService discoveryScanWebService;
 
   private Agent agent;
@@ -49,7 +55,10 @@ public class DiscoveryScanWebServiceTests {
   void setUp() {
     discoveryScanWebService =
         new DiscoveryScanWebService(
-            discoveryScanRepository, agentWebService, new DiscoveryScanProperties(TIMEOUT));
+            discoveryScanRepository,
+            agentWebService,
+            new DiscoveryScanProperties(TIMEOUT),
+            eventPublisher);
     agent = TestAgentFactory.createAgentWithId(1L, 1L);
     agent.heartbeat();
   }
@@ -80,6 +89,7 @@ public class DiscoveryScanWebServiceTests {
     assertSame(agent.getNetwork(), scan.getNetwork());
     assertEquals(DiscoveryScanStatus.PENDING, scan.getStatus());
     assertEquals(Ipv4Range.parse("192.168.0.0/24"), scan.getRange());
+    assertEquals(List.of(DiscoveryScanStatus.PENDING), publishedStatuses(1));
   }
 
   @ParameterizedTest
@@ -103,6 +113,7 @@ public class DiscoveryScanWebServiceTests {
     assertThrows(
         DiscoveryScanNotAllowedException.class,
         () -> discoveryScanWebService.startScan(command(null)));
+    verifyNoInteractions(eventPublisher);
   }
 
   @Test
@@ -118,6 +129,7 @@ public class DiscoveryScanWebServiceTests {
     assertEquals(DiscoveryScanStatus.PENDING, scan.getStatus());
     assertEquals(Ipv4Range.parse("10.0.0.1-10.0.0.20"), scan.getRange());
     verify(discoveryScanRepository, never()).saveAndFlush(any());
+    assertEquals(List.of(DiscoveryScanStatus.PENDING), publishedStatuses(1));
   }
 
   @Test
@@ -131,6 +143,7 @@ public class DiscoveryScanWebServiceTests {
         DiscoveryScanNotAllowedException.class,
         () -> discoveryScanWebService.startScan(command(null)));
     assertEquals(requestedAt, scan.getRequestedAt());
+    verifyNoInteractions(eventPublisher);
   }
 
   @Test
@@ -146,6 +159,8 @@ public class DiscoveryScanWebServiceTests {
 
     assertEquals(DiscoveryScanStatus.PENDING, scan.getStatus());
     assertTrue(scan.getRequestedAt().isAfter(requestedAt));
+    assertEquals(
+        List.of(DiscoveryScanStatus.TIMED_OUT, DiscoveryScanStatus.PENDING), publishedStatuses(2));
   }
 
   @Test
@@ -219,6 +234,12 @@ public class DiscoveryScanWebServiceTests {
         InvalidIpRangeException.class,
         () -> discoveryScanWebService.startScan(command("192.168.0.0/33")));
     verifyNoInteractions(agentWebService, discoveryScanRepository);
+  }
+
+  private List<DiscoveryScanStatus> publishedStatuses(int times) {
+    var captor = ArgumentCaptor.forClass(DiscoveryScanStatusChangedEvent.class);
+    verify(eventPublisher, times(times)).publishEvent(captor.capture());
+    return captor.getAllValues().stream().map(DiscoveryScanStatusChangedEvent::status).toList();
   }
 
   private void mockAgent() {
