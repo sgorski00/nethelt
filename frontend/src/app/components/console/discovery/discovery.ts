@@ -2,7 +2,7 @@ import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angula
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
-import { filter, finalize } from 'rxjs';
+import { filter, finalize, Observable } from 'rxjs';
 import { AgentService } from '../../../services/agent-service';
 import { DiscoveryScanService } from '../../../services/discovery-scan-service';
 import { WebSocketService } from '../../../services/websocket-service';
@@ -83,20 +83,12 @@ export class Discovery implements OnInit {
   ngOnInit(): void {
     this.loadAgent();
     this.loadScan();
-    this.webSocketService
-      .watch<AgentConnectionStateResponse>('/user/queue/agents')
-      .pipe(
-        filter((state) => state.networkId === this.networkContextService.getActiveNetworkId()),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => this.loadAgent());
-    this.webSocketService
-      .watch<DiscoveryScanStatusResponse>('/user/queue/discovery-scans')
-      .pipe(
-        filter((status) => status.networkId === this.networkContextService.getActiveNetworkId()),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => this.loadScan());
+    this.watchActiveNetwork<AgentConnectionStateResponse>('/user/queue/agents').subscribe(() =>
+      this.loadAgent(),
+    );
+    this.watchActiveNetwork<DiscoveryScanStatusResponse>('/user/queue/discovery-scans').subscribe(
+      () => this.loadScan(),
+    );
   }
 
   protected onIpRangeInput(event: Event): void {
@@ -131,6 +123,13 @@ export class Discovery implements OnInit {
       this.message.set(`Device ${result.ipAddress} added successfully.`);
       this.loadScan();
     });
+  }
+
+  private watchActiveNetwork<T extends { networkId: number }>(destination: string): Observable<T> {
+    return this.webSocketService.watch<T>(destination).pipe(
+      filter((message) => message.networkId === this.networkContextService.getActiveNetworkId()),
+      takeUntilDestroyed(this.destroyRef),
+    );
   }
 
   private loadAgent(): void {

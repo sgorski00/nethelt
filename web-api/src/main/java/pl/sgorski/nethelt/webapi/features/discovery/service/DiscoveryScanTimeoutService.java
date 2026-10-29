@@ -25,7 +25,7 @@ public class DiscoveryScanTimeoutService {
   public List<Long> findExpiredScanIds() {
     var deadline = Instant.now().minus(discoveryScanProperties.timeout());
     return discoveryScanRepository.findIdsByStatusInAndRequestedAtBefore(
-        List.of(DiscoveryScanStatus.PENDING, DiscoveryScanStatus.RUNNING), deadline);
+        DiscoveryScanStatus.IN_PROGRESS, deadline);
   }
 
   @Transactional

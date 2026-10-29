@@ -44,7 +44,7 @@ public class DiscoveryScanTimeoutServiceTests {
   @Test
   void findExpiredScanIds_shouldReturnScansInProgressRequestedBeforeTimeout() {
     when(discoveryScanRepository.findIdsByStatusInAndRequestedAtBefore(
-            eq(List.of(DiscoveryScanStatus.PENDING, DiscoveryScanStatus.RUNNING)),
+            eq(DiscoveryScanStatus.IN_PROGRESS),
             argThat(deadline -> deadline.isBefore(Instant.now().minus(TIMEOUT).plusSeconds(5)))))
         .thenReturn(List.of(1L, 2L));
 

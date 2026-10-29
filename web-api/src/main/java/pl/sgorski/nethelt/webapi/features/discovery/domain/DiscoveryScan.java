@@ -65,7 +65,7 @@ public class DiscoveryScan {
   }
 
   public boolean isInProgress() {
-    return status == DiscoveryScanStatus.PENDING || status == DiscoveryScanStatus.RUNNING;
+    return DiscoveryScanStatus.IN_PROGRESS.contains(status);
   }
 
   public boolean isExpired(Instant now, Duration timeout) {
@@ -116,10 +116,7 @@ public class DiscoveryScan {
       throw new DiscoveryScanNotAllowedException("The discovery scan is " + status);
     }
     this.status = DiscoveryScanStatus.FAILED;
-    this.failureReason =
-        reason.length() > MAX_FAILURE_REASON_LENGTH
-            ? reason.substring(0, MAX_FAILURE_REASON_LENGTH)
-            : reason;
+    this.failureReason = reason.substring(0, Math.min(reason.length(), MAX_FAILURE_REASON_LENGTH));
     this.finishedAt = Instant.now();
   }
 
@@ -128,12 +125,7 @@ public class DiscoveryScan {
   }
 
   private void reset(@Nullable Ipv4Range range) {
-    if (range != null) {
-      setRange(range);
-    } else {
-      this.rangeStart = null;
-      this.rangeEnd = null;
-    }
+    setRange(range);
     this.status = DiscoveryScanStatus.PENDING;
     this.requestedAt = Instant.now();
     this.startedAt = null;
@@ -142,13 +134,13 @@ public class DiscoveryScan {
     this.results.clear();
   }
 
-  private void setRange(Ipv4Range range) {
-    if (range.size() > MAX_RANGE_SIZE) {
+  private void setRange(@Nullable Ipv4Range range) {
+    if (range != null && range.size() > MAX_RANGE_SIZE) {
       throw new DiscoveryScanValidationFailedException(
           "the IP range can have at most " + MAX_RANGE_SIZE + " addresses (/24)");
     }
-    this.rangeStart = range.start();
-    this.rangeEnd = range.end();
+    this.rangeStart = range == null ? null : range.start();
+    this.rangeEnd = range == null ? null : range.end();
   }
 
   private void requireStatus(DiscoveryScanStatus expected) {

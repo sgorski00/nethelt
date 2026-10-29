@@ -57,8 +57,7 @@ public class DiscoveryScanWebService {
       eventPublisher.publishEvent(DiscoveryScanStatusChangedEvent.of(scan));
     }
     if (scan.isInProgress()) {
-      throw new DiscoveryScanNotAllowedException(
-          "Cannot start discovery scan: another scan is already in progress");
+      throw scanInProgress();
     }
     scan.restart(range);
     return scan;
@@ -68,9 +67,13 @@ public class DiscoveryScanWebService {
     try {
       return discoveryScanRepository.saveAndFlush(new DiscoveryScan(network, range));
     } catch (DataIntegrityViolationException e) {
-      throw new DiscoveryScanNotAllowedException(
-          "Cannot start discovery scan: another scan is already in progress");
+      throw scanInProgress();
     }
+  }
+
+  private static DiscoveryScanNotAllowedException scanInProgress() {
+    return new DiscoveryScanNotAllowedException(
+        "Cannot start discovery scan: another scan is already in progress");
   }
 
   private @Nullable Ipv4Range parseRange(@Nullable String value) {

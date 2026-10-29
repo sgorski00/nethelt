@@ -1,6 +1,7 @@
 package pl.sgorski.nethelt.agent.service;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,26 +31,24 @@ public class DiscoveryScanService {
       log.debug("Discovery scan is already running, skipping poll");
       return;
     }
-    discoveryScanClient.fetchPendingScan().ifPresent(this::startScan);
+    discoveryScanClient.fetchPendingScan().flatMap(this::resolveRange).ifPresent(this::startScan);
   }
 
-  private void startScan(DiscoveryScanResponse pendingScan) {
-    IpRange range;
+  private Optional<IpRange> resolveRange(DiscoveryScanResponse pendingScan) {
     try {
-      range = resolveRange(pendingScan);
+      var range = discoveryScanMapper.toRange(pendingScan);
+      return Optional.of(range != null ? range : localSubnetResolver.resolve());
     } catch (NetworkException | IllegalArgumentException e) {
       log.error("Could not determine the range to scan: {}", e.getMessage(), e);
       reportFailure(e);
-      return;
+      return Optional.empty();
     }
+  }
+
+  private void startScan(IpRange range) {
     discoveryScanClient.acknowledgeScan(discoveryScanMapper.toAckRequest(range));
     running.set(true);
     Thread.ofVirtual().name("nethelt-discovery-scan").start(() -> runScan(range));
-  }
-
-  private IpRange resolveRange(DiscoveryScanResponse pendingScan) {
-    var range = discoveryScanMapper.toRange(pendingScan);
-    return range != null ? range : localSubnetResolver.resolve();
   }
 
   private void runScan(IpRange range) {
