@@ -4,7 +4,7 @@ import { DeviceService } from '../../../../services/device-service';
 import { DeviceCreateRequest } from '../../../../models/device/device-request';
 import { DEVICE_TYPE_LABELS, DeviceType } from '../../../../models/device/device-type';
 import { ipv4Validator } from '../../../../shared/validators/ip.validator';
-import { DialogRef } from '@angular/cdk/dialog';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-create-device',
@@ -23,15 +23,17 @@ export class CreateDevice {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(DialogRef);
   private readonly deviceService = inject(DeviceService);
+  private readonly initialValues =
+    inject<Partial<DeviceCreateRequest> | null>(DIALOG_DATA, { optional: true }) ?? {};
 
   protected readonly deviceTypes = Object.values(DeviceType);
   protected readonly DEVICE_TYPE_LABELS = DEVICE_TYPE_LABELS;
 
   protected readonly errorMessage = signal('');
   protected readonly deviceCreateForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(100)]],
-    ipAddress: ['', [Validators.required, ipv4Validator()]],
-    type: [DeviceType.LAN_CLIENT, Validators.required],
+    name: [this.initialValues.name ?? '', [Validators.required, Validators.maxLength(100)]],
+    ipAddress: [this.initialValues.ipAddress ?? '', [Validators.required, ipv4Validator()]],
+    type: [this.initialValues.type ?? DeviceType.LAN_CLIENT, Validators.required],
   });
 
   protected submit(): void {

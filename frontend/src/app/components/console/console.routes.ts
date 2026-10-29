@@ -17,6 +17,11 @@ export const consoleRoutes: Routes = [
         loadComponent: () => import('./agent/create-agent/create-agent').then((m) => m.CreateAgent),
       },
       {
+        path: 'discovery',
+        canActivate: [hasAgentGuard],
+        loadComponent: () => import('./discovery/discovery').then((m) => m.Discovery),
+      },
+      {
         path: 'devices',
         loadComponent: () => import('./devices/devices').then((m) => m.Devices),
       },

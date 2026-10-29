@@ -1,0 +1,133 @@
+<div class="content-details">
+  <div class="content-details-header">
+    <h2>Device Discovery</h2>
+    <div class="content-header-actions">
+      <label>
+        IP range:
+        <input
+          type="text"
+          placeholder="Agent subnet, e.g. 192.168.0.0/24"
+          [class.invalid]="ipRangeTouched() && ipRangeError()"
+          [value]="ipRange()"
+          [disabled]="!canStart()"
+          (input)="onIpRangeInput($event)"
+          (blur)="ipRangeTouched.set(true)"
+          (keydown.enter)="start()"
+        />
+      </label>
+      <button
+        type="button"
+        class="primary"
+        [disabled]="!canStart() || (ipRangeTouched() && !!ipRangeError())"
+        (click)="start()"
+      >
+        <i class="fa-solid fa-satellite-dish"></i> Discover devices
+      </button>
+    </div>
+  </div>
+  @if (ipRangeTouched() && ipRangeError(); as ipRangeError) {
+    <small class="error-message">{{ ipRangeError }}</small>
+  }
+  @if ((agent() && !agentOnline()) || message() || errorMessage()) {
+    <div class="message-box">
+      @if (message(); as message) {
+        <p class="success-message">{{ message }}</p>
+      }
+      @if (agent() && !agentOnline()) {
+        <p class="neutral-message">The agent must be active and online to scan the network.</p>
+      }
+      @if (errorMessage(); as errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+    </div>
+  }
+  <div class="content-details-body">
+    @if (scan(); as scan) {
+      <div class="panel">
+        <h3>Last scan</h3>
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span
+            class="badge"
+            [class.success]="scan.status === DiscoveryScanStatus.COMPLETED"
+            [class.danger]="
+              scan.status === DiscoveryScanStatus.FAILED ||
+              scan.status === DiscoveryScanStatus.TIMED_OUT
+            "
+            [class.neutral]="inProgress()"
+            >{{ STATUS_LABELS[scan.status] }}</span
+          >
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">IP range</span>
+          <span class="mono">{{
+            scan.rangeStart ? scan.rangeStart + ' - ' + scan.rangeEnd : 'Agent subnet'
+          }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Requested</span>
+          <span>{{ scan.requestedAt | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
+        </div>
+        @if (scan.finishedAt) {
+          <div class="detail-row">
+            <span class="detail-label">Finished</span>
+            <span>{{ scan.finishedAt | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
+          </div>
+        }
+        @if (scan.failureReason) {
+          <div class="detail-row">
+            <span class="detail-label">Reason</span>
+            <span class="error-message">{{ scan.failureReason }}</span>
+          </div>
+        }
+      </div>
+
+      @if (scan.status === DiscoveryScanStatus.COMPLETED) {
+        @if (scan.results.length > 0) {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>IP address</th>
+                  <th>Hostname</th>
+                  <th>Response time</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (result of scan.results; track result.ipAddress) {
+                  <tr>
+                    <td class="mono">{{ result.ipAddress }}</td>
+                    <td>{{ result.hostname ?? '-' }}</td>
+                    <td>{{ result.responseTimeMs }} ms</td>
+                    <td>
+                      @if (result.existingDeviceId !== null) {
+                        <span class="badge success">In network</span>
+                      } @else {
+                        <span class="badge neutral">New</span>
+                      }
+                    </td>
+                    <td>
+                      @if (result.existingDeviceId === null) {
+                        <button type="button" class="action-button" (click)="addDevice(result)">
+                          <i class="fa-solid fa-plus"></i> Add
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p>No devices responded in the scanned range.</p>
+        }
+      }
+    } @else if (scan() === null) {
+      <p>The network has not been scanned yet.</p>
+    } @else {
+      <p>Loading...</p>
+    }
+  </div>
+</div>

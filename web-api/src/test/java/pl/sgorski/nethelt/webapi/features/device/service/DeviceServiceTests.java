@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceNotFoundException;
 import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
+import pl.sgorski.nethelt.webapi.exception.domain.device.InvalidIpRangeException;
 import pl.sgorski.nethelt.webapi.exception.domain.network.NetworkNotFoundException;
 import pl.sgorski.nethelt.webapi.features.device.domain.Device;
 import pl.sgorski.nethelt.webapi.features.device.domain.DeviceType;
@@ -94,7 +95,7 @@ public class DeviceServiceTests {
     var pageable = PageRequest.of(0, 10);
 
     assertThrows(
-        DeviceValidationFailedException.class,
+        InvalidIpRangeException.class,
         () -> deviceService.getAllDevicesInNetwork(1L, filter, pageable));
     verifyNoInteractions(deviceRepository);
   }

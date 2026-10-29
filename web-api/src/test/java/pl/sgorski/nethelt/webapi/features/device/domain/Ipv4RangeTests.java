@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
+import pl.sgorski.nethelt.webapi.exception.domain.device.InvalidIpRangeException;
 
 public class Ipv4RangeTests {
 
@@ -52,7 +52,7 @@ public class Ipv4RangeTests {
         "abc"
       })
   void parse_shouldThrow_whenValueIsInvalid(String value) {
-    assertThrows(DeviceValidationFailedException.class, () -> Ipv4Range.parse(value));
+    assertThrows(InvalidIpRangeException.class, () -> Ipv4Range.parse(value));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class Ipv4RangeTests {
   @ParameterizedTest
   @ValueSource(strings = {"", " ", "10.0.0.1,", "10.0.0.1,,10.0.0.2", "10.0.0.1, 10.0.0.300"})
   void parseAll_shouldThrow_whenAnyValueIsInvalid(String value) {
-    assertThrows(DeviceValidationFailedException.class, () -> Ipv4Range.parseAll(value));
+    assertThrows(InvalidIpRangeException.class, () -> Ipv4Range.parseAll(value));
   }
 
   @Test
@@ -80,7 +80,49 @@ public class Ipv4RangeTests {
             .mapToObj(i -> "10.0.0." + i)
             .collect(Collectors.joining(","));
 
-    assertThrows(DeviceValidationFailedException.class, () -> Ipv4Range.parseAll(value));
+    assertThrows(InvalidIpRangeException.class, () -> Ipv4Range.parseAll(value));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "10.0.0.5, 1",
+    "192.168.0.0/24, 256",
+    "10.0.0.1-10.0.0.50, 50",
+    "0.0.0.0/0, 4294967296",
+  })
+  void size_shouldReturnNumberOfAddresses(String value, long size) {
+    assertEquals(size, Ipv4Range.parse(value).size());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"0.0.0.0", "10.0.0.1", "192.168.0.255", "255.255.255.255"})
+  void toLiteral_shouldFormatAddress(String address) {
+    assertEquals(address, Ipv4Range.toLiteral(toNumber(address)));
+  }
+
+  @Test
+  void of_shouldReturnRangeBetweenAddresses() {
+    assertEquals(
+        Ipv4Range.parse("192.168.0.10-192.168.0.20"),
+        Ipv4Range.of("192.168.0.10", " 192.168.0.20"));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"192.168.0.20, 192.168.0.10", "192.168.0.300, 192.168.0.10", "abc, 192.168.0.10"})
+  void of_shouldThrow_whenRangeIsInvalid(String start, String end) {
+    assertThrows(InvalidIpRangeException.class, () -> Ipv4Range.of(start, end));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "192.168.0.0, true",
+    "192.168.0.100, true",
+    "192.168.0.255, true",
+    "192.167.255.255, false",
+    "192.168.1.0, false",
+  })
+  void contains_shouldReturnWhetherAddressIsInRange(String address, boolean expected) {
+    assertEquals(expected, Ipv4Range.parse("192.168.0.0/24").contains(toNumber(address)));
   }
 
   private static long toNumber(String address) {

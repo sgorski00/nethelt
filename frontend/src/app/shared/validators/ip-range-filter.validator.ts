@@ -44,6 +44,19 @@ function validateToken(token: string): string | null {
   return IPV4_REGEX.test(token) ? null : 'invalid IP address.';
 }
 
+/** Number of addresses in a single valid value, e.g. 256 for `192.168.0.0/24`. */
+export function ipRangeSize(value: string): number {
+  const token = value.trim();
+  if (token.includes('-')) {
+    const [start, end] = token.split('-').map((part) => part.trim());
+    return toNumber(end) - toNumber(start) + 1;
+  }
+  if (token.includes('/')) {
+    return 2 ** (32 - Number(token.split('/')[1].trim()));
+  }
+  return 1;
+}
+
 function toNumber(address: string): number {
   return address.split('.').reduce((result, octet) => result * 256 + Number(octet), 0);
 }
