@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import pl.sgorski.nethelt.webapi.exception.domain.device.DeviceValidationFailedException;
+import pl.sgorski.nethelt.webapi.exception.domain.device.InvalidIpRangeException;
 
 /**
  * Inclusive range of IPv4 addresses stored as unsigned 32-bit numbers, the same way as {@link
@@ -41,6 +41,21 @@ public record Ipv4Range(long start, long end) {
     return Integer.toUnsignedLong(ByteBuffer.wrap(address.getAddress()).getInt());
   }
 
+  /** Formats an address stored as an unsigned 32-bit number, e.g. {@code 192.168.0.1}. */
+  public static String toLiteral(long address) {
+    return (address >>> 24 & 0xFF)
+        + "."
+        + (address >>> 16 & 0xFF)
+        + "."
+        + (address >>> 8 & 0xFF)
+        + "."
+        + (address & 0xFF);
+  }
+
+  public long size() {
+    return end - start + 1;
+  }
+
   private static Ipv4Range parseRange(String value) {
     var parts = value.split("-", -1);
     if (parts.length != 2) throw invalid(value, "range must have exactly one '-'");
@@ -70,7 +85,7 @@ public record Ipv4Range(long start, long end) {
     return Integer.parseInt(prefix);
   }
 
-  private static DeviceValidationFailedException invalid(String value, String reason) {
-    return new DeviceValidationFailedException("invalid IP filter '" + value + "': " + reason);
+  private static InvalidIpRangeException invalid(String value, String reason) {
+    return new InvalidIpRangeException(value, reason);
   }
 }
