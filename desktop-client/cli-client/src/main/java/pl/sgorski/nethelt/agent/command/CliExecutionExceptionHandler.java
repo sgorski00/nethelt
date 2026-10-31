@@ -4,6 +4,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.IExecutionExceptionHandler;
 import picocli.CommandLine.ParseResult;
 import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
+import pl.sgorski.nethelt.agent.uninstall.UninstallException;
 
 public final class CliExecutionExceptionHandler implements IExecutionExceptionHandler {
 
@@ -14,9 +15,16 @@ public final class CliExecutionExceptionHandler implements IExecutionExceptionHa
   public int handleExecutionException(
       Exception ex, CommandLine commandLine, ParseResult parseResult) throws Exception {
     if (ex instanceof CredentialsAccessDeniedException) {
-      commandLine.getErr().println(commandLine.getColorScheme().errorText(ACCESS_DENIED_MESSAGE));
-      return commandLine.getCommandSpec().exitCodeOnExecutionException();
+      return printErrorAndGetExitCode(commandLine, ACCESS_DENIED_MESSAGE);
+    }
+    if (ex instanceof UninstallException) {
+      return printErrorAndGetExitCode(commandLine, ex.getMessage());
     }
     throw ex;
+  }
+
+  private int printErrorAndGetExitCode(CommandLine commandLine, String message) {
+    commandLine.getErr().println(commandLine.getColorScheme().errorText(message));
+    return commandLine.getCommandSpec().exitCodeOnExecutionException();
   }
 }

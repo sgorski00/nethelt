@@ -7,6 +7,7 @@
 #   curl -fsSL .../install.sh | sudo bash -s -- --uninstall [--purge]
 #
 # Running it again upgrades the installation. Keep it compatible with bash 3.2 (macOS).
+# The core archive ships a copy as $INSTALL_DIR/install.sh, `nethelt uninstall` runs it with --uninstall.
 
 set -euo pipefail
 

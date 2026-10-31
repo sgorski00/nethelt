@@ -35,6 +35,7 @@ Options are passed after `bash -s --`:
 curl -fsSL .../install.sh | sudo bash -s -- --yes                 # no questions
 curl -fsSL .../install.sh | sudo bash -s -- --version 1.2.3       # specific release
 curl -fsSL .../install.sh | sudo bash -s -- --uninstall [--purge] # remove (--purge also removes credentials and the service account)
+sudo nethelt uninstall [--purge] [--yes]                          # the same with the CLI, it runs /opt/nethelt/install.sh --uninstall
 sudo desktop-client/distribution/src/unix/install.sh --archive-dir desktop-client/distribution/target # local `make dist` build
 ```
 
@@ -51,7 +52,7 @@ Run `nethelt-setup-<version>-windows-x64.exe` (needs administrator rights). The 
 
 The CLI and the background service form the required `core` component. Optional components are prepared in `distribution/src/windows/nethelt.iss`.
 
-Installing a newer version upgrades in place. Uninstall it from *Settings > Apps* or with `unins000.exe` in the install directory. It asks whether to remove the PAT and logs.
+Installing a newer version upgrades in place. Uninstall it with `nethelt uninstall [--purge] [--yes]` in a terminal run as administrator (it starts `unins000.exe` and returns), from *Settings > Apps* or with `unins000.exe` in the install directory, which asks whether to remove the PAT and logs.
 
 ```powershell
 nethelt-setup-1.2.3-windows-x64.exe /VERYSILENT /SUPPRESSMSGBOXES   # silent install

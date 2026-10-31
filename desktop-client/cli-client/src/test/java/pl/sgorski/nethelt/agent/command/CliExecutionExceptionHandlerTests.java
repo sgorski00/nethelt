@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
+import pl.sgorski.nethelt.agent.uninstall.UninstallException;
 
 public class CliExecutionExceptionHandlerTests {
 
@@ -36,6 +37,16 @@ public class CliExecutionExceptionHandlerTests {
 
     assertEquals(1, exitCode);
     assertTrue(errors.toString().contains(CliExecutionExceptionHandler.ACCESS_DENIED_MESSAGE));
+  }
+
+  @Test
+  void handle_shouldPrintMessage_whenUninstallFails() {
+    toThrow = new UninstallException("Uninstaller was not found");
+
+    var exitCode = commandLine.execute();
+
+    assertEquals(1, exitCode);
+    assertEquals("Uninstaller was not found", errors.toString().strip());
   }
 
   @Test

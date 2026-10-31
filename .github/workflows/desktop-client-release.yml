@@ -131,7 +131,7 @@ jobs:
             sudo tail -n 20 /Library/Logs/NetHelt/agent.log
             sudo grep "Started App" /Library/Logs/NetHelt/agent.log
           fi
-          sudo "$installer" --uninstall --purge
+          sudo nethelt uninstall --yes --purge
           test ! -e /opt/nethelt
           test ! -e /usr/local/bin/nethelt
 
@@ -157,9 +157,12 @@ jobs:
           icacls $config
           Get-ChildItem "$config\logs" | ForEach-Object { Write-Host "== $($_.Name)"; Get-Content $_.FullName -Tail 20 }
 
-          Start-Process "$app\unins000.exe" -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/PURGE', "/LOG=$PWD\uninstall.log" -Wait
-          # The uninstaller continues in a temporary copy of itself
+          # Starts unins000.exe and returns, the uninstaller continues in a temporary copy of itself
+          & "$app\nethelt.exe" uninstall --yes --purge
+          if ($LASTEXITCODE -ne 0) { throw "nethelt uninstall failed with exit code $LASTEXITCODE" }
           for ($i = 0; $i -lt 60 -and (Test-Path "$app\unins000.exe"); $i++) { Start-Sleep -Seconds 2 }
+          # Files of the CLI that started the uninstaller must not stay locked
+          if (Test-Path "$app\nethelt.exe") { throw "$app\nethelt.exe was not removed" }
           sc.exe query nethelt-agent | Out-Null
           if ($LASTEXITCODE -ne 1060) { throw 'Service nethelt-agent still exists' }
           if (Test-Path $config) { throw "/PURGE did not remove $config" }

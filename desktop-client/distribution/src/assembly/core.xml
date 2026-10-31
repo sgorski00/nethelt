@@ -17,5 +17,10 @@
       <directory>${app.image.dir}</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/install-script</directory>
+      <outputDirectory>${dist.install.script.dir}</outputDirectory>
+      <fileMode>0755</fileMode>
+    </fileSet>
   </fileSets>
 </assembly>
