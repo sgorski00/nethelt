@@ -8,6 +8,7 @@ import pl.sgorski.nethelt.agent.command.auth.AuthCommand;
 @Command(
     name = "nethelt",
     mixinStandardHelpOptions = true,
+    versionProvider = VersionProvider.class,
     subcommands = {AuthCommand.class})
 public final class NetheltCommand implements Runnable {
   @Override

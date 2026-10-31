@@ -19,7 +19,6 @@
 
   <properties>
     <app.name>nethelt</app.name>
-    <app.version>1.0.0</app.version>
     <app.vendor>Sebastian Górski</app.vendor>
     <app.input.dir>${project.build.directory}/jpackage-input</app.input.dir>
     <app.image.dir>${project.build.directory}/app-image</app.image.dir>
