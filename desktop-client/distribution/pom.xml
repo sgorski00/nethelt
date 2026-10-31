@@ -19,7 +19,6 @@
 
   <properties>
     <app.name>nethelt</app.name>
-    <app.version>1.0.0</app.version>
     <app.vendor>Sebastian Górski</app.vendor>
     <app.input.dir>${project.build.directory}/jpackage-input</app.input.dir>
     <app.image.dir>${project.build.directory}/app-image</app.image.dir>
@@ -28,6 +27,9 @@
     <!-- Set by the OS/arch profiles below -->
     <dist.os>linux</dist.os>
     <dist.arch>x64</dist.arch>
+    <!-- Where install.sh lands in the core archive, so it ends up as /opt/nethelt/install.sh (see src/assembly/core.xml) -->
+    <dist.install.script.dir>nethelt</dist.install.script.dir>
+    <dist.install.script.skip>false</dist.install.script.skip>
     <dist.archive.format>tar.gz</dist.archive.format>
     <!-- Launcher icon, jpackage needs .png on Linux, .ico on Windows and .icns on macOS -->
     <dist.icon>${project.basedir}/src/icons/nethelt.png</dist.icon>
@@ -141,6 +143,32 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Copy of install.sh kept in the install dir, `nethelt uninstall` runs it with uninstall -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>install-script</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <skip>${dist.install.script.skip}</skip>
+              <outputDirectory>${project.build.directory}/install-script</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/unix</directory>
+                  <includes>
+                    <include>install.sh</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -178,6 +206,7 @@
         <dist.os>windows</dist.os>
         <dist.archive.format>zip</dist.archive.format>
         <dist.icon>${project.basedir}/src/icons/nethelt.ico</dist.icon>
+        <dist.install.script.skip>true</dist.install.script.skip>
       </properties>
       <build>
         <plugins>
@@ -255,6 +284,8 @@
       <properties>
         <dist.os>macos</dist.os>
         <dist.icon>${project.basedir}/src/icons/nethelt.icns</dist.icon>
+        <!-- The archive holds nethelt.app, which install.sh extracts into the install dir -->
+        <dist.install.script.dir>/</dist.install.script.dir>
       </properties>
     </profile>
     <profile>

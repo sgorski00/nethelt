@@ -2,13 +2,17 @@ package pl.sgorski.nethelt.agent.command;
 
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ScopeType;
 import pl.sgorski.nethelt.agent.command.auth.AuthCommand;
+import pl.sgorski.nethelt.agent.command.uninstall.UninstallCommand;
 
 @Component
 @Command(
     name = "nethelt",
     mixinStandardHelpOptions = true,
-    subcommands = {AuthCommand.class})
+    scope = ScopeType.INHERIT,
+    versionProvider = VersionProvider.class,
+    subcommands = {AuthCommand.class, UninstallCommand.class})
 public final class NetheltCommand implements Runnable {
   @Override
   public void run() {

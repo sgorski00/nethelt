@@ -13,7 +13,8 @@ import pl.sgorski.nethelt.agent.command.NetheltCommand;
     scanBasePackages = {
       "pl.sgorski.nethelt.agent.command",
       "pl.sgorski.nethelt.agent.security.storage",
-      "pl.sgorski.nethelt.agent.security.provider"
+      "pl.sgorski.nethelt.agent.security.provider",
+      "pl.sgorski.nethelt.agent.uninstall"
     })
 public class CliApplication implements CommandLineRunner {
 
