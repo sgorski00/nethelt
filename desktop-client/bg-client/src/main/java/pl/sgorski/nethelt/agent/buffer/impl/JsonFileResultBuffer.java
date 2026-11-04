@@ -134,9 +134,9 @@ public final class JsonFileResultBuffer implements ResultBuffer {
           StandardOpenOption.CREATE,
           StandardOpenOption.APPEND);
       fileLines++;
-      onWriteSucceeded();
+      logWriteRecovery();
     } catch (IOException e) {
-      onWriteFailed(e);
+      logFirstWriteFailure(e);
     }
   }
 
@@ -157,9 +157,9 @@ public final class JsonFileResultBuffer implements ResultBuffer {
             tempFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
       }
       fileLines = results.size();
-      onWriteSucceeded();
+      logWriteRecovery();
     } catch (IOException e) {
-      onWriteFailed(e);
+      logFirstWriteFailure(e);
     } finally {
       deleteIfExists(tempFile);
     }
@@ -173,8 +173,7 @@ public final class JsonFileResultBuffer implements ResultBuffer {
     return jsonMapper.writeValueAsString(request) + "\n";
   }
 
-  // Logged once, otherwise every buffered result would log the same error while offline
-  private void onWriteFailed(IOException e) {
+  private void logFirstWriteFailure(IOException e) {
     if (!writeFailed) {
       log.error(
           "Cannot write result buffer to {}, buffered results will be lost on restart: {}",
@@ -184,7 +183,7 @@ public final class JsonFileResultBuffer implements ResultBuffer {
     }
   }
 
-  private void onWriteSucceeded() {
+  private void logWriteRecovery() {
     if (writeFailed) {
       log.info("Result buffer {} is writable again", file);
       writeFailed = false;

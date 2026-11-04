@@ -13,10 +13,6 @@ public interface PathProvider {
 
   Path get();
 
-  /**
-   * Default location of {@code fileName}: {@code %ProgramData%\NetHelt} on Windows, {@code
-   * /Library/Application Support/NetHelt} on macOS and {@code <linuxBaseDir>/nethelt} on Linux.
-   */
   static Path defaultPath(
       String fileName, String linuxBaseDir, String osName, UnaryOperator<String> env) {
     var os = osName.toLowerCase(Locale.ROOT);

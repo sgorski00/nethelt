@@ -1,6 +1,7 @@
 package pl.sgorski.nethelt.agent.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import pl.sgorski.nethelt.agent.exception.CredentialsStoreException;
 import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
+import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultBatchRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultRequest;
 
 @Slf4j
@@ -37,14 +39,32 @@ public class MonitoringResultSender {
     }
   }
 
-  /**
-   * Sends buffered results oldest first and removes them only after the Web API accepted or
-   * rejected them. Stops at the first temporary error, the rest is sent in the next flush.
-   */
   public void flushBuffer() {
     var batch = resultBuffer.peek(properties.flushBatchSize());
     if (batch.isEmpty()) return;
 
+    try {
+      var response =
+          monitoringResultClient.sendMonitoringResults(new MonitoringResultBatchRequest(batch));
+      resultBuffer.remove(batch);
+      log.info(
+          "Sent {} buffered result(s): {} saved, {} duplicate(s), {} rejected, {} left",
+          batch.size(),
+          response.saved(),
+          response.duplicates(),
+          response.rejected(),
+          resultBuffer.size());
+    } catch (Exception e) {
+      if (isTemporary(e)) {
+        log.warn("Flush of result buffer stopped: {}", e.getMessage());
+        return;
+      }
+      log.warn("Batch of buffered results was rejected, sending one by one: {}", e.getMessage());
+      sendOneByOneUntilTemporaryError(batch);
+    }
+  }
+
+  private void sendOneByOneUntilTemporaryError(List<MonitoringResultRequest> batch) {
     var processed = new ArrayList<MonitoringResultRequest>(batch.size());
     var sent = 0;
     for (var request : batch) {

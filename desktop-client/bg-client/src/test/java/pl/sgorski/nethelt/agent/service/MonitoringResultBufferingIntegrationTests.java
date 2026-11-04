@@ -92,16 +92,22 @@ public class MonitoringResultBufferingIntegrationTests {
     assertTrue(
         Files.readString(bufferFile).contains("\"executedAt\":\"2026-11-04T12:00:00.500Z\""));
 
-    server.enqueue(new MockResponse.Builder().code(201).build());
+    server.enqueue(
+        new MockResponse.Builder()
+            .code(200)
+            .addHeader("Content-Type", "application/json")
+            .body("{\"saved\":1,\"duplicates\":0,\"rejected\":0}")
+            .build());
 
     sender.flushBuffer();
 
-    var body = server.takeRequest().getBody().utf8();
+    var flushRequest = server.takeRequest();
+    assertEquals("/client/monitoring-results/batch", flushRequest.getTarget());
     assertEquals(
-        "{\"taskId\":7,\"executedAt\":\"2026-11-04T12:00:00.500Z\",\"success\":true,"
-            + "\"message\":\"OK\",\"responseTimeMs\":12,"
-            + "\"extension\":{\"type\":\"TELNET\",\"portOpen\":true}}",
-        body);
+        "{\"results\":[{\"taskId\":7,\"executedAt\":\"2026-11-04T12:00:00.500Z\","
+            + "\"success\":true,\"message\":\"OK\",\"responseTimeMs\":12,"
+            + "\"extension\":{\"type\":\"TELNET\",\"portOpen\":true}}]}",
+        flushRequest.getBody().utf8());
     assertEquals(0, resultBuffer.size());
     assertFalse(Files.exists(bufferFile));
   }

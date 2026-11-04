@@ -24,8 +24,10 @@ import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
 import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
+import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultBatchRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.request.PingResultExtensionRequest;
+import pl.sgorski.nethelt.agent.webclient.dto.response.MonitoringResultBatchResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class MonitoringResultSenderTests {
@@ -150,10 +152,39 @@ public class MonitoringResultSenderTests {
   }
 
   @Test
-  void flushBuffer_shouldSendResultsInOrder_andRemoveThem() {
+  void flushBuffer_shouldSendResultsInOneBatch_andRemoveThem() {
     var first = createRequest(1L);
     var second = createRequest(2L);
     when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first, second));
+    when(monitoringResultClient.sendMonitoringResults(
+            new MonitoringResultBatchRequest(List.of(first, second))))
+        .thenReturn(new MonitoringResultBatchResponse(1, 1, 0));
+
+    sender.flushBuffer();
+
+    verify(resultBuffer).remove(List.of(first, second));
+    verify(monitoringResultClient, never()).sendMonitoringResult(any());
+  }
+
+  @Test
+  void flushBuffer_shouldKeepResults_whenBatchFailsTemporarily() {
+    var first = createRequest(1L);
+    when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first));
+    when(monitoringResultClient.sendMonitoringResults(any()))
+        .thenThrow(new ResourceAccessException("Connection refused"));
+
+    sender.flushBuffer();
+
+    verify(resultBuffer, never()).remove(any());
+    verify(monitoringResultClient, never()).sendMonitoringResult(any());
+  }
+
+  @Test
+  void flushBuffer_shouldSendOneByOneInOrder_whenBatchIsRejected() {
+    var first = createRequest(1L);
+    var second = createRequest(2L);
+    when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first, second));
+    rejectBatchEndpoint();
 
     sender.flushBuffer();
 
@@ -164,11 +195,25 @@ public class MonitoringResultSenderTests {
   }
 
   @Test
-  void flushBuffer_shouldStop_andKeepRemainingResults_whenApiFailsTemporarily() {
+  void flushBuffer_shouldSendOneByOne_whenBatchIsInvalid() {
+    var first = createRequest(1L);
+    when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first));
+    when(monitoringResultClient.sendMonitoringResults(any()))
+        .thenThrow(new ConstraintViolationException(Set.of()));
+
+    sender.flushBuffer();
+
+    verify(monitoringResultClient).sendMonitoringResult(first);
+    verify(resultBuffer).remove(List.of(first));
+  }
+
+  @Test
+  void flushBuffer_shouldStopOneByOne_andKeepRemainingResults_whenApiFailsTemporarily() {
     var first = createRequest(1L);
     var second = createRequest(2L);
     var third = createRequest(3L);
     when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first, second, third));
+    rejectBatchEndpoint();
     doThrow(new ResourceAccessException("Connection refused"))
         .when(monitoringResultClient)
         .sendMonitoringResult(second);
@@ -181,10 +226,11 @@ public class MonitoringResultSenderTests {
   }
 
   @Test
-  void flushBuffer_shouldRemoveRejectedResult_andContinue() {
+  void flushBuffer_shouldRemoveRejectedResult_andContinueOneByOne() {
     var first = createRequest(1L);
     var second = createRequest(2L);
     when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first, second));
+    rejectBatchEndpoint();
     doThrow(new WebClientException(HttpStatus.NOT_FOUND))
         .when(monitoringResultClient)
         .sendMonitoringResult(first);
@@ -196,9 +242,10 @@ public class MonitoringResultSenderTests {
   }
 
   @Test
-  void flushBuffer_shouldKeepAllResults_whenFirstResultFailsTemporarily() {
+  void flushBuffer_shouldKeepAllResults_whenFirstResultFailsTemporarilyOneByOne() {
     var first = createRequest(1L);
     when(resultBuffer.peek(BATCH_SIZE)).thenReturn(List.of(first));
+    rejectBatchEndpoint();
     doThrow(new WebClientException(HttpStatus.SERVICE_UNAVAILABLE))
         .when(monitoringResultClient)
         .sendMonitoringResult(first);
@@ -206,6 +253,11 @@ public class MonitoringResultSenderTests {
     sender.flushBuffer();
 
     verify(resultBuffer).remove(List.of());
+  }
+
+  private void rejectBatchEndpoint() {
+    when(monitoringResultClient.sendMonitoringResults(any()))
+        .thenThrow(new WebClientException(HttpStatus.NOT_FOUND));
   }
 
   private static MonitoringResultRequest createRequest(Long taskId) {

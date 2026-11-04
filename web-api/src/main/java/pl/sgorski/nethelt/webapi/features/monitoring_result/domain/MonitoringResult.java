@@ -12,7 +12,12 @@ import pl.sgorski.nethelt.webapi.features.monitoring_task.domain.MonitoringTask;
 
 @Entity
 @Getter
-@Table(name = "monitoring_results")
+@Table(
+    name = "monitoring_results",
+    uniqueConstraints =
+        @UniqueConstraint(
+            name = "uq_monitoring_results_task_id_executed_at",
+            columnNames = {"task_id", "executed_at"}))
 @EqualsAndHashCode(exclude = {"task", "extension"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MonitoringResult {

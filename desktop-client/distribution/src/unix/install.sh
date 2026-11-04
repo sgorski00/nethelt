@@ -364,13 +364,18 @@ linux_create_service_account() {
     return
   fi
   info "Creating system user '$SERVICE_USER'"
-  local nologin
+  local nologin group_option
   nologin=$(command -v nologin || echo /usr/sbin/nologin)
-  if command -v useradd >/dev/null 2>&1; then
-    useradd --system --user-group --no-create-home --home-dir /nonexistent --shell "$nologin" "$SERVICE_USER"
-  else
+  if ! command -v useradd >/dev/null 2>&1; then
     die "useradd is required to create the '$SERVICE_USER' system user"
   fi
+  # userdel keeps the group while it has members, e.g. an admin added to read the config dir
+  if getent group "$SERVICE_USER" >/dev/null 2>&1; then
+    group_option="--gid=$SERVICE_USER"
+  else
+    group_option="--user-group"
+  fi
+  useradd --system "$group_option" --no-create-home --home-dir /nonexistent --shell "$nologin" "$SERVICE_USER"
 }
 
 # Credentials file gets the group of this directory (see FileCredentialsStore), so the service can read it
@@ -593,6 +598,9 @@ uninstall_client() {
       rm -rf "$LINUX_CONFIG_DIR" "$LINUX_STATE_DIR"
       if id "$SERVICE_USER" >/dev/null 2>&1; then
         userdel "$SERVICE_USER" 2>/dev/null || warn "Cannot remove the '$SERVICE_USER' user"
+      fi
+      if getent group "$SERVICE_USER" >/dev/null 2>&1; then
+        groupdel "$SERVICE_USER" 2>/dev/null || warn "Cannot remove the '$SERVICE_USER' group"
       fi
     fi
   else

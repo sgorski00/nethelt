@@ -1,6 +1,8 @@
 package pl.sgorski.nethelt.webapi.features.monitoring_task.service;
 
 import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,10 @@ public class MonitoringTaskService {
     return monitoringTaskRepository
         .findByIdAndNetworkId(monitoringTaskId, networkId)
         .orElseThrow(MonitoringTaskNotFoundException::new);
+  }
+
+  public List<MonitoringTask> findMonitoringTasksByIds(Long networkId, Collection<Long> ids) {
+    return monitoringTaskRepository.findAllByIdInAndNetworkId(ids, networkId);
   }
 
   public Set<MonitoringTask> getMonitoringTasks(Long networkId, Long deviceId) {
