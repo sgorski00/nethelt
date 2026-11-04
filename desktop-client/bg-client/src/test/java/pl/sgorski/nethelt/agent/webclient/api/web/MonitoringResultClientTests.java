@@ -7,6 +7,8 @@ import jakarta.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -19,9 +21,11 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.service.registry.ImportHttpServices;
 import pl.sgorski.nethelt.agent.webclient.dto.request.HttpHealthcheckResultExtensionRequest;
+import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultBatchRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.request.PingResultExtensionRequest;
 import pl.sgorski.nethelt.agent.webclient.dto.request.TelnetResultExtensionRequest;
+import pl.sgorski.nethelt.agent.webclient.dto.response.MonitoringResultBatchResponse;
 
 @SpringBootTest(classes = MonitoringResultClientTests.TestConfig.class)
 public class MonitoringResultClientTests {
@@ -97,6 +101,59 @@ public class MonitoringResultClientTests {
     assertThrows(
         ConstraintViolationException.class,
         () -> monitoringResultClient.sendMonitoringResult(request));
+  }
+
+  @Test
+  void sendMonitoringResults_shouldSendBatch_andReturnSummary() throws Exception {
+    server.enqueue(
+        new MockResponse.Builder()
+            .code(200)
+            .addHeader("Content-Type", "application/json")
+            .body("{\"saved\":1,\"duplicates\":1,\"rejected\":0}")
+            .build());
+    var request =
+        new MonitoringResultBatchRequest(
+            List.of(
+                new MonitoringResultRequest(
+                    1L,
+                    Instant.parse("2026-10-04T12:00:00Z"),
+                    true,
+                    null,
+                    12L,
+                    new PingResultExtensionRequest())));
+
+    var response = monitoringResultClient.sendMonitoringResults(request);
+
+    assertEquals(new MonitoringResultBatchResponse(1, 1, 0), response);
+    var recorded = server.takeRequest();
+    assertEquals("/client/monitoring-results/batch", recorded.getTarget());
+    assertEquals(
+        "{\"results\":[{\"taskId\":1,\"executedAt\":\"2026-10-04T12:00:00Z\",\"success\":true,"
+            + "\"message\":null,\"responseTimeMs\":12,\"extension\":{\"type\":\"PING\"}}]}",
+        recorded.getBody().utf8());
+  }
+
+  @Test
+  void sendMonitoringResults_shouldThrow_whenBatchIsEmpty() {
+    var request = new MonitoringResultBatchRequest(List.of());
+
+    assertThrows(
+        ConstraintViolationException.class,
+        () -> monitoringResultClient.sendMonitoringResults(request));
+  }
+
+  @Test
+  void sendMonitoringResults_shouldThrow_whenBatchIsTooLarge() {
+    var result =
+        new MonitoringResultRequest(
+            1L, Instant.now(), true, null, 12L, new PingResultExtensionRequest());
+    var request =
+        new MonitoringResultBatchRequest(
+            Collections.nCopies(MonitoringResultBatchRequest.WEB_API_MAX_SIZE + 1, result));
+
+    assertThrows(
+        ConstraintViolationException.class,
+        () -> monitoringResultClient.sendMonitoringResults(request));
   }
 
   private static MockWebServer startServer() {

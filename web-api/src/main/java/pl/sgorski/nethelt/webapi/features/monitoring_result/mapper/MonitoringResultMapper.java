@@ -1,22 +1,27 @@
 package pl.sgorski.nethelt.webapi.features.monitoring_result.mapper;
 
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.domain.MonitoringResult;
+import pl.sgorski.nethelt.webapi.features.monitoring_result.domain.MonitoringResultBatchSummary;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.domain.MonitoringResultExtension;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.domain.extension.HttpHealthcheckResultExtension;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.domain.extension.PingResultExtension;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.domain.extension.TelnetResultExtension;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.command.MonitoringResultAddCommand;
+import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.command.MonitoringResultBatchItemCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.command.MonitoringResultExtensionCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.command.extension.HttpHealthcheckResultExtensionCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.command.extension.PingResultExtensionCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.command.extension.TelnetResultExtensionCommand;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.MonitoringResultAddRequest;
+import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.MonitoringResultBatchAddRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.MonitoringResultExtensionRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.extension.HttpHealthcheckResultExtensionRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.extension.PingResultExtensionRequest;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.extension.TelnetResultExtensionRequest;
+import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.response.MonitoringResultBatchAddResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.response.MonitoringResultExtensionResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.response.MonitoringResultResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.response.extension.HttpHealthcheckResultExtensionResponse;
@@ -30,6 +35,15 @@ public interface MonitoringResultMapper {
   MonitoringResultResponse toResponse(MonitoringResult monitoringResult);
 
   MonitoringResultAddCommand toCommand(MonitoringResultAddRequest request);
+
+  default List<MonitoringResultBatchItemCommand> toCommands(
+      MonitoringResultBatchAddRequest request) {
+    return request.results().stream()
+        .map(result -> new MonitoringResultBatchItemCommand(result.taskId(), toCommand(result)))
+        .toList();
+  }
+
+  MonitoringResultBatchAddResponse toResponse(MonitoringResultBatchSummary summary);
 
   PingResultExtensionCommand toCommand(PingResultExtensionRequest request);
 

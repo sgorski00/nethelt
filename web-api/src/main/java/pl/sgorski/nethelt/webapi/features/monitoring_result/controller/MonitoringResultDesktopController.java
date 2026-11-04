@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.MonitoringResultAddRequest;
+import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.request.MonitoringResultBatchAddRequest;
+import pl.sgorski.nethelt.webapi.features.monitoring_result.dto.response.MonitoringResultBatchAddResponse;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.mapper.MonitoringResultMapper;
 import pl.sgorski.nethelt.webapi.features.monitoring_result.service.MonitoringResultService;
 import pl.sgorski.nethelt.webapi.security.agent.AgentAuthentication;
@@ -22,8 +24,18 @@ public class MonitoringResultDesktopController {
   public ResponseEntity<Void> sendResult(
       @RequestBody @Valid MonitoringResultAddRequest request, AgentAuthentication authentication) {
     var command = monitoringResultMapper.toCommand(request);
-    monitoringResultService.addMonitoringResult(
+    monitoringResultService.addMonitoringResultIfAbsent(
         authentication.getPrincipal().networkId(), request.taskId(), command);
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @PostMapping("/batch")
+  public ResponseEntity<MonitoringResultBatchAddResponse> sendResults(
+      @RequestBody @Valid MonitoringResultBatchAddRequest request,
+      AgentAuthentication authentication) {
+    var summary =
+        monitoringResultService.addMonitoringResultsIfAbsent(
+            authentication.getPrincipal().networkId(), monitoringResultMapper.toCommands(request));
+    return ResponseEntity.ok(monitoringResultMapper.toResponse(summary));
   }
 }

@@ -29,7 +29,7 @@ public final class DefaultHttpHealthcheckOperation implements HttpHealthcheckOpe
     var client = configureClient(task, configuration);
     var request = buildRequest(url);
 
-    log.info("Http healthcheck of device with id: {}, url: {}", task.deviceId(), url);
+    log.debug("Http healthcheck of device with id: {}, url: {}", task.deviceId(), url);
     var startTime = System.nanoTime();
     try (var response = client.newCall(request).execute()) {
       var responseTime = Duration.ofNanos(System.nanoTime() - startTime).toMillis();

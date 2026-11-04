@@ -27,6 +27,7 @@ COMPONENTS_FILE="components"
 
 SERVICE_USER="nethelt"
 LINUX_CONFIG_DIR="/etc/nethelt"
+LINUX_STATE_DIR="/var/lib/nethelt"
 LINUX_UNIT_FILE="/etc/systemd/system/nethelt-agent.service"
 MACOS_CONFIG_DIR="/Library/Application Support/NetHelt"
 MACOS_LOG_DIR="/Library/Logs/NetHelt"
@@ -72,7 +73,7 @@ Options:
       --version VER     Install a specific release (e.g. 1.2.3) instead of the latest one
       --archive-dir DIR Use archives from a local directory instead of downloading them
       --uninstall       Remove the client and its service
-      --purge           With --uninstall, also remove credentials and the service account
+      --purge           With --uninstall, also remove credentials, buffered results and the service account
   -h, --help            Show this help
 EOF
   local names
@@ -363,13 +364,18 @@ linux_create_service_account() {
     return
   fi
   info "Creating system user '$SERVICE_USER'"
-  local nologin
+  local nologin group_option
   nologin=$(command -v nologin || echo /usr/sbin/nologin)
-  if command -v useradd >/dev/null 2>&1; then
-    useradd --system --user-group --no-create-home --home-dir /nonexistent --shell "$nologin" "$SERVICE_USER"
-  else
+  if ! command -v useradd >/dev/null 2>&1; then
     die "useradd is required to create the '$SERVICE_USER' system user"
   fi
+  # userdel keeps the group while it has members, e.g. an admin added to read the config dir
+  if getent group "$SERVICE_USER" >/dev/null 2>&1; then
+    group_option="--gid=$SERVICE_USER"
+  else
+    group_option="--user-group"
+  fi
+  useradd --system "$group_option" --no-create-home --home-dir /nonexistent --shell "$nologin" "$SERVICE_USER"
 }
 
 # Credentials file gets the group of this directory (see FileCredentialsStore), so the service can read it
@@ -402,6 +408,9 @@ AmbientCapabilities=CAP_NET_RAW
 CapabilityBoundingSet=CAP_NET_RAW
 NoNewPrivileges=true
 ProtectSystem=strict
+# The only writable directory, ProtectSystem=strict makes the rest read-only
+StateDirectory=nethelt
+StateDirectoryMode=0750
 ProtectHome=true
 PrivateTmp=true
 
@@ -582,17 +591,20 @@ uninstall_client() {
   rm -rf "$INSTALL_DIR" "$INSTALL_DIR.old"
 
   if [ "$PURGE" = true ]; then
-    info "Removing credentials and service account"
+    info "Removing credentials, buffered results and service account"
     if [ "$OS" = "macos" ]; then
       rm -rf "$MACOS_CONFIG_DIR" "$MACOS_LOG_DIR"
     else
-      rm -rf "$LINUX_CONFIG_DIR"
+      rm -rf "$LINUX_CONFIG_DIR" "$LINUX_STATE_DIR"
       if id "$SERVICE_USER" >/dev/null 2>&1; then
         userdel "$SERVICE_USER" 2>/dev/null || warn "Cannot remove the '$SERVICE_USER' user"
       fi
+      if getent group "$SERVICE_USER" >/dev/null 2>&1; then
+        groupdel "$SERVICE_USER" 2>/dev/null || warn "Cannot remove the '$SERVICE_USER' group"
+      fi
     fi
   else
-    info "Credentials were kept, use --purge to remove them"
+    info "Credentials and buffered results were kept, use --purge to remove them"
   fi
   info "NetHelt was removed"
 }

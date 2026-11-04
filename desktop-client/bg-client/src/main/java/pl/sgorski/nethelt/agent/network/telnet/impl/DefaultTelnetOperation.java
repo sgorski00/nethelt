@@ -34,7 +34,7 @@ public final class DefaultTelnetOperation implements TelnetOperation {
   @Override
   public TelnetResult execute(MonitoringTask task) throws NetworkException {
     configuration = (TelnetTaskConfiguration) task.configuration();
-    log.info("Checking port {} of device with id: {}", configuration.port(), task.deviceId());
+    log.debug("Checking port {} of device with id: {}", configuration.port(), task.deviceId());
     var startTime = System.nanoTime();
     var isPortOpen = checkIfPortIsOpen(task);
     var responseTime = Duration.ofNanos(System.nanoTime() - startTime).toMillis();

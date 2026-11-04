@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.security.storage.CredentialsStore;
 import pl.sgorski.nethelt.agent.webclient.api.auth.AgentAuthClient;
@@ -47,7 +48,7 @@ public class TokenProviderTests {
   void getToken_shouldPropagateException_whenAuthenticationFails() {
     when(credentialsStore.get()).thenReturn(Optional.of("pat"));
     when(agentAuthClient.authenticate(new AgentAuthRequest("pat")))
-        .thenThrow(new WebClientException("Web API request failed with status 401"));
+        .thenThrow(new WebClientException(HttpStatus.UNAUTHORIZED));
 
     assertThrows(WebClientException.class, () -> tokenProvider.getToken());
   }

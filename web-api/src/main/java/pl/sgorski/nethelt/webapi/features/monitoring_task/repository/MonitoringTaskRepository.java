@@ -1,5 +1,7 @@
 package pl.sgorski.nethelt.webapi.features.monitoring_task.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +29,13 @@ public interface MonitoringTaskRepository extends JpaRepository<MonitoringTask, 
 """)
   Optional<MonitoringTask> findByIdAndNetworkId(
       @Param("monitoringTaskId") Long monitoringTaskId, @Param("networkId") Long networkId);
+
+  @Query(
+"""
+    select mt from MonitoringTask mt
+    where mt.id in :monitoringTaskIds and mt.device.network.id = :networkId
+""")
+  List<MonitoringTask> findAllByIdInAndNetworkId(
+      @Param("monitoringTaskIds") Collection<Long> monitoringTaskIds,
+      @Param("networkId") Long networkId);
 }

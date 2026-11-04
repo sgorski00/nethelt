@@ -48,5 +48,6 @@ public class WebApiResponseErrorHandlerTests {
             () -> responseErrorHandler.handleError(url, HttpMethod.GET, response));
 
     assertEquals("Web API request failed with status 404", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
   }
 }

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import pl.sgorski.nethelt.agent.exception.NetworkException;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.mapper.DiscoveryScanMapper;
@@ -136,7 +137,7 @@ public class DiscoveryScanServiceTests {
   void startPendingScan_shouldReportFailure_whenSendingResultsFails() {
     mockPendingScan("192.168.0.1", "192.168.0.254");
     when(discoveryScanner.scan(RANGE)).thenReturn(List.of());
-    doThrow(new WebClientException("Web API request failed with status 422"))
+    doThrow(new WebClientException(HttpStatus.UNPROCESSABLE_CONTENT))
         .when(discoveryScanClient)
         .sendResults(any());
 
@@ -149,7 +150,7 @@ public class DiscoveryScanServiceTests {
   @Test
   void startPendingScan_shouldNotScan_whenAcknowledgeFails() {
     mockPendingScan("192.168.0.1", "192.168.0.254");
-    doThrow(new WebClientException("Web API request failed with status 409"))
+    doThrow(new WebClientException(HttpStatus.CONFLICT))
         .when(discoveryScanClient)
         .acknowledgeScan(any());
 

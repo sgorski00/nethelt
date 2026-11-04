@@ -10,21 +10,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.mapper.MonitoringResultMapper;
 import pl.sgorski.nethelt.agent.model.monitoring_result.HttpHealthcheckResult;
 import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
 import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
 import pl.sgorski.nethelt.agent.network.http_healthcheck.HttpHealthcheckOperation;
+import pl.sgorski.nethelt.agent.service.MonitoringResultSender;
 import pl.sgorski.nethelt.agent.test_utils.TestMonitoringTaskFactory;
-import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
 import pl.sgorski.nethelt.agent.webclient.dto.request.MonitoringResultRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class HttpHealthcheckTaskHandlerTests {
 
   @Mock private HttpHealthcheckOperation httpHealthcheckOperation;
-  @Mock private MonitoringResultClient monitoringResultClient;
+  @Mock private MonitoringResultSender monitoringResultSender;
   @Mock private MonitoringResultMapper monitoringResultMapper;
   @Mock private MonitoringResultRequest request;
   @InjectMocks private HttpHealthcheckTaskHandler httpHealthcheckTaskHandler;
@@ -43,20 +42,7 @@ public class HttpHealthcheckTaskHandlerTests {
 
     httpHealthcheckTaskHandler.execute(task);
 
-    verify(monitoringResultClient).sendMonitoringResult(request);
-  }
-
-  @Test
-  void execute_shouldPropagateException_whenSendingFails() {
-    var task = createTask();
-    var result = new HttpHealthcheckResult(1L, true, "OK", 12L, 200);
-    when(httpHealthcheckOperation.execute(task)).thenReturn(result);
-    when(monitoringResultMapper.toRequest(result)).thenReturn(request);
-    doThrow(new WebClientException("failed"))
-        .when(monitoringResultClient)
-        .sendMonitoringResult(request);
-
-    assertThrows(WebClientException.class, () -> httpHealthcheckTaskHandler.execute(task));
+    verify(monitoringResultSender).send(request);
   }
 
   private static MonitoringTask createTask() {
