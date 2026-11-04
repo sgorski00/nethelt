@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
 import pl.sgorski.nethelt.agent.service.DiscoveryScanService;
@@ -28,7 +29,9 @@ public class DiscoveryScanSchedulerTests {
 
   @Test
   void checkPendingScan_shouldNotThrow_whenRequestFails() {
-    doThrow(new WebClientException("failed")).when(discoveryScanService).startPendingScan();
+    doThrow(new WebClientException(HttpStatus.INTERNAL_SERVER_ERROR))
+        .when(discoveryScanService)
+        .startPendingScan();
 
     assertDoesNotThrow(() -> discoveryScanScheduler.checkPendingScan());
   }

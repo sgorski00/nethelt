@@ -7,14 +7,14 @@ import pl.sgorski.nethelt.agent.mapper.MonitoringResultMapper;
 import pl.sgorski.nethelt.agent.model.monitoring_task.MonitoringTask;
 import pl.sgorski.nethelt.agent.model.monitoring_task.TaskType;
 import pl.sgorski.nethelt.agent.network.telnet.TelnetOperation;
-import pl.sgorski.nethelt.agent.webclient.api.web.MonitoringResultClient;
+import pl.sgorski.nethelt.agent.service.MonitoringResultSender;
 
 @Component
 @RequiredArgsConstructor
 public final class TelnetTaskHandler implements MonitoringTaskHandler {
 
   private final TelnetOperation telnetOperation;
-  private final MonitoringResultClient monitoringResultClient;
+  private final MonitoringResultSender monitoringResultSender;
   private final MonitoringResultMapper monitoringResultMapper;
 
   @Override
@@ -26,6 +26,6 @@ public final class TelnetTaskHandler implements MonitoringTaskHandler {
   public void execute(MonitoringTask task) {
     var result = telnetOperation.execute(task);
     var request = monitoringResultMapper.toRequest(result);
-    monitoringResultClient.sendMonitoringResult(request);
+    monitoringResultSender.send(request);
   }
 }

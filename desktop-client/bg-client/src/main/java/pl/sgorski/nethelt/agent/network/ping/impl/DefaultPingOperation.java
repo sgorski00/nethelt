@@ -16,7 +16,7 @@ public final class DefaultPingOperation implements PingOperation {
 
   @Override
   public PingResult execute(MonitoringTask task) throws NetworkException {
-    log.info("Pinging device: {}", task.deviceId());
+    log.debug("Pinging device: {}", task.deviceId());
     var startTime = System.nanoTime();
     try {
       var configuration = (PingTaskConfiguration) task.configuration();

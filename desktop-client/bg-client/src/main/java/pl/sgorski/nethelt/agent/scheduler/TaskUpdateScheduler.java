@@ -27,7 +27,6 @@ public final class TaskUpdateScheduler {
           monitoringTaskClient.fetchMonitoringTasks().stream()
               .map(monitoringTaskMapper::toModel)
               .toList();
-      tasks.forEach(task -> log.info("task: {}", task));
       monitoringTaskService.synchronize(tasks);
     } catch (MissingCredentialsException | CredentialsAccessDeniedException e) {
       log.warn("Skipping task update: {}", e.getMessage());

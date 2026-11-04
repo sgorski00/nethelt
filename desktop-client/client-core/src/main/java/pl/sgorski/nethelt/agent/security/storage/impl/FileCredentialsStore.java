@@ -14,10 +14,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
 import pl.sgorski.nethelt.agent.exception.CredentialsStoreException;
-import pl.sgorski.nethelt.agent.security.provider.CredentialsPathProvider;
+import pl.sgorski.nethelt.agent.provider.PathProvider;
+import pl.sgorski.nethelt.agent.security.provider.impl.DefaultCredentialsPathProvider;
 import pl.sgorski.nethelt.agent.security.storage.CredentialsStore;
 
 /**
@@ -37,9 +39,10 @@ public final class FileCredentialsStore implements CredentialsStore {
   // Well-known SIDs, names of these accounts are localized: SYSTEM and BUILTIN\Administrators
   private static final List<String> WINDOWS_ACL_GRANTS = List.of("*S-1-5-18:F", "*S-1-5-32-544:F");
 
-  private final CredentialsPathProvider pathProvider;
+  private final PathProvider pathProvider;
 
-  public FileCredentialsStore(CredentialsPathProvider pathProvider) {
+  public FileCredentialsStore(
+      @Qualifier(DefaultCredentialsPathProvider.BEAN_NAME) PathProvider pathProvider) {
     this.pathProvider = pathProvider;
   }
 

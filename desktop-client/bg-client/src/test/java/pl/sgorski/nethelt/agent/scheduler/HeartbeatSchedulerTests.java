@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import pl.sgorski.nethelt.agent.exception.CredentialsAccessDeniedException;
 import pl.sgorski.nethelt.agent.exception.MissingCredentialsException;
 import pl.sgorski.nethelt.agent.exception.WebClientException;
@@ -30,7 +31,7 @@ public class HeartbeatSchedulerTests {
 
   @Test
   void sendHeartbeat_shouldNotThrow_whenHeartbeatFails() {
-    doThrow(new WebClientException("failed")).when(agentClient).heartbeat();
+    doThrow(new WebClientException(HttpStatus.INTERNAL_SERVER_ERROR)).when(agentClient).heartbeat();
 
     assertDoesNotThrow(() -> heartbeatScheduler.sendHeartbeat());
   }

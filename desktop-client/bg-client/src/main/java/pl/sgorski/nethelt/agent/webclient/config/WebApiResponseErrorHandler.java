@@ -25,6 +25,6 @@ public final class WebApiResponseErrorHandler implements ResponseErrorHandler {
       throws IOException {
     var status = response.getStatusCode();
     log.warn("Web API request failed: {} {} -> {}", method.name(), url, status);
-    throw new WebClientException("Web API request failed with status " + status.value());
+    throw new WebClientException(status);
   }
 }
