@@ -1,4 +1,5 @@
 \chapter{Założenia projektowe}
+\label{chap:project-assumptions}
 
 \section{Wprowadzenie}
 
@@ -12,19 +13,19 @@ Założenia opisane w dalszej części pracy stanowią podstawę do implementacj
 
 \section{Przedmiot pracy i wizja aplikacji}
 
-Przedmiotem pracy jest opracowanie wielomodułowego systemu informatycznego do monitorowania urządzeń sieciowych działających w środowisku lokalnym (LAN). System ma umożliwiać kontrolę stanu urządzeń, analizę jakości połączenia sieciowego oraz wykrywanie anomalii mogących świadczyć o problemach w działaniu infrastruktury sieciowej.
+Przedmiotem pracy jest opracowanie wielomodułowego systemu informatycznego do monitorowania urządzeń sieciowych działających w środowisku lokalnym (LAN). System umożliwia kontrolę stanu urządzeń, analizę jakości połączenia sieciowego oraz wykrywanie anomalii mogących świadczyć o problemach w działaniu infrastruktury sieciowej.
 
 Projektowane rozwiązanie składa się z aplikacji webowej, aplikacji desktopowej oraz modułu analizy danych wykorzystującego algorytm \texttt{Isolation Forest}. Aplikacja webowa odpowiada za zarządzanie systemem i prezentację danych użytkownikowi, natomiast aplikacja desktopowa realizuje operacje monitorujące w sieci lokalnej i przesyła wyniki do centralnego serwera.
 
-System przewiduje obsługę użytkowników standardowych oraz administratorów, posiadających rozszerzone uprawnienia zarządzania systemem. Aplikacja ma umożliwiać m.in. konfigurację urządzeń, monitorowanie ich dostępności, analizę parametrów połączenia oraz wysyłanie powiadomień o wykrytych problemach.
+System przewiduje obsługę użytkowników standardowych oraz administratorów, posiadających rozszerzone uprawnienia zarządzania systemem. Aplikacja umożliwia m.in. konfigurację urządzeń, monitorowanie ich dostępności, analizę parametrów połączenia oraz wysyłanie powiadomień o wykrytych problemach.
 
-Wizja projektu zakłada stworzenie skalowalnego i łatwego w rozbudowie systemu, dostępnego z poziomu przeglądarki internetowej oraz wdrożonego w środowisku chmurowym. Komunikacja pomiędzy modułami będzie realizowana z wykorzystaniem interfejsów API oraz centralnej bazy danych PostgreSQL.
+Wizja projektu zakłada stworzenie skalowalnego i łatwego w rozbudowie systemu, dostępnego z poziomu przeglądarki internetowej oraz wdrożonego w środowisku chmurowym. Komunikacja pomiędzy modułami jest realizowana z wykorzystaniem interfejsów API oraz centralnej bazy danych PostgreSQL.
 
 \section{Wymagania funkcjonalne}
 
 Wymagania funkcjonalne określają funkcje oraz operacje, które system powinien realizować z perspektywy użytkownika. Ich celem jest opisanie zachowania aplikacji oraz możliwości udostępnianych poszczególnym aktorom systemu. 
 
-W procesie analizy wymagań wykorzystano koncepcję \emph{user stories}, stosowaną w metodykach zwinnych do opisu oczekiwań użytkowników wobec systemu \cite{www2}. Na podstawie przeprowadzonej analizy opracowano zestaw wymagań funkcjonalnych dla projektowanej aplikacji.
+W procesie analizy wymagań wykorzystano koncepcję \emph{user stories}, stosowaną w metodykach zwinnych do opisu oczekiwań użytkowników wobec systemu \cite{www3}. Na podstawie przeprowadzonej analizy opracowano zestaw wymagań funkcjonalnych dla projektowanej aplikacji.
 
 W systemie wyróżniono trzech głównych aktorów:
 \begin{itemize}
@@ -77,7 +78,7 @@ Zestaw wymagań funkcjonalnych przedstawiono w tabeli \ref{tab:functional-requir
 
 \section{Wymagania niefunkcjonalne}
 
-Wymagania niefunkcjonalne określają ograniczenia oraz cechy jakościowe systemu informatycznego. W przeciwieństwie do wymagań funkcjonalnych nie opisują one konkretnych funkcji aplikacji, lecz definiują sposób działania systemu, jego wydajność, bezpieczeństwo, niezawodność oraz dostępność \cite{www3}. 
+Wymagania niefunkcjonalne określają ograniczenia oraz cechy jakościowe systemu informatycznego. W przeciwieństwie do wymagań funkcjonalnych nie opisują one konkretnych funkcji aplikacji, lecz definiują sposób działania systemu, jego wydajność, bezpieczeństwo, niezawodność oraz dostępność \cite{www4}. 
 
 Wymagania niefunkcjonalne mają istotny wpływ na jakość projektowanego rozwiązania oraz komfort korzystania z systemu przez użytkowników. Ich analiza została przeprowadzona na podstawie literatury z zakresu inżynierii oprogramowania oraz założeń projektowych aplikacji \cite{1}.
 
@@ -110,11 +111,9 @@ Najważniejsze wymagania niefunkcjonalne projektowanego systemu przedstawiono w 
 		
 		Bezpieczeństwo & Komunikacja pomiędzy klientem a serwerem powinna być szyfrowana z wykorzystaniem protokołu HTTPS \\
 		
-		Bezpieczeństwo & Hasła użytkowników powinny być przechowywane w postaci skrótu kryptograficznego z wykorzystaniem algorytmu Argon2 \\
+		Bezpieczeństwo & Hasła użytkowników powinny być przechowywane w postaci skrótu kryptograficznego z wykorzystaniem algorytmu BCrypt \\
 		
 		Niezawodność & System powinien zapisywać logi błędów oraz umożliwiać ich przeglądanie administratorowi \\
-		
-		Niezawodność & System powinien posiadać mechanizm ponawiania połączeń z urządzeniami obejmujący minimum 3 próby \\
 		
 		\bottomrule
 	\end{tabular}
@@ -162,25 +161,28 @@ frontend komunikuje się z backendem poprzez REST API oraz WebSocket, zapewniaj�
 
 \subsection{Architektura fizyczna}
 
-Architektura fizyczna przedstawia sposób wdrożenia systemu w środowisku infrastrukturalnym. System został zaimplementowany z wykorzystaniem platformy Google Cloud Platform (GCP), która zapewnia skalowalne środowisko uruchomieniowe oraz usługi zarządzane.
+Architektura fizyczna przedstawia sposób wdrożenia systemu w środowisku infrastrukturalnym. System został wdrożony na platformie Amazon Web Services (AWS). Przy doborze usług kierowano się przede wszystkim niskim kosztem utrzymania, dlatego zamiast droższych usług zarządzanych wykorzystano jedną maszynę wirtualną, na której uruchomiono większość komponentów serwerowych.
 
-Poszczególne komponenty systemu zostały skonteneryzowane przy użyciu technologii Docker. Każdy główny moduł działa w osobnym kontenerze, co zapewnia ich izolację oraz możliwość niezależnego wdrażania.
+Komponenty serwerowe zostały skonteneryzowane przy użyciu technologii Docker. Każdy z nich działa w osobnym kontenerze na instancji usługi Amazon EC2, a kontenery są zarządzane za pomocą narzędzia Docker Compose. Zapewnia to ich izolację oraz możliwość niezależnego wdrażania.
 
 W warstwie fizycznej system obejmuje:
 \begin{itemize}
-	\item backend uruchamiany w kontenerze Docker,
-	\item frontend uruchamiany w kontenerze Docker,
-	\item moduł AI uruchamiany w kontenerze Docker,
-	\item bazę danych realizowaną w usłudze Cloud SQL,
-	\item cache realizowany w usłudze Memorystore,
+	\item backend uruchamiany w kontenerze Docker na instancji EC2,
+	\item bazę danych PostgreSQL uruchamianą w kontenerze Docker na instancji EC2, której kopia zapasowa jest codziennie zapisywana w usłudze Amazon S3,
+	\item cache Redis uruchamiany w kontenerze Docker na instancji EC2,
+	\item serwer pośredniczący (\emph{reverse proxy}), zapewniający szyfrowanie HTTPS w komunikacji z backendem,
+	\item frontend w postaci plików statycznych przechowywanych w usłudze Amazon S3 i udostępnianych przez sieć CDN Amazon CloudFront,
+	\item moduł AI uruchamiany w usłudze bezserwerowej AWS Lambda,
 	\item klienta desktopowego instalowanego lokalnie na urządzeniu użytkownika.
 \end{itemize}
 
-Takie podejście zapewnia separację komponentów, łatwość skalowania oraz zwiększoną odporność systemu na awarie, a także upraszcza proces wdrażania i utrzymania infrastruktury.
+Backend korzysta ponadto z usług zewnętrznych: serwera SMTP do wysyłki wiadomości e-mail, interfejsu Telegram Bot API do wysyłki powiadomień przez komunikator Telegram oraz usług Google i GitHub do uwierzytelniania użytkowników w protokole OAuth2. Schemat wdrożenia przedstawiono na rysunku \ref{fig:physic-arch}.
+
+Takie podejście zapewnia separację komponentów oraz niski koszt utrzymania, a także upraszcza proces wdrażania. Moduł AI działa w modelu bezserwerowym, więc generuje koszty wyłącznie w czasie wykonywania analizy. Wadą rozwiązania jest umieszczenie komponentów serwerowych na jednej maszynie wirtualnej. W przypadku wzrostu liczby użytkowników bazę danych oraz cache można przenieść do usług zarządzanych Amazon RDS i Amazon ElastiCache bez zmian w kodzie aplikacji.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{images/physic-arch.jpg}
+	\includegraphics[width=0.8\textwidth]{images/physic-arch.png}
 	\caption{Architektura fizyczna systemu\\Źródło: opracowanie własne}
 	\label{fig:physic-arch}
 \end{figure}

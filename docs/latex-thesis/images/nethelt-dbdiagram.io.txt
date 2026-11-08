@@ -1,83 +1,294 @@
-Table devices {
-  id integer [primary key]
-  user_id integer [not null]
-  name varchar [not null]
-  ip_address varchar [not null]
-  port integer
-  device_type varchar [not null, note: "eg. 'lan_client', 'router'"]
+Table users {
+  id bigint [pk, increment]
+  email varchar(255) [not null, note: 'unique among not deleted rows']
+  password_hash varchar(255) [note: 'BCrypt, null for OAuth2-only accounts']
+  role varchar(50) [not null, note: 'USER, ADMIN']
   created_at timestamp
   updated_at timestamp
-  deleted_at timestamp
+  deleted_at timestamp [note: 'soft delete']
+}
+
+Table profiles {
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
+  username varchar(255) [not null, unique]
+  first_name varchar(255)
+  last_name varchar(255)
+  birth_date date
+  bio text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table user_identities {
-  id integer [primary key]
-  user_id integer [not null]
-  provider varchar [not null, note: "eg: 'google', 'facebook'"]
-  provider_id varchar [not null]
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  provider varchar(255) [not null, note: 'GOOGLE, GITHUB']
+  provider_id text [not null]
+
+  indexes {
+    (provider, provider_id) [unique]
+    (user_id, provider) [unique]
+  }
 }
 
-Table users {
-  id integer [primary key]
-  username varchar [not null, unique]
-  email varchar [not null, unique]
-  password_hash varchar
-  role varchar [not null, note: "eg. 'admin', 'user'"]
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
+Table refresh_tokens {
+  id bigint [pk, increment]
+  token varchar(255) [not null, unique]
+  user_id bigint [not null]
+  is_revoked boolean [not null, default: false]
+  expires_at timestamp [not null]
 }
 
-Table device_operations {
-  id integer [primary key]
-  device_id integer [not null]
-  operation_type varcahr [not null, note: "eg. 'ping', 'telnet'"]
-  schedule_interval integer [not null, note: "in seconds"]
-  is_anomaly_detection_enabled boolean [not null, default: false]
+Table password_reset_tokens {
+  id bigint [pk, increment]
+  token varchar(255) [not null, unique]
+  user_id bigint [not null]
+  is_revoked boolean [not null, default: false]
+  expires_at timestamp [not null]
+}
+
+Table networks {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  name varchar(255) [not null, note: 'unique per user among not deleted rows']
+  description text
   created_at timestamp
   updated_at timestamp
-  deleted_at timestamp
+  deleted_at timestamp [note: 'soft delete']
+}
+
+Table network_agents {
+  id bigint [pk, increment]
+  network_id bigint [not null, unique]
+  name varchar(255) [not null]
+  hashed_token text [not null, unique]
+  token_created_at timestamp [not null]
+  last_heartbeat_at timestamp
+  status varchar(50) [not null, default: 'ACTIVE']
+  max_unavailability_time interval [not null, default: '5 minutes']
+  availability_alert_state varchar(16) [not null, default: 'OK']
+}
+
+Table devices {
+  id bigint [pk, increment]
+  network_id bigint [not null]
+  name varchar(255) [not null]
+  ip_address inet [not null, note: 'IPv4 only']
+  ip_numeric bigint [not null, note: 'IP as number, used for range filtering']
+  type varchar(50) [not null, note: 'LAN_CLIENT, WIFI_CLIENT, NETWORK_DEVICE']
+  is_enabled boolean [not null, default: true]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  indexes {
+    (network_id, name) [unique]
+    (network_id, ip_address) [unique]
+    (network_id, ip_numeric)
+  }
+}
+
+Table monitoring_tasks {
+  id bigint [pk, increment]
+  device_id bigint [not null]
+  configuration_id bigint
+  type varchar(255) [not null, note: 'PING, TELNET, HTTP_HEALTHCHECK']
+  interval interval [not null, note: 'delay between runs']
+  is_enabled boolean [not null, default: true]
+  is_ai_analysis_enabled boolean [not null, default: false]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table monitoring_task_configurations {
+  id bigint [pk, increment]
+}
+
+Table ping_task_configurations {
+  id bigint [pk]
+  timeout interval [not null]
+}
+
+Table telnet_task_configurations {
+  id bigint [pk]
+  port integer [not null]
+  timeout interval [not null]
+}
+
+Table http_healthcheck_task_configurations {
+  id bigint [pk]
+  scheme varchar(255) [not null, note: 'HTTP, HTTPS']
+  host varchar(255)
+  port integer [not null]
+  path varchar(255) [not null]
+  expected_status_code integer [note: '100-599']
+  timeout interval [not null]
+}
+
+Table monitoring_results {
+  id bigint [pk, increment]
+  task_id bigint [not null]
+  monitoring_result_extension_id bigint [not null, unique]
+  executed_at timestamptz [not null]
+  success boolean [not null]
+  message text
+  response_time_ms bigint
+  created_at timestamptz [not null]
+
+  indexes {
+    (task_id, executed_at) [unique, note: 'resent results are skipped']
+  }
+}
+
+Table monitoring_result_extensions {
+  id bigint [pk, increment]
+}
+
+Table ping_result_extensions {
+  id bigint [pk]
+}
+
+Table telnet_result_extensions {
+  id bigint [pk]
+  port_open boolean [not null]
+}
+
+Table http_healthcheck_result_extensions {
+  id bigint [pk]
+  status_code integer
+}
+
+Table ai_analysis_results {
+  id bigint [pk, increment]
+  task_id bigint [not null]
+  window_start timestamptz [not null, note: '1-minute window']
+  ping_std_1m double
+  packet_loss_1m double
+  score double [not null, note: 'Isolation Forest score, below 0 = anomaly']
+  is_anomaly boolean [not null]
+  model_version varchar(50) [not null]
+  created_at timestamptz [not null]
+
+  indexes {
+    (task_id, window_start) [unique]
+  }
+}
+
+Table alert_rules {
+  id bigint [pk, increment]
+  task_id bigint [not null]
+  condition_type varchar(50) [not null, note: 'CONSECUTIVE_FAILURES, RESPONSE_TIME_ABOVE, PACKET_LOSS_ABOVE, NO_SUCCESS_FOR, NO_DATA_FOR']
+  parameters jsonb [not null, note: 'validated per condition type']
+  is_enabled boolean [not null, default: true]
+  alert_state varchar(16) [not null, default: 'OK']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
 }
 
 Table notifications {
-  id integer [primary key]
-  operation_id integer [not null]
-  event_type varchar [not null, default: "anomaly", note: "at start only anomaly"]
-  channel varchar [not null, note: "eg. 'email', 'sms', 'pushup'"]
-  is_enabled boolean [not null, default: true]
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  title varchar(255) [not null]
+  content text [not null]
+  read_at timestamp
   created_at timestamp
-  updated_at timestamp
+}
+
+Table notification_deliveries {
+  id bigint [pk, increment]
+  notification_id bigint [not null]
+  channel varchar(32) [not null, note: 'EMAIL, WEBSOCKET, TELEGRAM']
+  status varchar(16) [not null]
+  attempts integer [not null, default: 0]
+  last_error text
+  next_attempt_at timestamptz
+  last_attempt_at timestamptz
+  delivered_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  indexes {
+    (notification_id, channel) [unique]
+  }
 }
 
 Table notification_preferences {
-  id integer [primary key]
-  user_id integer [not null]
-  channel varchar [not null, note: "eg. 'email', 'sms', 'pushup'"]
-  is_enabled bool [not null, default: false]
-
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
 }
 
-Table device_operation_stats {
-  id integer [primary key]
-  operation_id integer [not null]
-  response_time_ms integer
-  status varchar [note: "eg. 'success', 'failure', 'timeout'"]
-  received_at timestamp
+Table notification_enabled_channels {
+  preference_id bigint [not null]
+  channel varchar(255) [not null, note: 'EMAIL, WEBSOCKET, TELEGRAM']
+
+  indexes {
+    (preference_id, channel) [pk]
+  }
 }
 
-Table anomaly_logs {
-  id integer [primary key]
-  operation_id integer [not null]
-  anomaly_type varchar [not null, note: "eg. 'latency_spike', 'packet_loss', 'unavailable'"]
-  severity varchar [note: "eg. 'low', 'medium', 'high'"]
-  description text
-  detected_at timestamp
+Table telegram_accounts {
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
+  chat_id bigint [not null, unique]
+  linked_at timestamptz [not null]
 }
 
-Ref: users.id < devices.user_id
-Ref: users.id < user_identities.user_id
-Ref: users.id < notification_preferences.user_id
-Ref: devices.id < device_operations.device_id
-Ref: device_operations.id < notifications.operation_id
-Ref: device_operations.id < device_operation_stats.operation_id
-Ref: anomaly_logs.operation_id > device_operations.id
+Table discovery_scans {
+  id bigint [pk, increment]
+  network_id bigint [not null, unique, note: 'last scan of the network']
+  status varchar(16) [not null, note: 'PENDING, RUNNING, COMPLETED, FAILED, TIMED_OUT']
+  range_start bigint
+  range_end bigint
+  requested_at timestamptz [not null]
+  started_at timestamptz
+  finished_at timestamptz
+  failure_reason varchar(255)
+}
+
+Table discovery_scan_results {
+  id bigint [pk, increment]
+  scan_id bigint [not null]
+  ip_address inet [not null]
+  hostname varchar(255)
+  response_time_ms integer [not null]
+
+  indexes {
+    (scan_id, ip_address) [unique]
+  }
+}
+
+Table error_logs {
+  id bigint [pk, increment]
+  occurred_at timestamptz [not null]
+  logger varchar(255) [not null]
+  message text [not null]
+  stack_trace text
+  request_path varchar(255)
+}
+
+Ref: profiles.user_id - users.id
+Ref: user_identities.user_id > users.id
+Ref: refresh_tokens.user_id > users.id
+Ref: password_reset_tokens.user_id > users.id
+Ref: networks.user_id > users.id
+Ref: network_agents.network_id - networks.id
+Ref: devices.network_id > networks.id
+Ref: monitoring_tasks.device_id > devices.id
+Ref: monitoring_tasks.configuration_id - monitoring_task_configurations.id
+Ref: ping_task_configurations.id - monitoring_task_configurations.id
+Ref: telnet_task_configurations.id - monitoring_task_configurations.id
+Ref: http_healthcheck_task_configurations.id - monitoring_task_configurations.id
+Ref: monitoring_results.task_id > monitoring_tasks.id
+Ref: monitoring_results.monitoring_result_extension_id - monitoring_result_extensions.id
+Ref: ping_result_extensions.id - monitoring_result_extensions.id
+Ref: telnet_result_extensions.id - monitoring_result_extensions.id
+Ref: http_healthcheck_result_extensions.id - monitoring_result_extensions.id
+Ref: ai_analysis_results.task_id > monitoring_tasks.id
+Ref: alert_rules.task_id > monitoring_tasks.id
+Ref: notifications.user_id > users.id
+Ref: notification_deliveries.notification_id > notifications.id
+Ref: notification_preferences.user_id - users.id
+Ref: notification_enabled_channels.preference_id > notification_preferences.id
+Ref: telegram_accounts.user_id - users.id
+Ref: discovery_scans.network_id - networks.id
+Ref: discovery_scan_results.scan_id > discovery_scans.id
